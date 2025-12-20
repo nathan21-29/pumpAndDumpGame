@@ -1,10 +1,10 @@
 package pumpAndDumpGame;
 
-public class HelloWorld {
+public class PumpAndDumpGame {
 
 	public static void main(String[] args) {
-		System.out.println("Hello World");
-		//lol
+		// TODO Auto-generated method stub
+
 	}
 
 }
