@@ -5,8 +5,6 @@ import java.util.*;
 public class Stock {
 
 	private String symbol;
-	private double value; //if using candlesticks
-	//value can be derived using close price of final candlestick
 	
 	static ArrayList<Stock> market = new ArrayList<>();
 
@@ -22,7 +20,7 @@ public class Stock {
 	}
 
 	public double getValue () {
-		return this.value;
+		return priceHistory.peekLast().getClosePrice();
 	}
 	
 	public void setValue(double newPrice) {
