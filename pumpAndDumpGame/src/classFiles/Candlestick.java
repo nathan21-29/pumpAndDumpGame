@@ -22,4 +22,12 @@ public class Candlestick {
 	public double getClosePrice() {
 		return closePrice;
 	}
+	
+	public boolean getType() {
+		return type;
+	}
+	
+	public String toString() {
+		return "Open price: " + openPrice + "  Close price: " + closePrice + "\n";
+	}
 }
