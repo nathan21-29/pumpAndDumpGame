@@ -102,7 +102,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.setColor(darkGray);
 		g.fillRect(0, 0, screenWidth, screenHeight);
 
-		demo.drawDemo(100, 10, g);
+		demo.drawDemo(200, 10, g);
 		
 		g.drawImage(menuTitle, 0, 0, 1900, 1000, this);
 		g.drawImage(menuPlayButton, 600, 500, 700,  300, this);

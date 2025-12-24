@@ -18,7 +18,9 @@ public class priceGenerationTest {
 		while(true) {
 			test = new Stock("TEST", 10, 3);
 			for(int i = 0; i < 25; i++) {
+				System.out.println("s'");
 				test.nextCandleStick();
+				System.out.println("hi");
 			}
 			System.out.println(test);
 			in.nextLine();
