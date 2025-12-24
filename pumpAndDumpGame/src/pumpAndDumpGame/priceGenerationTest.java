@@ -17,7 +17,7 @@ public class priceGenerationTest {
 		int winners = 0;
 		int losers = 0;
 		for(int i = 0; i < 1000; i++) {
-			test = new Stock("TEST", 10, 1, 1, 1);
+			test = new Stock("DEMO", 10, 2, 1.01, 1);
 			for(int j = 0; j < 150; j++) {
 				test.nextCandleStick();
 			}

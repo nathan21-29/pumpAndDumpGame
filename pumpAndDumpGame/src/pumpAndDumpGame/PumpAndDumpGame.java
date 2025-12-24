@@ -63,22 +63,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		timeElapsed = 0;
 		FPS = 100;
-//		for(int i = 0; i < 100000; i++) {
-//			// this is just to delay time
-//			String s = "set up stuff blah blah blah";
-//			s.toUpperCase();
-//		}
 		//generate first 100 candlesticks for demo
 		for(int i = 0; i < 300; i++) {
 			demo.nextCandleStick();
 		}
 		System.out.println(demo.getRecentMax());
-		gameState = TRADINGSCREEN;
+		gameState = MAINMENU;
 		demoStartTime = System.currentTimeMillis();
-//		System.out.println("max");
-//		System.out.println(demo.getMaxPrice());
-//		System.out.println(demo.getMinPrice());
-//		System.out.println(demo.getPriceHistory());
 		
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
@@ -102,7 +93,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			drawMenu(g);
 		}
 		else if(gameState == TRADINGSCREEN) {
-			drawTradingScreen(g);
+			drawTradingScreen(demo, g);
 		}
 	}
 	
@@ -117,9 +108,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(menuSettingsButton, 600, 730, 700,  300, this);
 	}
 	
-	public void drawTradingScreen(Graphics g) {
+	public void drawTradingScreen(Stock s, Graphics g) {
 		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
-		demo.drawGraph(g);
+		s.drawGraph(g);
 	}
 	
 	@Override
@@ -130,8 +121,21 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE && gameState == TRADINGSCREEN) {
+			demo = new Stock("DEMO", 10, 2, 1, 1);
+			//generate first 100 candlesticks for demo
+			for(int i = 0; i < 300; i++) {
+				demo.nextCandleStick();
+			}
+			System.out.println(demo.getRecentMax());
+			gameState = MAINMENU;
+			demoStartTime = System.currentTimeMillis();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			gameState = TRADINGSCREEN;
+		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
-			System.out.println("hi");
+			demo.nextCandleStick();
 		}
 	}
 
