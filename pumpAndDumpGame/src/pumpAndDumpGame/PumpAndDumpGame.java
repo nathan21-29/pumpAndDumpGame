@@ -71,10 +71,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		for(int i = 0; i < 200; i++) {
 			demo.nextCandleStick();
 		}
-		System.out.println("max");
-		System.out.println(demo.getMaxPrice());
-		System.out.println(demo.getMinPrice());
-		System.out.println(demo.getPriceHistory());
+//		System.out.println("max");
+//		System.out.println(demo.getMaxPrice());
+//		System.out.println(demo.getMinPrice());
+//		System.out.println(demo.getPriceHistory());
 		
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");

@@ -153,8 +153,7 @@ public class Stock {
 		double bottomBound = minPrice * 0.95;
 		int openPixel;
 		int closePixel;
-		int count = Math.min(candlestickCount, priceHistory.size());
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < candlestickCount; i++) {
 			openPixel = getDrawPixel(0, 1000, topBound, bottomBound, priceHistory.get(i).getOpenPrice());
 			closePixel = getDrawPixel(0, 1000, topBound, bottomBound, priceHistory.get(i).getClosePrice());
 			if(openPixel >= closePixel) { //upward candle
