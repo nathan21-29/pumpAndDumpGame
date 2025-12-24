@@ -27,7 +27,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
 	
-	Stock demo = new Stock("DEMO", 10, 1);
+	Stock demo = new Stock("DEMO", 10, 1.7);
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -86,7 +86,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void update() {
 		//update stuff
 		timeElapsed = System.currentTimeMillis() - startTime;
-		
 		frameCount++;
 	}
 	
@@ -102,7 +101,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.setColor(darkGray);
 		g.fillRect(0, 0, screenWidth, screenHeight);
 
-		demo.drawDemo(200, 10, g);
+		demo.drawDemo(startTime, 200, 10, g);
 		
 		g.drawImage(menuTitle, 0, 0, 1900, 1000, this);
 		g.drawImage(menuPlayButton, 600, 500, 700,  300, this);

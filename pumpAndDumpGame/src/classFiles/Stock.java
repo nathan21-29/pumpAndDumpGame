@@ -147,13 +147,13 @@ public class Stock {
 		}
 	}
 	
-	public void drawDemo(int candlestickCount, int candlestickWidth, Graphics g) {
+	public void drawDemo(long startTime, int candlestickCount, int candlestickWidth, Graphics g) {
 //		g.setColor(Color.WHITE);
 		double topBound = maxPrice * 1.05;
 		double bottomBound = minPrice * 0.95;
 		int openPixel;
 		int closePixel;
-		for (int i = 0; i < candlestickCount; i++) {
+		for (int i = 0; i < Math.min((System.currentTimeMillis() - startTime) / 50, candlestickCount); i++) {
 			openPixel = getDrawPixel(0, 1000, topBound, bottomBound, priceHistory.get(i).getOpenPrice());
 			closePixel = getDrawPixel(0, 1000, topBound, bottomBound, priceHistory.get(i).getClosePrice());
 			if(openPixel >= closePixel) { //upward candle
