@@ -8,23 +8,28 @@ import classFiles.Stock;
 public class priceGenerationTest {
 
 	public static void main(String[] args) {
-		Scanner in = new Scanner(System.in);
 		Stock test;
 //		for(int i = 0; i < 10; i++) {
 //			test = new Stock("TEST", 10, 1);
 //			System.out.println(test);
 //			test.nextCandleStick();
 //		}
-		while(true) {
-			test = new Stock("TEST", 10, 3);
-			for(int i = 0; i < 25; i++) {
-				System.out.println("s'");
+		int winners = 0;
+		int losers = 0;
+		for(int i = 0; i < 1000; i++) {
+			test = new Stock("TEST", 10, 1, 1, 1);
+			for(int j = 0; j < 150; j++) {
 				test.nextCandleStick();
-				System.out.println("hi");
 			}
-			System.out.println(test);
-			in.nextLine();
+			if(test.getPriceHistory().getLast().getClosePrice() > 10) {
+				winners++;
+			}
+			else {
+				losers++;
+			}
 		}
+		System.out.println(winners + " winners");
+		System.out.println(losers + " losers");
 	}
 
 }

@@ -1,12 +1,14 @@
 package classFiles;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.*;
 
 public class Stock {
 	
 	public static ArrayList<Stock> market = new ArrayList<>();
+	private static Font price = new Font("Arial", Font.PLAIN, 20);
 
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
@@ -17,12 +19,20 @@ public class Stock {
 	private double momentum;
 	private double maxPrice;
 	private double minPrice;
+	private int recentMax;
+	private int recentMin;
+	private double targetGrowth;
+	private double stability;
 
-	public Stock(String symbol, int initialPrice, double volatility) {
+	public Stock(String symbol, int initialPrice, double volatility, double targetGrowth, double stability) {
 		maxPrice = initialPrice;
 		minPrice = initialPrice;
+		recentMax = 0;
+		recentMin = 0;
 		this.symbol = symbol;
 		this.volatility = volatility;
+		this.targetGrowth = targetGrowth;
+		this.stability = stability;
 		momentum = 2; //default
 		priceHistory = new ArrayList<>();
 		priceHistory.add(generateInitialCandlestick(initialPrice));
@@ -46,6 +56,10 @@ public class Stock {
 	
 	public ArrayList<Candlestick> getPriceHistory() {
 		return priceHistory;
+	}
+	
+	public int getRecentMax() {
+		return recentMax;
 	}
 	
 	public void setValue(double newPrice) {
@@ -81,12 +95,12 @@ public class Stock {
 	public void nextCandleStick() {
 		//first, find pressure
 		Deque<Candlestick> recent = new LinkedList<Candlestick>
-		(priceHistory.subList(Math.max(priceHistory.size() - 25,  0), priceHistory.size()));
+		(priceHistory.subList(Math.max(priceHistory.size() - (int)(25 * stability),  0), priceHistory.size()));
 		
-		int recentSize = Math.min(priceHistory.size(), 25);
+		int recentSize = Math.min(priceHistory.size(), (int)(25 * stability));
 		
 		//baselinePrice is the average price of the last 25 available candlesticks + 10%
-		double baselinePrice = baselineSum / recentSize * 1.01;
+		double baselinePrice = baselineSum / recentSize * targetGrowth;
 //		System.out.println(baselinePrice);
 		//find pressure as %difference from baselinePrice
 		double percentDiff = (baselinePrice - this.getValue()) / baselinePrice;
@@ -110,9 +124,34 @@ public class Stock {
 			generateCandleStick(NEGATIVE);
 		}
 		
+		//check for out of bounds min/max
+		if(priceHistory.size() - recentMax > 141) { //recent max is out of bounds of the current graph
+			double maxValue = priceHistory.get(priceHistory.size() - 141).getClosePrice();
+			int maxIndex = priceHistory.size() - 141;
+			for(int i = priceHistory.size() - 140; i < priceHistory.size(); i++) {
+				if(priceHistory.get(i).getClosePrice() > maxValue) {
+					maxValue = priceHistory.get(i).getClosePrice();
+					maxIndex = i;
+				}
+			}
+			recentMax = maxIndex;
+		}
+		
+		if(priceHistory.size() - recentMin > 141) { //recent max is out of bounds of the current graph
+			double minValue = priceHistory.get(priceHistory.size() - 140).getClosePrice();
+			int minIndex = priceHistory.size() - 141;
+			for(int i = priceHistory.size() - 140; i < priceHistory.size(); i++) {
+				if(priceHistory.get(i).getClosePrice() < minValue) {
+					minValue = priceHistory.get(i).getClosePrice();
+					minIndex = i;
+				}
+			}
+			recentMin = minIndex;
+		}
+		
 		//correct baselineSum
-		if(recentSize == 25) {
-			baselineSum -= priceHistory.get(priceHistory.size() - 25).getClosePrice();
+		if(recentSize == 25 * stability) {
+			baselineSum -= priceHistory.get(priceHistory.size() - (int)(25 * stability)).getClosePrice();
 		}
 	}
 	
@@ -125,10 +164,13 @@ public class Stock {
 				//maxroll momentum in the other direction
 				momentum = Math.min(momentum + 0.25, 2.7);
 			}
-			momentum = Math.min(momentum + Math.sqrt(Math.random()) * 0.2 + 0.05, 2.7);
+			momentum = Math.min(momentum + Math.sqrt(Math.random()) * 0.2 + 0.05, 2.55);
 			baselineSum += this.getValue() + change;
 			if(this.getValue() + change > maxPrice) {
 				maxPrice = this.getValue() + change;
+			}
+			if(this.getValue() + change > priceHistory.get(recentMax).getClosePrice()) {
+				recentMax = priceHistory.size(); //set recent max index to new candlestick
 			}
 			priceHistory.add(new Candlestick(this.getValue(), this.getValue() + change));
 		}
@@ -138,10 +180,13 @@ public class Stock {
 				//maxroll momentum in the other direction
 				momentum = Math.max(momentum - 0.25, 1.3);
 			}
-			momentum = Math.max(momentum - Math.random() * 0.2 + 0.05, 1.3);
+			momentum = Math.max(momentum - Math.sqrt(Math.random()) * 0.2 + 0.05, 1.3);
 			baselineSum += this.getValue() - change;
 			if(this.getValue() - change < minPrice) {
 				minPrice = this.getValue() - change;
+			}
+			if(this.getValue() - change < priceHistory.get(recentMin).getClosePrice()) {
+				recentMin = priceHistory.size(); //set recent max index to new candlestick
 			}
 			priceHistory.add(new Candlestick(this.getValue(), this.getValue() - change));
 		}
@@ -151,6 +196,8 @@ public class Stock {
 //		g.setColor(Color.WHITE);
 		double topBound = maxPrice * 1.05;
 		double bottomBound = minPrice * 0.95;
+//		double topBound = 50;
+//		double bottomBound = 0;
 		int openPixel;
 		int closePixel;
 		for (int i = 0; i < Math.min((System.currentTimeMillis() - startTime) / 50, candlestickCount); i++) {
@@ -167,8 +214,47 @@ public class Stock {
 //					candlestickWidth,
 //					-100);
 			g.fillRect(i * candlestickWidth, Math.min(openPixel, closePixel), candlestickWidth, Math.abs(openPixel - closePixel));
-			
-			
+		}
+	}
+	
+	public void drawGraph(Graphics g) {
+		double topBound = priceHistory.get(recentMax).getClosePrice() * 1.05;
+		double bottomBound = priceHistory.get(recentMin).getClosePrice() * 0.95;
+		
+		drawGraphLines(g);
+		
+		int openPixel;
+		int closePixel;
+		int start = priceHistory.size() - 141;
+		for (int i = 0; i < 140; i++) {
+			openPixel = getDrawPixel(100, 700, topBound, bottomBound, priceHistory.get(i + start).getOpenPrice());
+			closePixel = getDrawPixel(100, 700, topBound, bottomBound, priceHistory.get(i + start).getClosePrice());
+			if(openPixel >= closePixel) { //upward candle
+				g.setColor(Color.GREEN);
+			}
+			else { //downward candle
+				g.setColor(Color.RED);
+			}
+//			g.drawRect(i * candlestickWidth, 
+//					getDrawPixel(0, 1900, topBound, bottomBound, priceHistory.get(i).getOpenPrice()),
+//					candlestickWidth,
+//					-100);
+			g.fillRect(10 + i * 10, Math.min(openPixel, closePixel), 10, Math.abs(openPixel - closePixel));
+		}
+	}
+	
+	public void drawGraphLines(Graphics g) {
+		g.setColor(Color.WHITE);
+		g.setFont(price);
+		double top = priceHistory.get(recentMax).getClosePrice();
+		double bottom = priceHistory.get(recentMin).getClosePrice();
+		double valueIncrement = (top - bottom) / 4; //round to nearest 100th
+		
+		int yCoord;
+		for(int i = 0; i <= 4; i++) {
+			yCoord = getDrawPixel(100, 700, top * 1.05, bottom * 0.95, bottom + (i * valueIncrement));
+			g.drawLine(10, yCoord, 1450, yCoord);
+			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1455, yCoord + 2);
 		}
 	}
 	
