@@ -97,6 +97,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 	}
 	
+	//Draws the main menu
+	//Graphics g is the graphics object used to draw elements
 	public void drawMenu(Graphics g) {
 		g.setColor(darkGray);
 		g.fillRect(0, 0, screenWidth, screenHeight);
@@ -107,7 +109,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(menuPlayButton, 600, 500, 700,  300, this);
 		g.drawImage(menuSettingsButton, 600, 730, 700,  300, this);
 	}
-	
+
+	//Draws the trading screen
+	//Stock s is the stock to be drawn
+	//Graphics g is the graphics object used to draw elements
 	public void drawTradingScreen(Stock s, Graphics g) {
 		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
 		s.drawGraph(g);
@@ -121,6 +126,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		//esc moves from trading screen back to menu and resets animation
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE && gameState == TRADINGSCREEN) {
 			demo = new Stock("DEMO", 10, 2, 1, 1);
 			//generate first 100 candlesticks for demo

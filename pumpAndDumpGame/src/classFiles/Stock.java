@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.util.*;
 
 public class Stock {
-	
+
 	public static ArrayList<Stock> market = new ArrayList<>();
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
 
@@ -24,6 +24,14 @@ public class Stock {
 	private double targetGrowth;
 	private double stability;
 
+	//constructor
+	//String symbol is the symbol or "ticker" of the stock, int initialPrice is the seed price of the stock,
+	//double volatility is a double from 0 exclusive to inf that dictates how big swings are
+	//, but works best in the range of 0.1 - 3. Double targetGrowth is the percent above the baseline that
+	//the stock "wants" to be at (e.g. targetGrowth of 1.1 means the stock wants to grow 10% above the baseline
+	//however targetGrowth is most realistic in the range 1 +- 0.07. Double stability is a factor of the
+	//sample size defining the baseline, as a multiple of 25 (if stability is 2, then the baseline price will
+	//be defined using the last 2 * 25 = 50 close prices)
 	public Stock(String symbol, int initialPrice, double volatility, double targetGrowth, double stability) {
 		maxPrice = initialPrice;
 		minPrice = initialPrice;
@@ -35,9 +43,10 @@ public class Stock {
 		this.stability = stability;
 		momentum = 2; //default
 		priceHistory = new ArrayList<>();
-		priceHistory.add(generateInitialCandlestick(initialPrice));
+		generateInitialCandlestick(initialPrice);
 	}
- 
+
+	//getters
 	public String getSymbol () {
 		return this.symbol;
 	}
@@ -45,60 +54,66 @@ public class Stock {
 	public double getValue () {
 		return priceHistory.getLast().getClosePrice();
 	}
-	
+
 	public double getMaxPrice() {
 		return maxPrice;
 	}
-	
+
 	public double getMinPrice() {
 		return minPrice;
 	}
-	
+
 	public ArrayList<Candlestick> getPriceHistory() {
 		return priceHistory;
 	}
-	
+
 	public int getRecentMax() {
 		return recentMax;
 	}
-	
+
+	//setters
 	public void setValue(double newPrice) {
 		priceHistory.addLast(new Candlestick(priceHistory.getLast().getClosePrice(), newPrice));
 	}
-	
+
 	public void setValue(double openPrice, double closePrice) {
 		priceHistory.addLast(new Candlestick(openPrice, closePrice));
 	}
-	
+
 	public String toString() {
 		return priceHistory.toString();
 	}
 
+	//Generates the first candlestick for a stock
+	//double openPrice is the openPrice of this first candleStick
 	//volatility is a float from 0 exclusive to inf, values above 1 create larger swings
-	public Candlestick generateInitialCandlestick(double openPrice) {
+	public void generateInitialCandlestick(double openPrice) {
 		//for a volatility of 1, generate 
 		double change = Math.random() * ((0.085 * openPrice) * volatility) + (0.015 * openPrice);
 		if(Math.random() >= 0.5) {
 			momentum += Math.random() * 0.1 + 0.05;
 			baselineSum += openPrice + change;
 			maxPrice = openPrice + change;
-			return new Candlestick(openPrice, openPrice + change);
+			priceHistory.add(new Candlestick(openPrice, openPrice + change));
 		}
 		else {
 			momentum -= Math.random() * 0.1 + 0.05;
 			baselineSum += openPrice - change;
 			minPrice = openPrice - change;
-			return new Candlestick(openPrice, openPrice - change);
+			priceHistory.add(new Candlestick(openPrice, openPrice - change));
 		}
 	}
-	
+
+	//generates the next candlestick for a non-empty stock
+	//using factors momentum and pressure in order to weigh the probability
+	//of positive or negative change
 	public void nextCandleStick() {
 		//first, find pressure
 		Deque<Candlestick> recent = new LinkedList<Candlestick>
 		(priceHistory.subList(Math.max(priceHistory.size() - (int)(25 * stability),  0), priceHistory.size()));
-		
+
 		int recentSize = Math.min(priceHistory.size(), (int)(25 * stability));
-		
+
 		//baselinePrice is the average price of the last 25 available candlesticks + 10%
 		double baselinePrice = baselineSum / recentSize * targetGrowth;
 		//find pressure as %difference from baselinePrice
@@ -118,7 +133,7 @@ public class Stock {
 		else { //negative roll
 			generateCandleStick(NEGATIVE);
 		}
-		
+
 		//check for out of bounds min/max
 		if(priceHistory.size() - recentMax > 141) { //recent max is out of bounds of the current graph
 			double maxValue = priceHistory.get(priceHistory.size() - 141).getClosePrice();
@@ -131,7 +146,7 @@ public class Stock {
 			}
 			recentMax = maxIndex;
 		}
-		
+
 		if(priceHistory.size() - recentMin > 141) { //recent max is out of bounds of the current graph
 			double minValue = priceHistory.get(priceHistory.size() - 140).getClosePrice();
 			int minIndex = priceHistory.size() - 141;
@@ -143,19 +158,20 @@ public class Stock {
 			}
 			recentMin = minIndex;
 		}
-		
+
 		//correct baselineSum
 		if(recentSize == 25 * stability) {
 			baselineSum -= priceHistory.get(priceHistory.size() - (int)(25 * stability)).getClosePrice();
 		}
 	}
-	
-	//pass in sublist so that we can still access values after changing it
+
+	//Creates a candlestick using random change value
+	//boolean type is the type of the candlestick (i.e. true = positive, false = negative)
 	public void generateCandleStick(boolean type) {
 		double change = Math.random() * ((0.095 * this.getValue()) * volatility) + (0.005 * this.getValue());
 		if(type == POSITIVE) {
 			if(priceHistory.getLast().getType() == NEGATIVE) { //swing from negative -> positive
-//				momentum = 2; //reset momentum
+				//				momentum = 2; //reset momentum
 				//maxroll momentum in the other direction
 				momentum = Math.min(momentum + 0.25, 2.7);
 			}
@@ -171,7 +187,7 @@ public class Stock {
 		}
 		else { //type == NEGATIVE
 			if(priceHistory.getLast().getType() == POSITIVE) { //swing from positive -> negative
-//				momentum = 2; //reset momentum
+				//				momentum = 2; //reset momentum
 				//maxroll momentum in the other direction
 				momentum = Math.max(momentum - 0.25, 1.3);
 			}
@@ -186,7 +202,11 @@ public class Stock {
 			priceHistory.add(new Candlestick(this.getValue(), this.getValue() - change));
 		}
 	}
-	
+
+	//animates the demo stock
+	//long startTime is the time since the start of rendering the demo, used to calculate how many candlesticks
+	//to render. Int candlestickCount is the max number of candlesticks rendered, int candlestickWidth is the
+	//width, in pixels, of an individual candlestick. Graphics g is the graphics object used to draw elements
 	public void drawDemo(long startTime, int candlestickCount, int candlestickWidth, Graphics g) {
 		double topBound = maxPrice * 1.05;
 		double bottomBound = minPrice * 0.95;
@@ -204,15 +224,17 @@ public class Stock {
 			g.fillRect(i * candlestickWidth, Math.min(openPixel, closePixel), candlestickWidth, Math.abs(openPixel - closePixel));
 		}
 	}
-	
+
+	//draws the last 140 candlesticks of the instance stock in the bounds of the trading menu
+	//Graphics g is the graphics object used to draw elements
 	public void drawGraph(Graphics g) {
 		double topBound = Math.max(priceHistory.get(recentMax).getClosePrice(), 
 				priceHistory.get(recentMax).getOpenPrice()) * 1.1;
 		double bottomBound = Math.min(priceHistory.get(recentMin).getClosePrice(), 
 				priceHistory.get(recentMin).getOpenPrice()) * 0.85;
-		
+
 		drawGraphLines(g);
-		
+
 		int openPixel;
 		int closePixel;
 		int start = priceHistory.size() - 141;
@@ -228,7 +250,9 @@ public class Stock {
 			g.fillRect(10 + i * 10, Math.min(openPixel, closePixel), 10, Math.abs(openPixel - closePixel));
 		}
 	}
-	
+
+	//draws 5 graph lines from the bottom value to the top value
+	//Graphics g is the graphics object used to draw elements
 	public void drawGraphLines(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.setFont(price);
@@ -237,7 +261,7 @@ public class Stock {
 		double bottom = Math.min(priceHistory.get(recentMin).getClosePrice(), 
 				priceHistory.get(recentMin).getOpenPrice());
 		double valueIncrement = (top - bottom) / 4; //round to nearest 100th
-		
+
 		int yCoord;
 		for(int i = 0; i <= 4; i++) {
 			yCoord = getDrawPixel(100, 700, top * 1.1, bottom * 0.85, bottom + (i * valueIncrement));
@@ -245,7 +269,11 @@ public class Stock {
 			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1455, yCoord + 2);
 		}
 	}
-	
+
+	//gets the y pixel to draw an element
+	//int fieldTop is the y pixel of the top of the field, fieldBottom is the y pixel of the bottom of the field,
+	//double topBound is the top value of the graph's range, double bottomBound is the bottom value of the graph's
+	//range. Double target is the value which we are looking for the y pixel of
 	public int getDrawPixel(int fieldTop, int fieldBottom, double topBound, double bottomBound, double target) {
 		return (int) (fieldTop + (fieldBottom - fieldTop) * (1 - (target - bottomBound) / (topBound - bottomBound)));
 	}
