@@ -15,19 +15,20 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	int screenWidth = 1900;
 	int screenHeight = 1000;
 	
-	long startTime, timeElapsed;
+	long startTime, timeElapsed, demoStartTime;
 	int frameCount = 0;
 	
 	int gameState = 0;
-	final int MAINMENU = 0;
+	final int MAINMENU = 0, TRADINGSCREEN = 1;
 	
 	Color darkGray = new Color(22, 22, 22);
 	Font title = new Font ("Arial", Font.BOLD, 100);
 	FontMetrics fmTitle;
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
+	Image tradingView;
 	
-	Stock demo = new Stock("DEMO", 10, 1.7);
+	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -68,9 +69,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 //			s.toUpperCase();
 //		}
 		//generate first 100 candlesticks for demo
-		for(int i = 0; i < 200; i++) {
+		for(int i = 0; i < 300; i++) {
 			demo.nextCandleStick();
 		}
+		System.out.println(demo.getRecentMax());
+		gameState = TRADINGSCREEN;
+		demoStartTime = System.currentTimeMillis();
 //		System.out.println("max");
 //		System.out.println(demo.getMaxPrice());
 //		System.out.println(demo.getMinPrice());
@@ -79,6 +83,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
 		menuSettingsButton = Toolkit.getDefaultToolkit().getImage("gameFiles/settingsButton.png");
+		
+		tradingView = Toolkit.getDefaultToolkit().getImage("gameFiles/tradingScreen.png");
 		
 		System.out.println("Thread: Done initializing game");
 	}
@@ -95,17 +101,25 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		if(gameState == MAINMENU) {
 			drawMenu(g);
 		}
+		else if(gameState == TRADINGSCREEN) {
+			drawTradingScreen(g);
+		}
 	}
 	
 	public void drawMenu(Graphics g) {
 		g.setColor(darkGray);
 		g.fillRect(0, 0, screenWidth, screenHeight);
 
-		demo.drawDemo(startTime, 200, 10, g);
+		demo.drawDemo(demoStartTime, 200, 10, g);
 		
 		g.drawImage(menuTitle, 0, 0, 1900, 1000, this);
 		g.drawImage(menuPlayButton, 600, 500, 700,  300, this);
 		g.drawImage(menuSettingsButton, 600, 730, 700,  300, this);
+	}
+	
+	public void drawTradingScreen(Graphics g) {
+		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
+		demo.drawGraph(g);
 	}
 	
 	@Override
