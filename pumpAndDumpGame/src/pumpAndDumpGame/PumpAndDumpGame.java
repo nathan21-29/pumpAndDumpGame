@@ -26,7 +26,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	FontMetrics fmTitle;
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
-	Image tradingView;
+	Image tradingView, selectionPill;
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
 	Stock test = new Stock("DEMO", 10, 0.01, 1.008, 3);
@@ -84,6 +84,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		menuSettingsButton = Toolkit.getDefaultToolkit().getImage("gameFiles/settingsButton.png");
 		
 		tradingView = Toolkit.getDefaultToolkit().getImage("gameFiles/tradingScreen.png");
+		selectionPill = Toolkit.getDefaultToolkit().getImage("gameFiles/selectionPill.png");
 		
 		System.out.println("Thread: Done initializing game");
 	}
@@ -125,12 +126,25 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
 		s.drawGraph(g);
 		s.getIndicators(g);
+		
+		//draw timeline selection
+		if(s.getCandleCount() == 140) {
+			g.drawImage(selectionPill, 500, 40, 120, 50, this);
+		}
+		else if(s.getCandleCount() == 7) {
+			g.drawImage(selectionPill, 172, 40, 120, 50, this);
+		}
+		else if(s.getCandleCount() == 35) {
+			g.drawImage(selectionPill, 330, 40, 120, 50, this);
+		}
+		else if(s.getCandleCount() == 1400) {
+			g.drawImage(selectionPill, 710, 40, 120, 50, this);
+		}
 	}
 	
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

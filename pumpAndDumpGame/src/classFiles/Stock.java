@@ -12,6 +12,7 @@ public class Stock {
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
 	private static String[] ratings = {"Strong sell", "Sell", "neutral", "Buy", "Strong buy"};
+	private static int[] views = {7, 35, 140, 1400}; 
 
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
@@ -49,7 +50,7 @@ public class Stock {
 		momentum = 2; //default
 		priceHistory = new ArrayList<>();
 		generateInitialCandlestick(initialPrice);
-		candleCount = 140;
+		candleCount = views[0];
 	}
 
 	//getters
@@ -75,6 +76,10 @@ public class Stock {
 
 	public int getRecentMax() {
 		return recentMax;
+	}
+	
+	public int getCandleCount() {
+		return candleCount;
 	}
 
 	//setters
@@ -167,7 +172,7 @@ public class Stock {
 		}
 
 		if(priceHistory.size() - recentMin > lastIndex) { //recent max is out of bounds of the current graph
-			double minValue = priceHistory.get(priceHistory.size() - 140).getClosePrice();
+			double minValue = priceHistory.get(priceHistory.size() - candleCount).getClosePrice();
 			int minIndex = priceHistory.size() - lastIndex;
 			for(int i = priceHistory.size() - lastIndex; i < priceHistory.size(); i++) {
 				if(priceHistory.get(i).getClosePrice() < minValue) {
@@ -268,7 +273,7 @@ public class Stock {
 			else { //downward candle
 				g.setColor(Color.RED);
 			}
-			g.fillRect(10 + i * 10, Math.min(openPixel, closePixel), 10, Math.abs(openPixel - closePixel));
+			g.fillRect(10 + i * (1400 / candleCount), Math.min(openPixel, closePixel), (1400 / candleCount), Math.abs(openPixel - closePixel));
 		}
 	}
 
