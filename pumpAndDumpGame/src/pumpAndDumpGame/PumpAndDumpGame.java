@@ -15,7 +15,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	int screenWidth = 1900;
 	int screenHeight = 1000;
 	
-	long startTime, timeElapsed, demoStartTime;
+	long startTime, timeElapsed, demoStartTime, lastCycle;
 	int frameCount = 0;
 	
 	int gameState = 0;
@@ -94,6 +94,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void update() {
 		//update stuff
 		timeElapsed = System.currentTimeMillis() - startTime;
+		if(gameState == TRADINGSCREEN && System.currentTimeMillis() - lastCycle > 3000) {
+			currentStock.nextCandleStick();
+			Stock.incrementTime();
+			lastCycle = System.currentTimeMillis();
+		}
 		frameCount++;
 	}
 	
@@ -104,7 +109,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			drawMenu(g);
 		}
 		else if(gameState == TRADINGSCREEN) {
-			drawTradingScreen(test, g);
+			drawTradingScreen(g);
 		}
 	}
 	
@@ -124,28 +129,33 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	//Draws the trading screen
 	//Stock s is the stock to be drawn
 	//Graphics g is the graphics object used to draw elements
-	public void drawTradingScreen(Stock s, Graphics g) {
+	public void drawTradingScreen(Graphics g) { 
 		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
-		s.drawGraph(g);
-		s.getIndicators(g);
+		currentStock.drawGraph(g);
+		currentStock.getIndicators(g);
 		
 		//draw timeline selection
-		if(s.getCandleCount() == 140) {
+		if(currentStock.getCandleCount() == 140) {
 			g.drawImage(selectionPill, 500, 40, 120, 50, this);
 		}
-		else if(s.getCandleCount() == 7) {
+		else if(currentStock.getCandleCount() == 7) {
 			g.drawImage(selectionPill, 172, 40, 120, 50, this);
 		}
-		else if(s.getCandleCount() == 35) {
+		else if(currentStock.getCandleCount() == 35) {
 			g.drawImage(selectionPill, 330, 40, 120, 50, this);
 		}
-		else if(s.getCandleCount() == 1400) {
+		else if(currentStock.getCandleCount() == 1400) {
 			g.drawImage(selectionPill, 705, 40, 120, 50, this);
 		}
 		
 		//draw stock ticker
 		g.setColor(Color.WHITE);
-		g.drawString(s.getSymbol(), 20, 160);
+		g.drawString(currentStock.getSymbol(), 20, 160);
+	}
+	
+	public void startGame() {
+		gameState = TRADINGSCREEN;
+		lastCycle = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -167,7 +177,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			demoStartTime = System.currentTimeMillis();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			gameState = TRADINGSCREEN;
+			startGame();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
 			Stock.incrementTime();
@@ -196,20 +206,27 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			if(checkHit(x, y, 205, 14, 262, 86)) { //1D
 				System.out.println();
 				currentStock.setCandleCount(0);
+				currentStock.recalculateRecents(true);
 			}
 			else if(checkHit(x, y, 350, 14, 422, 86)) { //5D
 				System.out.println();
 				currentStock.setCandleCount(1);
+				currentStock.recalculateRecents(true);
 			}
 			else if(checkHit(x, y, 510, 14, 615, 86)) { //20D
 				System.out.println();
 				currentStock.setCandleCount(2);
+				currentStock.recalculateRecents(true);
 			}
 			else if(checkHit(x, y, 705, 14, 825, 86)) { //MAX
 				System.out.println();
 				currentStock.setCandleCount(3);
+				currentStock.recalculateRecents(true);
 			}
-			currentStock.recalculateRecents(true);
+			
+			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
+				gameState = MAINMENU;
+			}
 		}
 	}
 
