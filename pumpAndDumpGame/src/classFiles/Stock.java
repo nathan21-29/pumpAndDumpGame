@@ -24,6 +24,7 @@ public class Stock {
 	private double minPrice;
 	private int recentMax;
 	private int recentMin;
+	private int candleCount; //makes it possible to save a different view for each stock
 	private double targetGrowth;
 	private double stability;
 	private double chanceFactor;
@@ -48,6 +49,7 @@ public class Stock {
 		momentum = 2; //default
 		priceHistory = new ArrayList<>();
 		generateInitialCandlestick(initialPrice);
+		candleCount = 140;
 	}
 
 	//getters
@@ -151,10 +153,11 @@ public class Stock {
 		}
 
 		//check for out of bounds min/max
-		if(priceHistory.size() - recentMax > 141) { //recent max is out of bounds of the current graph
-			double maxValue = priceHistory.get(priceHistory.size() - 141).getClosePrice();
-			int maxIndex = priceHistory.size() - 141;
-			for(int i = priceHistory.size() - 141; i < priceHistory.size(); i++) {
+		int lastIndex = 1 + candleCount;
+		if(priceHistory.size() - recentMax > 1 + lastIndex) { //recent max is out of bounds of the current graph
+			double maxValue = priceHistory.get(priceHistory.size() - lastIndex).getClosePrice();
+			int maxIndex = priceHistory.size() - lastIndex;
+			for(int i = priceHistory.size() - lastIndex; i < priceHistory.size(); i++) {
 				if(priceHistory.get(i).getClosePrice() > maxValue) {
 					maxValue = priceHistory.get(i).getClosePrice();
 					maxIndex = i;
@@ -163,10 +166,10 @@ public class Stock {
 			recentMax = maxIndex;
 		}
 
-		if(priceHistory.size() - recentMin > 141) { //recent max is out of bounds of the current graph
+		if(priceHistory.size() - recentMin > lastIndex) { //recent max is out of bounds of the current graph
 			double minValue = priceHistory.get(priceHistory.size() - 140).getClosePrice();
-			int minIndex = priceHistory.size() - 141;
-			for(int i = priceHistory.size() - 141; i < priceHistory.size(); i++) {
+			int minIndex = priceHistory.size() - lastIndex;
+			for(int i = priceHistory.size() - lastIndex; i < priceHistory.size(); i++) {
 				if(priceHistory.get(i).getClosePrice() < minValue) {
 					minValue = priceHistory.get(i).getClosePrice();
 					minIndex = i;
@@ -255,8 +258,8 @@ public class Stock {
 
 		int openPixel;
 		int closePixel;
-		int start = priceHistory.size() - 141;
-		for (int i = 0; i < 140; i++) {
+		int start = priceHistory.size() - (candleCount + 1);
+		for (int i = 0; i < candleCount; i++) {
 			openPixel = getDrawPixel(100, 700, topBound + buffer, bottomBound - buffer, priceHistory.get(i + start).getOpenPrice());
 			closePixel = getDrawPixel(100, 700, topBound + buffer, bottomBound - buffer, priceHistory.get(i + start).getClosePrice());
 			if(openPixel >= closePixel) { //upward candle

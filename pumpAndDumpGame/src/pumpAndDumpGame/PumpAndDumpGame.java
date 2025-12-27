@@ -158,6 +158,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			test.nextCandleStick();
 			Stock.incrementTime();
 			test.nextCandleStick();
+//			String temp = JOptionPane.showInputDialog("HI");
 		}
 	}
 
