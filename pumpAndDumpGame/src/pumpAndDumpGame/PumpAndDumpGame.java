@@ -140,8 +140,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			g.drawImage(selectionPill, 330, 40, 120, 50, this);
 		}
 		else if(s.getCandleCount() == 1400) {
-			g.drawImage(selectionPill, 710, 40, 120, 50, this);
+			g.drawImage(selectionPill, 705, 40, 120, 50, this);
 		}
+		
+		//draw stock ticker
+		g.setColor(Color.WHITE);
+		g.drawString(s.getSymbol(), 20, 160);
 	}
 	
 	@Override
@@ -189,22 +193,23 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		int x = e.getX(), y = e.getY() - 30; //offset y b/c y counts window header pixels
 		if(gameState == TRADINGSCREEN) {
 			//view changing
-			if(checkHit(x, y, 205, 28, 262, 70)) { //1D
+			if(checkHit(x, y, 205, 14, 262, 86)) { //1D
 				System.out.println();
 				currentStock.setCandleCount(0);
 			}
-			else if(checkHit(x, y, 350, 28, 422, 70)) { //5D
+			else if(checkHit(x, y, 350, 14, 422, 86)) { //5D
 				System.out.println();
 				currentStock.setCandleCount(1);
 			}
-			else if(checkHit(x, y, 510, 28, 615, 70)) { //20D
+			else if(checkHit(x, y, 510, 14, 615, 86)) { //20D
 				System.out.println();
 				currentStock.setCandleCount(2);
 			}
-			else if(checkHit(x, y, 705, 28, 825, 70)) { //MAX
+			else if(checkHit(x, y, 705, 14, 825, 86)) { //MAX
 				System.out.println();
 				currentStock.setCandleCount(3);
 			}
+			currentStock.recalculateRecents(true);
 		}
 	}
 

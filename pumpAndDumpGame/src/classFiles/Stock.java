@@ -23,8 +23,8 @@ public class Stock {
 	private double momentum;
 	private double maxPrice;
 	private double minPrice;
-	private int recentMax;
-	private int recentMin;
+	private int recentMax; //stores the INDEX of the recent max value
+	private int recentMin; //stores the INDEX of the recent min value
 	private int candleCount; //makes it possible to save a different view for each stock
 	private double targetGrowth;
 	private double stability;
@@ -55,7 +55,7 @@ public class Stock {
 
 	//getters
 	public String getSymbol () {
-		return this.symbol;
+		return symbol;
 	}
 
 	public double getValue () {
@@ -361,5 +361,34 @@ public class Stock {
 			result += "(";
 		}
 		g.drawString(String.format("%.4f%% %s", diff / pastValue * 100, result + String.format("%+.2f", diff) + ")"), x, y);
+	}
+	
+	//boolean bypass dictates whether to bypass the checked recount (i.e. only check if recentMax
+	//has left the bounds of the graph) if true, this check will be skipped
+	public void recalculateRecents(boolean bypass) {
+		int lastIndex = 1 + candleCount;
+		if(priceHistory.size() - recentMax > 1 + lastIndex || bypass) { //recent max is out of bounds of the current graph
+			double maxValue = priceHistory.get(priceHistory.size() - lastIndex).getClosePrice();
+			int maxIndex = priceHistory.size() - lastIndex;
+			for(int i = priceHistory.size() - lastIndex; i < priceHistory.size(); i++) {
+				if(priceHistory.get(i).getClosePrice() > maxValue) {
+					maxValue = priceHistory.get(i).getClosePrice();
+					maxIndex = i;
+				}
+			}
+			recentMax = maxIndex;
+		}
+
+		if(priceHistory.size() - recentMin > lastIndex || bypass) { //recent max is out of bounds of the current graph
+			double minValue = priceHistory.get(priceHistory.size() - candleCount).getClosePrice();
+			int minIndex = priceHistory.size() - lastIndex;
+			for(int i = priceHistory.size() - lastIndex; i < priceHistory.size(); i++) {
+				if(priceHistory.get(i).getClosePrice() < minValue) {
+					minValue = priceHistory.get(i).getClosePrice();
+					minIndex = i;
+				}
+			}
+			recentMin = minIndex;
+		}
 	}
 }
