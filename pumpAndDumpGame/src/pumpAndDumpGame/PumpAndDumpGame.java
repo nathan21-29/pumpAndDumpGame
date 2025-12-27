@@ -29,7 +29,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Image tradingView;
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
-	Stock test = new Stock("DEMO", 10, 0.1, 1, 1);
+	Stock test = new Stock("DEMO", 10, 0.01, 1.008, 3);
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -65,8 +65,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		timeElapsed = 0;
 		FPS = 100;
 		//generate first candlesticks for demo and test
-		for(int i = 0; i < 300; i++) {
+		for(int i = 0; i < 200; i++) {
 			demo.nextCandleStick();
+			test.nextCandleStick();
+		}
+		
+		for(int i = 0; i < 2920; i++) {
 			test.nextCandleStick();
 		}
 		System.out.println(demo.getRecentMax());
@@ -146,6 +150,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			gameState = TRADINGSCREEN;
 		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
+			Stock.incrementTime();
+			test.nextCandleStick();
+			Stock.incrementTime();
+			test.nextCandleStick();
+			Stock.incrementTime();
+			test.nextCandleStick();
+			Stock.incrementTime();
 			test.nextCandleStick();
 		}
 	}

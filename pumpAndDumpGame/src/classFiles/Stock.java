@@ -10,6 +10,8 @@ public class Stock {
 	public static ArrayList<Stock> market = new ArrayList<>();
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
+	private static int time = 0; //int # of hours since "day" started
+	private static String[] ratings = {"Strong sell", "Sell", "neutral", "Buy", "Strong buy"};
 
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
@@ -24,6 +26,7 @@ public class Stock {
 	private int recentMin;
 	private double targetGrowth;
 	private double stability;
+	private double chanceFactor;
 
 	//constructor
 	//String symbol is the symbol or "ticker" of the stock, int initialPrice is the seed price of the stock,
@@ -84,6 +87,17 @@ public class Stock {
 	public String toString() {
 		return priceHistory.toString();
 	}
+	
+	//returns true if timechange rolls into a new day
+	//returns false otherwise
+	public static boolean incrementTime() {
+		time++;
+		if(time > 7) {
+			time = 0;
+			return true;
+		}
+		return false;
+	}
 
 	//Generates the first candlestick for a stock
 	//double openPrice is the openPrice of this first candleStick
@@ -128,7 +142,8 @@ public class Stock {
 			pressure = Math.max(percentDiff / (0.2 * Math.pow(volatility, 1.2)), -1);
 		}
 		//roll positive or negative candlestick
-		if(Math.random() * 4 <= momentum + pressure) { //positive roll
+		chanceFactor = momentum + pressure;
+		if(Math.random() * 4 <= chanceFactor) { //positive roll
 			generateCandleStick(POSITIVE);
 		}
 		else { //negative roll
@@ -169,10 +184,10 @@ public class Stock {
 	//Creates a candlestick using random change value
 	//boolean type is the type of the candlestick (i.e. true = positive, false = negative)
 	public void generateCandleStick(boolean type) {
-		double change = Math.random() * ((0.095 * this.getValue()) * volatility) + (0.005 * this.getValue());
+		double change = Math.random() * ((0.0999 * this.getValue()) * volatility) + (0.0001 * this.getValue());
 		if(type == POSITIVE) {
 			if(priceHistory.getLast().getType() == NEGATIVE) { //swing from negative -> positive
-				//				momentum = 2; //reset momentum
+				//momentum = 2; //reset momentum
 				//maxroll momentum in the other direction
 				momentum = Math.min(momentum + 0.25, 2.7);
 			}
@@ -188,7 +203,7 @@ public class Stock {
 		}
 		else { //type == NEGATIVE
 			if(priceHistory.getLast().getType() == POSITIVE) { //swing from positive -> negative
-				//				momentum = 2; //reset momentum
+				//momentum = 2; //reset momentum
 				//maxroll momentum in the other direction
 				momentum = Math.max(momentum - 0.25, 1.3);
 			}
@@ -230,24 +245,20 @@ public class Stock {
 	//Graphics g is the graphics object used to draw elements
 	public void drawGraph(Graphics g) {
 		double topBound = Math.max(priceHistory.get(recentMax).getClosePrice(), 
-				priceHistory.get(recentMax).getOpenPrice()) * 1.1;
+				priceHistory.get(recentMax).getOpenPrice());
 		double bottomBound = Math.min(priceHistory.get(recentMin).getClosePrice(), 
-				priceHistory.get(recentMin).getOpenPrice()) * 0.85;
+				priceHistory.get(recentMin).getOpenPrice());
 		
-		double buffer = Math.sqrt(Math.abs(
-				Math.max(priceHistory.get(recentMax).getClosePrice(), 
-						priceHistory.get(recentMax).getOpenPrice())
-				 - Math.min(priceHistory.get(recentMin).getClosePrice(), 
-							priceHistory.get(recentMin).getOpenPrice())));
+		double buffer = Math.sqrt(volatility) * Math.sqrt(Math.abs(topBound - bottomBound));
 
-		drawGraphLines(g);
+		drawGraphLines(buffer, g);
 
 		int openPixel;
 		int closePixel;
 		int start = priceHistory.size() - 141;
 		for (int i = 0; i < 140; i++) {
-			openPixel = getDrawPixel(100, 700, topBound, bottomBound, priceHistory.get(i + start).getOpenPrice());
-			closePixel = getDrawPixel(100, 700, topBound, bottomBound, priceHistory.get(i + start).getClosePrice());
+			openPixel = getDrawPixel(100, 700, topBound + buffer, bottomBound - buffer, priceHistory.get(i + start).getOpenPrice());
+			closePixel = getDrawPixel(100, 700, topBound + buffer, bottomBound - buffer, priceHistory.get(i + start).getClosePrice());
 			if(openPixel >= closePixel) { //upward candle
 				g.setColor(Color.GREEN);
 			}
@@ -260,7 +271,7 @@ public class Stock {
 
 	//draws 5 graph lines from the bottom value to the top value
 	//Graphics g is the graphics object used to draw elements
-	public void drawGraphLines(Graphics g) {
+	public void drawGraphLines(double buffer, Graphics g) {
 		g.setColor(Color.WHITE);
 		g.setFont(price);
 		double top = Math.max(priceHistory.get(recentMax).getClosePrice(), 
@@ -271,7 +282,7 @@ public class Stock {
 
 		int yCoord;
 		for(int i = 0; i <= 4; i++) {
-			yCoord = getDrawPixel(100, 700, top * 1.1, bottom * 0.85, bottom + (i * valueIncrement));
+			yCoord = getDrawPixel(100, 700, top + buffer, bottom - buffer, bottom + (i * valueIncrement));
 			g.drawLine(10, yCoord, 1450, yCoord);
 			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1455, yCoord + 2);
 		}
@@ -286,19 +297,57 @@ public class Stock {
 	}
 	
 	public void getIndicators(Graphics g) {
-		double oneDay = priceHistory.get(priceHistory.size() - 9).getClosePrice();
-		drawIndicator((getValue() - oneDay) / oneDay, 430, 755, g);
+		//draw time indicators (past 5 days etc)
+		double currentValue = getValue();
+		double oneDay = getPastPrice(time);
+		double fiveDay = getPastPrice(time + 35); //5 days * 7 hours (9am open -> 4pm close)
+		double twentyDay = getPastPrice(time + 140);
+		drawIndicator(currentValue, oneDay, 430, 755, g);
+		drawIndicator(currentValue, fiveDay, 430, 807, g);
+		drawIndicator(currentValue, twentyDay, 430, 860, g);
+		
+		//draw current price
+		g.setColor(Color.WHITE);
+		g.drawString(String.format("$%.4f", currentValue),  1160, 755);
+		
+		//draw "analyst rating" based on our chanceFactor
+		int rating = 0;
+		if(chanceFactor < 1.8) {
+			g.setColor(Color.RED);
+			rating = 1;
+			if(chanceFactor < 0.6) {
+				rating = 0;
+			}
+		}
+		else if(chanceFactor < 2.2) {
+			rating = 2;
+		}
+		else { //chanceFactor > 2.2
+			g.setColor(Color.GREEN);
+			rating = 3;
+			if(chanceFactor > 3.15) {
+				rating = 4;
+			}
+		}
+		g.drawString(ratings[rating], 1160, 807);
 	}
 	
-	public void drawIndicator(double val, int x, int y, Graphics g) {
+	public double getPastPrice(int hoursAgo) {
+		return priceHistory.get(priceHistory.size() - 1 - hoursAgo).getClosePrice();
+	}
+	
+	public void drawIndicator(double currentValue, double pastValue, int x, int y, Graphics g) {
 		g.setFont(body);
-		if(val >= 0) {
+		double diff = currentValue - pastValue;
+		String result = "";
+		if(diff >= 0) {
 			g.setColor(Color.GREEN);
+			result += "(";
 		}
-		else { //val < 0
+		else { //diff < 0
 			g.setColor(Color.RED);
+			result += "(";
 		}
-		g.drawString(String.format("%.4f%%", val * 100), x, y);
-		
+		g.drawString(String.format("%.4f%% %s", diff / pastValue * 100, result + String.format("%+.2f", diff) + ")"), x, y);
 	}
 }

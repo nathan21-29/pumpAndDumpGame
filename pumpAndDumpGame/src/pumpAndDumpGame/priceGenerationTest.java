@@ -16,9 +16,10 @@ public class priceGenerationTest {
 //		}
 		int winners = 0;
 		int losers = 0;
+		double totalSum = 0;
 		for(int i = 0; i < 1000; i++) {
-			test = new Stock("DEMO", 10, 2, 1.01, 1);
-			for(int j = 0; j < 150; j++) {
+			test = new Stock("DEMO", 10, 0.01, 1.004, 2);
+			for(int j = 0; j < 2920; j++) {
 				test.nextCandleStick();
 			}
 			if(test.getPriceHistory().getLast().getClosePrice() > 10) {
@@ -27,9 +28,12 @@ public class priceGenerationTest {
 			else {
 				losers++;
 			}
+			
+			totalSum += test.getValue();
 		}
 		System.out.println(winners + " winners");
 		System.out.println(losers + " losers");
+		System.out.println(totalSum / 1000);
 	}
 
 }
