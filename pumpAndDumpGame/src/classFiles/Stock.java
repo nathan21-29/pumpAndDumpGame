@@ -11,7 +11,7 @@ public class Stock {
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
-	private static String[] ratings = {"Strong sell", "Sell", "neutral", "Buy", "Strong buy"};
+	private static String[] ratings = {"Strong sell", "Sell", "Neutral", "Buy", "Strong buy"};
 	private static int[] views = {7, 35, 140, 1400}; 
 
 	private final static boolean POSITIVE = true;

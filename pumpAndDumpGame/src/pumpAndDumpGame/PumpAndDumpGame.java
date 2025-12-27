@@ -1,5 +1,6 @@
 package pumpAndDumpGame;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.awt.*;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	FontMetrics fmTitle;
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
+	ArrayList<Image> tutorial = new ArrayList<>(); //AL to hold the images for the tutorial slideshow
 	Image tradingView, selectionPill;
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
