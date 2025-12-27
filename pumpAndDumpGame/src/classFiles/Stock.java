@@ -50,7 +50,7 @@ public class Stock {
 		momentum = 2; //default
 		priceHistory = new ArrayList<>();
 		generateInitialCandlestick(initialPrice);
-		candleCount = views[0];
+		candleCount = views[2];
 	}
 
 	//getters
@@ -89,6 +89,10 @@ public class Stock {
 
 	public void setValue(double openPrice, double closePrice) {
 		priceHistory.addLast(new Candlestick(openPrice, closePrice));
+	}
+	
+	public void setCandleCount(int data) {
+		candleCount = views[data];
 	}
 
 	public String toString() {

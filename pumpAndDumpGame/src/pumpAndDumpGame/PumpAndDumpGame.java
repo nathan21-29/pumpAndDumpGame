@@ -29,7 +29,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Image tradingView, selectionPill;
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
-	Stock test = new Stock("DEMO", 10, 0.01, 1.008, 3);
+	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3);
+	
+	Stock currentStock = test;
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -184,8 +186,26 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		int x = e.getX(), y = e.getY() - 30; //offset y b/c y counts window header pixels
+		if(gameState == TRADINGSCREEN) {
+			//view changing
+			if(checkHit(x, y, 205, 28, 262, 70)) { //1D
+				System.out.println();
+				currentStock.setCandleCount(0);
+			}
+			else if(checkHit(x, y, 350, 28, 422, 70)) { //5D
+				System.out.println();
+				currentStock.setCandleCount(1);
+			}
+			else if(checkHit(x, y, 510, 28, 615, 70)) { //20D
+				System.out.println();
+				currentStock.setCandleCount(2);
+			}
+			else if(checkHit(x, y, 705, 28, 825, 70)) { //MAX
+				System.out.println();
+				currentStock.setCandleCount(3);
+			}
+		}
 	}
 
 	@Override
@@ -210,6 +230,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	//x1 and y1 are the coordinates of the top left point of the rect
+	//x2 and y2 are the coordinates of the bottom right point of the rect
+	public boolean checkHit(int mouseX, int mouseY, int x1, int y1, int x2, int y2) {
+		return mouseX > x1 && mouseX < x2 && mouseY > y1 && mouseY < y2;
 	}
 	
 	public static void main(String[] args) {
