@@ -9,6 +9,7 @@ public class Stock {
 
 	public static ArrayList<Stock> market = new ArrayList<>();
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
+	private static Font body = new Font("Arial", Font.PLAIN, 40);
 
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
@@ -232,6 +233,12 @@ public class Stock {
 				priceHistory.get(recentMax).getOpenPrice()) * 1.1;
 		double bottomBound = Math.min(priceHistory.get(recentMin).getClosePrice(), 
 				priceHistory.get(recentMin).getOpenPrice()) * 0.85;
+		
+		double buffer = Math.sqrt(Math.abs(
+				Math.max(priceHistory.get(recentMax).getClosePrice(), 
+						priceHistory.get(recentMax).getOpenPrice())
+				 - Math.min(priceHistory.get(recentMin).getClosePrice(), 
+							priceHistory.get(recentMin).getOpenPrice())));
 
 		drawGraphLines(g);
 
@@ -276,5 +283,22 @@ public class Stock {
 	//range. Double target is the value which we are looking for the y pixel of
 	public int getDrawPixel(int fieldTop, int fieldBottom, double topBound, double bottomBound, double target) {
 		return (int) (fieldTop + (fieldBottom - fieldTop) * (1 - (target - bottomBound) / (topBound - bottomBound)));
+	}
+	
+	public void getIndicators(Graphics g) {
+		double oneDay = priceHistory.get(priceHistory.size() - 9).getClosePrice();
+		drawIndicator((getValue() - oneDay) / oneDay, 430, 755, g);
+	}
+	
+	public void drawIndicator(double val, int x, int y, Graphics g) {
+		g.setFont(body);
+		if(val >= 0) {
+			g.setColor(Color.GREEN);
+		}
+		else { //val < 0
+			g.setColor(Color.RED);
+		}
+		g.drawString(String.format("%.4f%%", val * 100), x, y);
+		
 	}
 }

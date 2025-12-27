@@ -29,6 +29,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Image tradingView;
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
+	Stock test = new Stock("DEMO", 10, 0.1, 1, 1);
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -63,13 +64,16 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		timeElapsed = 0;
 		FPS = 100;
-		//generate first 100 candlesticks for demo
+		//generate first candlesticks for demo and test
 		for(int i = 0; i < 300; i++) {
 			demo.nextCandleStick();
+			test.nextCandleStick();
 		}
 		System.out.println(demo.getRecentMax());
 		gameState = MAINMENU;
 		demoStartTime = System.currentTimeMillis();
+		
+		//populate market
 		
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
@@ -93,7 +97,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			drawMenu(g);
 		}
 		else if(gameState == TRADINGSCREEN) {
-			drawTradingScreen(demo, g);
+			drawTradingScreen(test, g);
 		}
 	}
 	
@@ -116,6 +120,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void drawTradingScreen(Stock s, Graphics g) {
 		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
 		s.drawGraph(g);
+		s.getIndicators(g);
 	}
 	
 	@Override
@@ -141,7 +146,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			gameState = TRADINGSCREEN;
 		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
-			demo.nextCandleStick();
+			test.nextCandleStick();
 		}
 	}
 
