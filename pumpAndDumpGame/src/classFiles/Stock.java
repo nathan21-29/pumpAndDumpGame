@@ -7,15 +7,16 @@ import java.util.*;
 
 public class Stock {
 
+	public static ArrayList<Stock> testMarket = new ArrayList<>();
 	public static ArrayList<Stock> market = new ArrayList<>();
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
 	private static String[] ratings = {"Strong sell", "Sell", "Neutral", "Buy", "Strong buy"};
-	private static int[] views = {7, 35, 140, 1400}; 
-
+	private static int[] views = {7, 35, 140, 1400}; //array of different view history options, in # of candles (hours)
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
+
 	private ArrayList<Candlestick> priceHistory;
 	private String symbol;
 	private double volatility;

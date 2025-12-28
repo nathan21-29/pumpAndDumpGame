@@ -32,8 +32,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3);
+	Stock test2 = new Stock("TST2", 10, 2, 1, 1);
 	
-	Stock currentStock = test;
+	Stock currentStock = test2;
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -64,6 +65,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void initialize() {
 		//setups before the game starts running
 		System.out.println("Thread: Initializing game");
+		Stock.testMarket.add(test);
+		Stock.testMarket.add(test2);
 		startTime = System.currentTimeMillis();
 		
 		timeElapsed = 0;
@@ -74,8 +77,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			test.nextCandleStick();
 		}
 		
-		for(int i = 0; i < 2920; i++) {
-			test.nextCandleStick();
+		for(int i = 0; i < Stock.testMarket.size(); i++) {
+			for(int j = 0; j < 2920; j++) {
+				Stock.testMarket.get(i).nextCandleStick();
+			}
 		}
 		System.out.println(demo.getRecentMax());
 		gameState = MAINMENU;
@@ -89,6 +94,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		tradingView = Toolkit.getDefaultToolkit().getImage("gameFiles/tradingScreen.png");
 		selectionPill = Toolkit.getDefaultToolkit().getImage("gameFiles/selectionPill.png");
+		
 		
 		System.out.println("Thread: Done initializing game");
 	}
@@ -182,14 +188,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			startGame();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
+			for(int i = 0; i < Stock.testMarket.size(); i++) {
+				Stock.testMarket.get(i).nextCandleStick();
+			}
 			Stock.incrementTime();
-			test.nextCandleStick();
-			Stock.incrementTime();
-			test.nextCandleStick();
-			Stock.incrementTime();
-			test.nextCandleStick();
-			Stock.incrementTime();
-			test.nextCandleStick();
 //			String temp = JOptionPane.showInputDialog("HI");
 		}
 	}
