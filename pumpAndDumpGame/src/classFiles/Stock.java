@@ -189,7 +189,7 @@ public class Stock {
 		}
 
 		//correct baselineSum
-		if(recentSize == 25 * stability) {
+		if(recentSize == (int)(25 * stability)) {
 			baselineSum -= priceHistory.get(priceHistory.size() - (int)(25 * stability)).getClosePrice();
 		}
 	}

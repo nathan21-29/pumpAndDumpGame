@@ -32,7 +32,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3);
-	Stock test2 = new Stock("TST2", 10, 2, 1, 1);
+	Stock test2 = new Stock("TST2", 10, 1, 1, 0.5);
 	
 	Stock currentStock = test2;
 	
