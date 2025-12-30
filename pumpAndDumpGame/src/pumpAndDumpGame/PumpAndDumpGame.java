@@ -1,7 +1,6 @@
 package pumpAndDumpGame;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.awt.*;
 
 import javax.swing.*;
@@ -34,7 +33,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3);
-	Stock test2 = new Stock("TST2", 10, 1, 1, 0.5);
+	Stock test2 = new Stock("TST2", 100, 0.02, 1.004, 10);
 	
 	//player variables
 	double money;
@@ -45,6 +44,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	double quota;
 	double quotaProgress; //as an absolute amount, NOT a percentage
 	
+	HashMap<Stock, Integer> buyOrders = new HashMap<>(); //yet-to-be-filled buy orders, should be cleared upon each stock refresh
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel

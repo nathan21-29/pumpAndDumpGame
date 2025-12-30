@@ -17,8 +17,9 @@ public class priceGenerationTest {
 		int winners = 0;
 		int losers = 0;
 		double totalSum = 0;
+		int initPrice = 100;
 		for(int i = 0; i < 1000; i++) {
-			test = new Stock("DEMO", 10, 0.01, 1.004, 2);
+			test = new Stock("DEMO", initPrice, 0.02, 1.004, 10);
 			for(int j = 0; j < 2920; j++) {
 				test.nextCandleStick();
 			}
@@ -34,6 +35,7 @@ public class priceGenerationTest {
 		System.out.println(winners + " winners");
 		System.out.println(losers + " losers");
 		System.out.println(totalSum / 1000);
+		System.out.println((totalSum / 1000 - initPrice) / (totalSum / 100000) + "%");
 	}
 
 }
