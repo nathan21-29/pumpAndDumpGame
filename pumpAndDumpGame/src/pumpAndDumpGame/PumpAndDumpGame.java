@@ -1,12 +1,12 @@
 package pumpAndDumpGame;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.awt.*;
 
 import javax.swing.*;
 
-import classFiles.Player;
-import classFiles.Stock;
+import classFiles.*; //import all files from classFiles package
 
 @SuppressWarnings("serial") //funky warning, just suppress it. It's not gonna do anything.
 public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, MouseListener{
@@ -36,7 +36,15 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3);
 	Stock test2 = new Stock("TST2", 10, 1, 1, 0.5);
 	
+	//player variables
+	double money;
+	String name;
 	Stock currentStock = test2;
+	HashSet<Holding> portfolio = new HashSet<>();
+	
+	double quota;
+	double quotaProgress; //as an absolute amount, NOT a percentage
+	
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
