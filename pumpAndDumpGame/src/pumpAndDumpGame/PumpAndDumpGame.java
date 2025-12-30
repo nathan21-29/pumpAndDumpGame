@@ -5,6 +5,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import classFiles.Player;
 import classFiles.Stock;
 
 @SuppressWarnings("serial") //funky warning, just suppress it. It's not gonna do anything.
@@ -20,7 +21,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	int frameCount = 0;
 	
 	int gameState = 0;
-	final int MAINMENU = 0, TRADINGSCREEN = 1;
+	final int MAINMENU = 0, SAVESELECT = 1, TRADINGSCREEN = 3;
 	
 	Color darkGray = new Color(22, 22, 22);
 	Font title = new Font ("Arial", Font.BOLD, 100);
@@ -28,6 +29,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
 	ArrayList<Image> tutorial = new ArrayList<>(); //AL to hold the images for the tutorial slideshow
+	Image saveSelect;
 	Image tradingView, selectionPill;
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
@@ -71,6 +73,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		timeElapsed = 0;
 		FPS = 100;
+		
 		//generate first candlesticks for demo and test
 		for(int i = 0; i < 200; i++) {
 			demo.nextCandleStick();
@@ -82,7 +85,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				Stock.testMarket.get(i).nextCandleStick();
 			}
 		}
-		System.out.println(demo.getRecentMax());
+		
 		gameState = MAINMENU;
 		demoStartTime = System.currentTimeMillis();
 		
@@ -91,6 +94,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
 		menuSettingsButton = Toolkit.getDefaultToolkit().getImage("gameFiles/settingsButton.png");
+		
+		saveSelect = Toolkit.getDefaultToolkit().getImage("gameFiles/saveSelect.png");
 		
 		tradingView = Toolkit.getDefaultToolkit().getImage("gameFiles/tradingScreen.png");
 		selectionPill = Toolkit.getDefaultToolkit().getImage("gameFiles/selectionPill.png");
@@ -116,6 +121,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		if(gameState == MAINMENU) {
 			drawMenu(g);
 		}
+		else if(gameState == SAVESELECT) {
+			drawSaveSelect(g);
+		}
 		else if(gameState == TRADINGSCREEN) {
 			drawTradingScreen(g);
 		}
@@ -132,6 +140,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(menuTitle, 0, 0, 1900, 1000, this);
 		g.drawImage(menuPlayButton, 600, 500, 700,  300, this);
 		g.drawImage(menuSettingsButton, 600, 730, 700,  300, this);
+	}
+	
+	public void drawSaveSelect(Graphics g) {
+		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
 	}
 
 	//Draws the trading screen
@@ -205,7 +217,14 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX(), y = e.getY() - 30; //offset y b/c y counts window header pixels
-		if(gameState == TRADINGSCREEN) {
+		
+		if(gameState == MAINMENU) {
+			if(checkHit(x, y, 600, 500, 1300, 800)) { //play button
+				//move to save select
+				gameState = SAVESELECT;
+			}
+		}
+		else if(gameState == TRADINGSCREEN) {
 			//view changing
 			if(checkHit(x, y, 205, 14, 262, 86)) { //1D
 				System.out.println();
@@ -269,7 +288,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//The following lines creates your window
 		System.out.println("  Main: Booting game");
 		//makes a brand new JFrame
-		JFrame frame = new JFrame ("Example");
+		JFrame frame = new JFrame ("🤑Pump and Dump🤑");
 		//makes a new copy of your "game" that is also a JPanel
 		PumpAndDumpGame myPanel = new PumpAndDumpGame ();
 		//so your JPanel to the frame so you can actually see it

@@ -100,6 +100,11 @@ public class Stock {
 		return priceHistory.toString();
 	}
 	
+	public boolean equals(Object obj) {
+		Stock compare = (Stock) obj;
+		return symbol.equals(compare.getSymbol());
+	}
+	
 	//returns true if timechange rolls into a new day
 	//returns false otherwise
 	public static boolean incrementTime() {
@@ -262,16 +267,14 @@ public class Stock {
 		double bottomBound = Math.min(priceHistory.get(recentMin).getClosePrice(), 
 				priceHistory.get(recentMin).getOpenPrice());
 		
-		double buffer = Math.sqrt(volatility) * Math.sqrt(Math.abs(topBound - bottomBound));
-
-		drawGraphLines(buffer, g);
+		drawGraphLines(g);
 
 		int openPixel;
 		int closePixel;
 		int start = priceHistory.size() - (candleCount + 1);
 		for (int i = 0; i < candleCount; i++) {
-			openPixel = getDrawPixel(100, 700, topBound + buffer, bottomBound - buffer, priceHistory.get(i + start).getOpenPrice());
-			closePixel = getDrawPixel(100, 700, topBound + buffer, bottomBound - buffer, priceHistory.get(i + start).getClosePrice());
+			openPixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getOpenPrice());
+			closePixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getClosePrice());
 			if(openPixel >= closePixel) { //upward candle
 				g.setColor(Color.GREEN);
 			}
@@ -284,7 +287,7 @@ public class Stock {
 
 	//draws 5 graph lines from the bottom value to the top value
 	//Graphics g is the graphics object used to draw elements
-	public void drawGraphLines(double buffer, Graphics g) {
+	public void drawGraphLines(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.setFont(price);
 		double top = Math.max(priceHistory.get(recentMax).getClosePrice(), 
@@ -295,7 +298,7 @@ public class Stock {
 
 		int yCoord;
 		for(int i = 0; i <= 4; i++) {
-			yCoord = getDrawPixel(100, 700, top + buffer, bottom - buffer, bottom + (i * valueIncrement));
+			yCoord = getDrawPixel(175, 670, top, bottom, bottom + (i * valueIncrement));
 			g.drawLine(10, yCoord, 1450, yCoord);
 			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1455, yCoord + 2);
 		}

@@ -14,5 +14,13 @@ public class Holding {
 		this.initialValue = stock.getValue() * shares;
 		this.currentValue = this.initialValue;
 	}
+	
+	public Stock getStock() {
+		return stock;
+	}
 
+	public boolean equals(Object obj) {
+		Holding compare = (Holding) obj;
+		return stock.equals(compare.getStock());
+	}
 }
