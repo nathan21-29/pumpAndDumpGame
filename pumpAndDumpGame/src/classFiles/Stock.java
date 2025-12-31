@@ -32,6 +32,7 @@ public class Stock {
 	private double momentum;
 	private double maxPrice;
 	private double minPrice;
+	private double seedPrice; //the initial price of the stock, used for regenerating stocks
 	private int recentMax; //stores the INDEX of the recent max value
 	private int recentMin; //stores the INDEX of the recent min value
 	private int candleCount; //makes it possible to save a different view for each stock
@@ -54,6 +55,7 @@ public class Stock {
 	public Stock(String symbol, int initialPrice, double volatility, double targetGrowth, double stability) {
 		maxPrice = initialPrice;
 		minPrice = initialPrice;
+		seedPrice = initialPrice;
 		recentMax = 0;
 		recentMin = 0;
 		this.symbol = symbol;
@@ -84,6 +86,10 @@ public class Stock {
 
 	public double getMinPrice() {
 		return minPrice;
+	}
+	
+	public double getSeedPrice() {
+		return seedPrice;
 	}
 
 	public ArrayList<Candlestick> getPriceHistory() {
@@ -134,6 +140,10 @@ public class Stock {
 	
 	public static HashMap<Stock, Integer> getBuyOrders() {
 		return buyOrders;
+	}
+	
+	public static HashMap<Stock, Integer> getSellOrders() {
+		return sellOrders;
 	}
 
 	//setters
@@ -434,7 +444,7 @@ public class Stock {
 
 //		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
 //				getProfitLoss(false)), 1090, 860);
-		g.drawString(String.format("$%+.4f (%+.2f%%)", getProfitLoss(true), getProfitLoss(false)), 1090, 860);
+		g.drawString(String.format("$%+.2f (%+.4f%%)", getProfitLoss(true), getProfitLoss(false)), 1090, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {
