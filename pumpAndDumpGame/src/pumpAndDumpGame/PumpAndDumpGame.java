@@ -232,9 +232,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			gameState = MAINMENU;
 			demoStartTime = System.currentTimeMillis();
 		}
-//		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-//			startGame();
-//		}
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			System.out.println(currentStock.getProfitLoss(false));
+		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
 			for(int i = 0; i < Stock.getTestMarket().size(); i++) {
 				Stock.getTestMarket().get(i).nextCandleStick();

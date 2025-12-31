@@ -114,6 +114,9 @@ public class Stock {
 	}
 	
 	public double getAveragePurchasePrice() {
+		if(amountHeld == 0) {
+			return 0;
+		}
 		return totalPurchasePrice / amountHeld;
 	}
 	
@@ -121,10 +124,10 @@ public class Stock {
 	//otherwise return %
 	public double getProfitLoss(boolean absolute) {
 		if(absolute) {
-			return (getAveragePurchasePrice() - getValue()) * amountHeld;
+			return (getValue() - getAveragePurchasePrice()) * amountHeld;
 		}
 		else {
-			return (getAveragePurchasePrice() - getValue()) / getValue();
+			return (getValue() - getAveragePurchasePrice()) / getValue() * 100;
 		}
 	}
 	
@@ -422,14 +425,14 @@ public class Stock {
 			g.drawString("0 @ $0.00 (0.00%)", 1090, 860);
 			return; //to avoid zero division later on
 		}
-		else if(totalPurchasePrice >= amountHeld * getValue()) { //positive position
+		else if(amountHeld * getValue() >= totalPurchasePrice) { //positive position
 			g.setColor(darkGreen);
 		}
 		else { //negative position
 			g.setColor(darkRed);
 		}
 
-		g.drawString(String.format("%d @ $%.2f (%+.2f)", amountHeld, getAveragePurchasePrice(),
+		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
 				getProfitLoss(false)), 1090, 860);
 	}
 	
