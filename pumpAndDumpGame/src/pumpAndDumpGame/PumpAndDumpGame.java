@@ -1,6 +1,7 @@
 package pumpAndDumpGame;
 import java.awt.event.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.awt.*;
 
 import javax.swing.*;
@@ -46,8 +47,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	double quota;
 	double quotaProgress; //as an absolute amount, NOT a percentage
-	
-	HashMap<Stock, Integer> buyOrders = new HashMap<>(); //yet-to-be-filled buy orders, should be cleared upon each stock refresh
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -119,11 +118,34 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//update stuff
 		timeElapsed = System.currentTimeMillis() - startTime;
 		if(gameState == TRADINGSCREEN && System.currentTimeMillis() - lastCycle > 3000) {
-			currentStock.nextCandleStick();
-			Stock.incrementTime();
-			lastCycle = System.currentTimeMillis();
+			refreshMarket();
 		}
 		frameCount++;
+	}
+	
+	public void refreshMarket() {
+		currentStock.nextCandleStick();
+		Stock.incrementTime();
+		lastCycle = System.currentTimeMillis();
+		
+		//fill buy orders
+		//use an entrySet to iterate through key-value pairs easily
+		for(Entry<Stock, Integer> entry : Stock.getBuyOrders().entrySet()) {
+			Stock stock = entry.getKey();
+			int amount = entry.getValue();
+			//check sufficient funds
+			if(stock.getValue() * amount > money) {
+				JOptionPane.showMessageDialog(this, "Order for " + entry.getValue() + "shares\n"
+				 + "of " + entry.getKey().getSymbol() + " has failed. \n"
+				 + "Reason: Insufficient money");
+			}
+			else {
+				money -= stock.getValue() * amount;
+				stock.incrementAmountHeld(amount);
+				stock.incrementTotalPurchasePrice(stock.getValue() * amount);
+			}
+		}
+		Stock.getBuyOrders().clear();
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -186,6 +208,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void startGame() {
 		gameState = TRADINGSCREEN;
 		lastCycle = System.currentTimeMillis();
+	}
+	
+	public void buyStocks() {
+		
 	}
 	
 	@Override
@@ -293,12 +319,19 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				do {
 					validInput = true;
 					try {
-						int count = Integer.parseInt(JOptionPane.showInputDialog("How many shares?\n"
-								+ "Approx. max is " + (int)(money / currentStock.getValue())));
-						if(count <= 0) {
+						String amount = JOptionPane.showInputDialog("How many shares?\n"
+								+ "Approx. max is " + (int)(money / currentStock.getValue()));
+						
+						if(amount == null) { //handle cancel
+							break;
+						}
+						//convert count into an integer
+						int convert = Integer.parseInt(amount);
+						if(convert <= 0) {
 							throw new NumberFormatException();
 						}
-						buyOrders.put(currentStock, count);
+						//add buy order
+						Stock.getBuyOrders().put(currentStock, convert);
 					} catch (NumberFormatException e2) {
 						validInput = false;
 						JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");

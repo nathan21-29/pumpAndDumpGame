@@ -5,6 +5,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.*;
 
+import javax.swing.JOptionPane;
+
+import pumpAndDumpGame.PumpAndDumpGame;
+
 public class Stock {
 
 	private static ArrayList<Stock> testMarket = new ArrayList<>();
@@ -16,6 +20,7 @@ public class Stock {
 	private static int[] views = {7, 35, 140, 1400}; //array of different view history options, in # of candles (hours)
 	private static Color darkGreen = new Color(66, 176, 78);
 	private static Color darkRed = new Color(187, 46, 40);
+	private static HashMap<Stock, Integer> buyOrders = new HashMap<>(); //yet-to-be-filled buy orders, should be cleared upon each stock refresh
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
 
@@ -115,7 +120,16 @@ public class Stock {
 	//if absolute is true, return the absolute profitloss (dollar amount)
 	//otherwise return %
 	public double getProfitLoss(boolean absolute) {
-		return (getAveragePurchasePrice() - getValue()) / getValue();
+		if(absolute) {
+			return (getAveragePurchasePrice() - getValue()) * amountHeld;
+		}
+		else {
+			return (getAveragePurchasePrice() - getValue()) / getValue();
+		}
+	}
+	
+	public static HashMap<Stock, Integer> getBuyOrders() {
+		return buyOrders;
 	}
 
 	//setters
@@ -143,7 +157,7 @@ public class Stock {
 		amountHeld += increment;
 	}
 	
-	public void incrementTotalPurchasePrice(int increment) {
+	public void incrementTotalPurchasePrice(double increment) {
 		totalPurchasePrice += increment;
 	}
 	
@@ -416,7 +430,7 @@ public class Stock {
 		}
 
 		g.drawString(String.format("%d @ $%.2f (%+.2f)", amountHeld, getAveragePurchasePrice(),
-				getProfitLoss(false)), 1160, 860);
+				getProfitLoss(false)), 1090, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {
