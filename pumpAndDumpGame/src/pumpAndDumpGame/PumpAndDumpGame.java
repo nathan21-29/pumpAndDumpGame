@@ -133,25 +133,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		lastCycle = System.currentTimeMillis();
 		
-//		//fill buy orders
-//		//use an entrySet to iterate through key-value pairs easily
-//		for(Entry<Stock, Integer> entry : Stock.getBuyOrders().entrySet()) {
-//			Stock stock = entry.getKey();
-//			int amount = entry.getValue();
-//			//check sufficient funds
-//			if(stock.getValue() * amount > money) {
-//				JOptionPane.showMessageDialog(this, "Order for " + entry.getValue() + "shares\n"
-//				 + "of " + entry.getKey().getSymbol() + " has failed. \n"
-//				 + "Reason: Insufficient money");
-//			}
-//			else {
-//				money -= stock.getValue() * amount;
-//				stock.incrementAmountHeld(amount);
-//				stock.incrementTotalPurchasePrice(stock.getValue() * amount);
-//			}
-//		}
-//		Stock.getBuyOrders().clear();
-		
 		fillOrders(Stock.getBuyOrders(), true);
 		fillOrders(Stock.getSellOrders(), false);
 	}
@@ -169,9 +150,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 							+ "Reason: Insufficient money");
 				}
 				else {
-					money -= stock.getValue() * amount;
-					stock.incrementAmountHeld(amount);
+					money -= stock.getValue() * amount; //update money
 					stock.incrementTotalPurchasePrice(stock.getValue() * amount);
+					stock.incrementAmountHeld(amount);
 				}
 			}
 			else { //!buy; sell orders
@@ -181,9 +162,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 							+ "Reason: Insufficient shares");
 				}
 				else {
-					money += stock.getValue() * amount;
-					stock.incrementAmountHeld(-amount); //remove amount # of shares
-					stock.incrementTotalPurchasePrice(stock.getAveragePurchasePrice() * amount);
+					money += stock.getValue() * amount; //update money
+					//increment total first using old amount held
+					stock.incrementTotalPurchasePrice(stock.getAveragePurchasePrice() * -amount);
+					stock.incrementAmountHeld(-amount); //increment amount held
 				}
 			}
 		}
@@ -280,6 +262,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			Stock.incrementTime();
 //			String temp = JOptionPane.showInputDialog("HI");
 		}
+		if(e.getKeyCode() == KeyEvent.VK_F12) {
+			System.out.println("value" + currentStock.getValue());
+			System.out.println("avg purchase" + currentStock.getAveragePurchasePrice());
+			System.out.println("tot purchase" + currentStock.getTotalPurchasePrice());
+			System.out.println("amt held" + currentStock.getAmountHeld());
+		}
 	}
 
 	@Override
@@ -357,7 +345,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				do {
 					validInput = true;
 					try {
-						String amount = JOptionPane.showInputDialog("How many shares?\n"
+						String amount = JOptionPane.showInputDialog("How many shares would you like to buy?\n"
 								+ "Approx. max is " + (int)(money / currentStock.getValue()));
 						
 						if(amount == null) { //handle cancel
@@ -379,8 +367,28 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			else if(checkHit(x, y, 770, 896, 1500, 986)) {
 			}
 			
-			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
-				gameState = MAINMENU;
+			if(checkHit(x, y, 770, 896, 1500, 986)) { //dump button
+				do {
+					validInput = true;
+					try {
+						String amount = JOptionPane.showInputDialog("How many shares would you like to sell?\n"
+								+ "Max is " + currentStock.getAmountHeld());
+						
+						if(amount == null) { //handle cancel
+							break;
+						}
+						//convert count into an integer
+						int convert = Integer.parseInt(amount);
+						if(convert <= 0) {
+							throw new NumberFormatException();
+						}
+						//add buy order
+						Stock.getSellOrders().put(currentStock, convert);
+					} catch (NumberFormatException e2) {
+						validInput = false;
+						JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
+					}
+				} while (!validInput);
 			}
 		}
 	}

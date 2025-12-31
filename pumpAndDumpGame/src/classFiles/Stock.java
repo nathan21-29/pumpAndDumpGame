@@ -122,7 +122,7 @@ public class Stock {
 	
 	public double getAveragePurchasePrice() {
 		if(amountHeld == 0) {
-			return 0;
+			return 1.00001;
 		}
 		return totalPurchasePrice / amountHeld;
 	}
