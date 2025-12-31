@@ -21,6 +21,7 @@ public class Stock {
 	private static Color darkGreen = new Color(66, 176, 78);
 	private static Color darkRed = new Color(187, 46, 40);
 	private static HashMap<Stock, Integer> buyOrders = new HashMap<>(); //yet-to-be-filled buy orders, should be cleared upon each stock refresh
+	private static HashMap<Stock, Integer> sellOrders = new HashMap<>(); //yet-to-be-filled buy orders, should be cleared upon each stock refresh
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
 
@@ -236,11 +237,10 @@ public class Stock {
 		}
 
 		//check for out of bounds min/max
-		int lastIndex = 1 + candleCount;
-		if(priceHistory.size() - recentMax > 1 + lastIndex) { //recent max is out of bounds of the current graph
-			double maxValue = priceHistory.get(priceHistory.size() - lastIndex).getClosePrice();
-			int maxIndex = priceHistory.size() - lastIndex;
-			for(int i = priceHistory.size() - lastIndex; i < priceHistory.size(); i++) {
+		if(priceHistory.size() - recentMax > 1 + candleCount) { //recent max is out of bounds of the current graph
+			double maxValue = priceHistory.get(priceHistory.size() - candleCount).getClosePrice();
+			int maxIndex = priceHistory.size() - candleCount;
+			for(int i = priceHistory.size() - candleCount; i < priceHistory.size(); i++) {
 				if(priceHistory.get(i).getClosePrice() > maxValue) {
 					maxValue = priceHistory.get(i).getClosePrice();
 					maxIndex = i;
@@ -249,10 +249,10 @@ public class Stock {
 			recentMax = maxIndex;
 		}
 
-		if(priceHistory.size() - recentMin > lastIndex) { //recent max is out of bounds of the current graph
+		if(priceHistory.size() - recentMin > candleCount) { //recent max is out of bounds of the current graph
 			double minValue = priceHistory.get(priceHistory.size() - candleCount).getClosePrice();
-			int minIndex = priceHistory.size() - lastIndex;
-			for(int i = priceHistory.size() - lastIndex; i < priceHistory.size(); i++) {
+			int minIndex = priceHistory.size() - candleCount;
+			for(int i = priceHistory.size() - candleCount; i < priceHistory.size(); i++) {
 				if(priceHistory.get(i).getClosePrice() < minValue) {
 					minValue = priceHistory.get(i).getClosePrice();
 					minIndex = i;
@@ -339,7 +339,7 @@ public class Stock {
 
 		int openPixel;
 		int closePixel;
-		int start = priceHistory.size() - (candleCount + 1);
+		int start = priceHistory.size() - candleCount;
 		for (int i = 0; i < candleCount; i++) {
 			openPixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getOpenPrice());
 			closePixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getClosePrice());
@@ -422,7 +422,7 @@ public class Stock {
 		//draw amount held
 		if(amountHeld == 0) {
 			g.setColor(Color.WHITE);
-			g.drawString("0 @ $0.00 (0.00%)", 1090, 860);
+			g.drawString("0 (0.00%)", 1090, 860);
 			return; //to avoid zero division later on
 		}
 		else if(amountHeld * getValue() >= totalPurchasePrice) { //positive position
@@ -432,8 +432,9 @@ public class Stock {
 			g.setColor(darkRed);
 		}
 
-		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
-				getProfitLoss(false)), 1090, 860);
+//		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
+//				getProfitLoss(false)), 1090, 860);
+		g.drawString(String.format("$%+.4f (%+.2f%%)", getProfitLoss(true), getProfitLoss(false)), 1090, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {
