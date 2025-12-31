@@ -21,6 +21,6 @@ public class Holding {
 
 	public boolean equals(Object obj) {
 		Holding compare = (Holding) obj;
-		return stock.equals(compare.getStock());
+		return stock.equals(compare.getStock()); //compares by symbol
 	}
 }

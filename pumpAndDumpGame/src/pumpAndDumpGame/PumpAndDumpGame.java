@@ -11,6 +11,7 @@ import classFiles.*; //import all files from classFiles package
 public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, MouseListener{
 	
 	//self explanatory variables
+	boolean validInput;
 	int FPS = 100;
 	Thread thread;
 	int screenWidth = 1900;
@@ -23,6 +24,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	final int MAINMENU = 0, SAVESELECT = 1, TRADINGSCREEN = 3;
 	
 	Color darkGray = new Color(22, 22, 22);
+	Color darkGreen = new Color(66, 176, 78);
+	Color darkRed = new Color(187, 46, 40);
 	Font title = new Font ("Arial", Font.BOLD, 100);
 	FontMetrics fmTitle;
 	
@@ -75,8 +78,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void initialize() {
 		//setups before the game starts running
 		System.out.println("Thread: Initializing game");
-		Stock.testMarket.add(test);
-		Stock.testMarket.add(test2);
+		Stock.getTestMarket().add(test);
+		Stock.getTestMarket().add(test2);
 		startTime = System.currentTimeMillis();
 		
 		timeElapsed = 0;
@@ -88,9 +91,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			test.nextCandleStick();
 		}
 		
-		for(int i = 0; i < Stock.testMarket.size(); i++) {
+		for(int i = 0; i < Stock.getTestMarket().size(); i++) {
 			for(int j = 0; j < 2920; j++) {
-				Stock.testMarket.get(i).nextCandleStick();
+				Stock.getTestMarket().get(i).nextCandleStick();
 			}
 		}
 		
@@ -176,9 +179,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			g.drawImage(selectionPill, 705, 40, 120, 50, this);
 		}
 		
-		//draw stock ticker
-		g.setColor(Color.WHITE);
-		g.drawString(currentStock.getSymbol(), 20, 160);
+		//draw money
+		g.drawString(String.format("$%.2f", money), 1010, 65);
 	}
 	
 	public void startGame() {
@@ -204,12 +206,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			gameState = MAINMENU;
 			demoStartTime = System.currentTimeMillis();
 		}
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			startGame();
-		}
+//		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+//			startGame();
+//		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
-			for(int i = 0; i < Stock.testMarket.size(); i++) {
-				Stock.testMarket.get(i).nextCandleStick();
+			for(int i = 0; i < Stock.getTestMarket().size(); i++) {
+				Stock.getTestMarket().get(i).nextCandleStick();
 			}
 			Stock.incrementTime();
 //			String temp = JOptionPane.showInputDialog("HI");
@@ -230,6 +232,37 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			if(checkHit(x, y, 600, 500, 1300, 800)) { //play button
 				//move to save select
 				gameState = SAVESELECT;
+			}
+		}
+		else if (gameState == SAVESELECT) {
+			name = null; //reset in case multiple saves loaded in the same session
+			if(checkHit(x, y, 700, 20, 1200, 95)) {
+				name = JOptionPane.showInputDialog("Name:");
+				if(name == null) { //handle cancel button
+					//ignore
+				}
+			}
+			if(name != null) { //valid name has been inputted
+				//prompt mods
+				//custom money
+				if(JOptionPane.showOptionDialog(null, "Custom money?", "Custom money", 0, 3, null, null, null) == 0) {
+					do {
+						validInput = true;
+						try {
+							money = Integer.parseInt(JOptionPane.showInputDialog("How much? (Default 1000)"));
+							if(money < 50) {
+								throw new NumberFormatException();
+							}
+						} catch (NumberFormatException e2) {
+							validInput = false;
+							JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer above 50.");
+						}
+					} while (!validInput);
+				}
+				else { //default money
+					money = 1000;
+				}
+				startGame();
 			}
 		}
 		else if(gameState == TRADINGSCREEN) {
@@ -253,6 +286,24 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				System.out.println();
 				currentStock.setCandleCount(3);
 				currentStock.recalculateRecents(true);
+			}
+			
+			//pump button
+			if(checkHit(x, y, 20, 896, 750, 986)) {
+				do {
+					validInput = true;
+					try {
+						int count = Integer.parseInt(JOptionPane.showInputDialog("How many shares?\n"
+								+ "Approx. max is " + (int)(money / currentStock.getValue())));
+						if(count <= 0) {
+							throw new NumberFormatException();
+						}
+						buyOrders.put(currentStock, count);
+					} catch (NumberFormatException e2) {
+						validInput = false;
+						JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
+					}
+				} while (!validInput);
 			}
 			
 			if(checkHit(x, y, 10, 10, 90, 90)) { //back button

@@ -7,13 +7,15 @@ import java.util.*;
 
 public class Stock {
 
-	public static ArrayList<Stock> testMarket = new ArrayList<>();
-	public static ArrayList<Stock> market = new ArrayList<>();
+	private static ArrayList<Stock> testMarket = new ArrayList<>();
+	private static ArrayList<Stock> market = new ArrayList<>();
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
 	private static String[] ratings = {"Strong sell", "Sell", "Neutral", "Buy", "Strong buy"};
 	private static int[] views = {7, 35, 140, 1400}; //array of different view history options, in # of candles (hours)
+	private static Color darkGreen = new Color(66, 176, 78);
+	private static Color darkRed = new Color(187, 46, 40);
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
 
@@ -30,6 +32,10 @@ public class Stock {
 	private double targetGrowth;
 	private double stability;
 	private double chanceFactor;
+	
+	//player variables
+	private int amountHeld;
+	private double totalPurchasePrice;
 
 	//constructor
 	//String symbol is the symbol or "ticker" of the stock, int initialPrice is the seed price of the stock,
@@ -52,6 +58,9 @@ public class Stock {
 		priceHistory = new ArrayList<>();
 		generateInitialCandlestick(initialPrice);
 		candleCount = views[2];
+		
+		amountHeld = 0;
+		totalPurchasePrice = 0;
 	}
 
 	//getters
@@ -82,6 +91,32 @@ public class Stock {
 	public int getCandleCount() {
 		return candleCount;
 	}
+	
+	public int getAmountHeld() {
+		return amountHeld;
+	}
+	
+	public double getTotalPurchasePrice() {
+		return totalPurchasePrice;
+	}
+	
+	public static ArrayList<Stock> getMarket() {
+		return market;
+	}
+	
+	public static ArrayList<Stock> getTestMarket() {
+		return testMarket;
+	}
+	
+	public double getAveragePurchasePrice() {
+		return totalPurchasePrice / amountHeld;
+	}
+	
+	//if absolute is true, return the absolute profitloss (dollar amount)
+	//otherwise return %
+	public double getProfitLoss(boolean absolute) {
+		return (getAveragePurchasePrice() - getValue()) / getValue();
+	}
 
 	//setters
 	public void setValue(double newPrice) {
@@ -95,7 +130,23 @@ public class Stock {
 	public void setCandleCount(int data) {
 		candleCount = views[data];
 	}
-
+	
+	public void setAmountHeld(int amountHeld) {
+		this.amountHeld = amountHeld;
+	}
+	
+	public void setTotalPurchasePrice(int totalPurchasePrice) {
+		this.totalPurchasePrice = totalPurchasePrice;
+	}
+	
+	public void incrementAmountHeld(int increment) {
+		amountHeld += increment;
+	}
+	
+	public void incrementTotalPurchasePrice(int increment) {
+		totalPurchasePrice += increment;
+	}
+	
 	public String toString() {
 		return priceHistory.toString();
 	}
@@ -324,7 +375,7 @@ public class Stock {
 		
 		//draw current price
 		g.setColor(Color.WHITE);
-		g.drawString(String.format("$%.4f", currentValue),  1160, 755);
+		g.drawString(String.format("$%.4f", currentValue),  1090, 755);
 		
 		//draw "analyst rating" based on our chanceFactor
 		int rating = 0;
@@ -345,7 +396,27 @@ public class Stock {
 				rating = 4;
 			}
 		}
-		g.drawString(ratings[rating], 1160, 807);
+		g.drawString(ratings[rating], 1090, 807);
+
+		//draw stock ticker (symbol)
+		g.setColor(Color.WHITE);
+		g.drawString(symbol, 20, 160);
+
+		//draw amount held
+		if(amountHeld == 0) {
+			g.setColor(Color.WHITE);
+			g.drawString("0 @ $0.00 (0.00%)", 1090, 860);
+			return; //to avoid zero division later on
+		}
+		else if(totalPurchasePrice >= amountHeld * getValue()) { //positive position
+			g.setColor(darkGreen);
+		}
+		else { //negative position
+			g.setColor(darkRed);
+		}
+
+		g.drawString(String.format("%d @ $%.2f (%+.2f)", amountHeld, getAveragePurchasePrice(),
+				getProfitLoss(false)), 1160, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {
