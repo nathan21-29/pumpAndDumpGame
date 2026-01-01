@@ -215,21 +215,21 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		currentStock.getIndicators(g);
 		
 		//draw timeline selection
-		if(currentStock.getCandleCount() == 140) {
-			g.drawImage(selectionPill, 500, 40, 120, 50, this);
+		if(currentStock.getCandleCount() == 140) { //20D
+			g.drawImage(selectionPill, 269, 40, 100, 50, this);
 		}
-		else if(currentStock.getCandleCount() == 7) {
-			g.drawImage(selectionPill, 172, 40, 120, 50, this);
+		else if(currentStock.getCandleCount() == 7) { //1D
+			g.drawImage(selectionPill, 106, 40, 60, 50, this);
 		}
-		else if(currentStock.getCandleCount() == 35) {
-			g.drawImage(selectionPill, 330, 40, 120, 50, this);
+		else if(currentStock.getCandleCount() == 35) { //5D
+			g.drawImage(selectionPill, 180, 40, 70, 50, this);
 		}
-		else if(currentStock.getCandleCount() == 1400) {
-			g.drawImage(selectionPill, 705, 40, 120, 50, this);
+		else if(currentStock.getCandleCount() == 1400) { //MAX
+			g.drawImage(selectionPill, 390, 40, 116, 50, this);
 		}
 		
 		//draw money
-		g.drawString(String.format("$%.2f", money), 1010, 65);
+		g.drawString(String.format("$%.2f", money), 530, 65);
 		
 		//draw current holdings
 		Stock.drawHoldings(g);
@@ -325,22 +325,22 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		else if(gameState == TRADINGSCREEN) {
 			//view changing
-			if(checkHit(x, y, 205, 14, 262, 86)) { //1D
+			if(checkHit(x, y, 100, 14, 169, 86)) { //1D
 				System.out.println();
 				currentStock.setCandleCount(0);
 				currentStock.recalculateRecents(true);
 			}
-			else if(checkHit(x, y, 350, 14, 422, 86)) { //5D
+			else if(checkHit(x, y, 70, 14, 256, 86)) { //5D
 				System.out.println();
 				currentStock.setCandleCount(1);
 				currentStock.recalculateRecents(true);
 			}
-			else if(checkHit(x, y, 510, 14, 615, 86)) { //20D
+			else if(checkHit(x, y, 257, 14, 377, 86)) { //20D
 				System.out.println();
 				currentStock.setCandleCount(2);
 				currentStock.recalculateRecents(true);
 			}
-			else if(checkHit(x, y, 705, 14, 825, 86)) { //MAX
+			else if(checkHit(x, y, 378, 14, 512, 86)) { //MAX
 				System.out.println();
 				currentStock.setCandleCount(3);
 				currentStock.recalculateRecents(true);

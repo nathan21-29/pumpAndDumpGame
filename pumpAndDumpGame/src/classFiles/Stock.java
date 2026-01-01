@@ -202,7 +202,9 @@ public class Stock implements Comparable<Stock> {
 				break;
 			}
 			g.setFont(body);
-			g.drawString(testMarket.get(i).getSymbol() + String.format("    (%.4f%%)", testMarket.get(i).getProfitLoss(NEGATIVE)), 1525, 80 * i + 150);
+			g.drawString(testMarket.get(i).getSymbol() + 
+					String.format("    (%.4f%%)", testMarket.get(i).getProfitLoss(NEGATIVE)),
+					1525, 80 * i + 240);
 		}
 	}
 
