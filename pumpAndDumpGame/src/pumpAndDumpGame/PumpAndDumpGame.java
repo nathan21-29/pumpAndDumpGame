@@ -1,5 +1,6 @@
 package pumpAndDumpGame;
 import java.awt.event.*;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.Map.Entry;
 import java.awt.*;
@@ -135,6 +136,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		fillOrders(Stock.getBuyOrders(), true);
 		fillOrders(Stock.getSellOrders(), false);
+		
+		//sorting here means 1 sort per 3 seconds as opposed to every repaint
+		Collections.sort(Stock.getTestMarket());
+		
+		Stock.drawHoldings();
 	}
 	
 	//mode == true is buy, mode == false is sell
@@ -357,7 +363,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 							throw new NumberFormatException();
 						}
 						//add buy order
-						Stock.getBuyOrders().put(currentStock, convert);
+//						Stock.getBuyOrders().put(currentStock, convert);
+						currentStock.addOrder(Stock.getBuyOrders(), convert);
+						
 					} catch (NumberFormatException e2) {
 						validInput = false;
 						JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
@@ -383,7 +391,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 							throw new NumberFormatException();
 						}
 						//add buy order
-						Stock.getSellOrders().put(currentStock, convert);
+//						Stock.getSellOrders().put(currentStock, convert);
+						currentStock.addOrder(Stock.getSellOrders(), convert);
+						
 					} catch (NumberFormatException e2) {
 						validInput = false;
 						JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");

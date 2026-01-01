@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 
 import pumpAndDumpGame.PumpAndDumpGame;
 
-public class Stock {
+public class Stock implements Comparable<Stock> {
 
 	private static ArrayList<Stock> testMarket = new ArrayList<>();
 	private static ArrayList<Stock> market = new ArrayList<>();
@@ -194,6 +194,10 @@ public class Stock {
 		}
 		return false;
 	}
+	
+	public static void drawHoldings() {
+		
+	}
 
 	//Generates the first candlestick for a stock
 	//double openPrice is the openPrice of this first candleStick
@@ -377,8 +381,8 @@ public class Stock {
 		int yCoord;
 		for(int i = 0; i <= 4; i++) {
 			yCoord = getDrawPixel(175, 670, top, bottom, bottom + (i * valueIncrement));
-			g.drawLine(10, yCoord, 1450, yCoord);
-			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1455, yCoord + 2);
+			g.drawLine(10, yCoord, 1425, yCoord);
+			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1430, yCoord + 2);
 		}
 	}
 
@@ -451,6 +455,11 @@ public class Stock {
 		return priceHistory.get(priceHistory.size() - 1 - hoursAgo).getClosePrice();
 	}
 	
+	//compares stock objects by a default order of amount held decreasing
+	public int compareTo(Stock compare) {
+		return compare.getAmountHeld() - amountHeld;
+	}
+	
 	public void drawIndicator(double currentValue, double pastValue, int x, int y, Graphics g) {
 		g.setFont(body);
 		double diff = currentValue - pastValue;
@@ -492,6 +501,15 @@ public class Stock {
 				}
 			}
 			recentMin = minIndex;
+		}
+	}
+	
+	public void addOrder(HashMap<Stock, Integer> destination, int amount) {
+		if(destination.get(this) != null) { //order is already present
+			destination.put(this, destination.get(this) + amount); //add to the order
+		}
+		else {
+			destination.put(this, amount); //add to destination as normal
 		}
 	}
 }
