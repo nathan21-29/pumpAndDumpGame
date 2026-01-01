@@ -195,8 +195,15 @@ public class Stock implements Comparable<Stock> {
 		return false;
 	}
 	
-	public static void drawHoldings() {
-		
+	public static void drawHoldings(Graphics g) {
+		for(int i = 0; i < testMarket.size(); i++) {
+			//if reached stocks with 0 shares held
+			if(testMarket.get(i).amountHeld == 0) { 
+				break;
+			}
+			g.setFont(body);
+			g.drawString(testMarket.get(i).getSymbol() + String.format("    (%.4f%%)", testMarket.get(i).getProfitLoss(NEGATIVE)), 1525, 80 * i + 150);
+		}
 	}
 
 	//Generates the first candlestick for a stock

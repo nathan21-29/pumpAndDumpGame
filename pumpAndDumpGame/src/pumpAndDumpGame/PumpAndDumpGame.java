@@ -44,7 +44,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	double money;
 	String name;
 	Stock currentStock = test2;
-	HashSet<Holding> portfolio = new HashSet<>();
 	
 	double quota;
 	double quotaProgress; //as an absolute amount, NOT a percentage
@@ -139,8 +138,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//sorting here means 1 sort per 3 seconds as opposed to every repaint
 		Collections.sort(Stock.getTestMarket());
-		
-		Stock.drawHoldings();
 	}
 	
 	//mode == true is buy, mode == false is sell
@@ -233,6 +230,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//draw money
 		g.drawString(String.format("$%.2f", money), 1010, 65);
+		
+		//draw current holdings
+		Stock.drawHoldings(g);
 	}
 	
 	public void startGame() {
