@@ -18,12 +18,14 @@ public class priceGenerationTest {
 		int losers = 0;
 		double totalSum = 0;
 		int initPrice = 100;
-		for(int i = 0; i < 1000; i++) {
-			test = new Stock("DEMO", initPrice, 0.02, 1.004, 10);
-			for(int j = 0; j < 2920; j++) {
+		for(int i = 0; i < 1; i++) {
+			test = new Stock("TST2", 100, 0.02, 1.004, 10, 0.02);
+			Stock.getTestMarket().add(test);
+			for(int j = 0; j < 2000; j++) {
 				test.nextCandleStick();
+				Stock.incrementTime();
 			}
-			if(test.getPriceHistory().getLast().getClosePrice() > 10) {
+			if(test.getPriceHistory().getLast().getClosePrice() > initPrice) {
 				winners++;
 			}
 			else {

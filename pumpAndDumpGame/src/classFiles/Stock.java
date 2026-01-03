@@ -13,6 +13,7 @@ public class Stock implements Comparable<Stock> {
 
 	private static ArrayList<Stock> testMarket = new ArrayList<>();
 	private static ArrayList<Stock> market = new ArrayList<>();
+	private static ArrayList<Stock> selectedMarket = testMarket;
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
@@ -39,6 +40,7 @@ public class Stock implements Comparable<Stock> {
 	private double targetGrowth;
 	private double stability;
 	private double chanceFactor;
+	private double targetFlipChance;
 	
 	//player variables
 	private int amountHeld;
@@ -51,8 +53,9 @@ public class Stock implements Comparable<Stock> {
 	//the stock "wants" to be at (e.g. targetGrowth of 1.1 means the stock wants to grow 10% above the baseline
 	//however targetGrowth is most realistic in the range 1 +- 0.07. Double stability is a factor of the
 	//sample size defining the baseline, as a multiple of 25 (if stability is 2, then the baseline price will
-	//be defined using the last 2 * 25 = 50 close prices)
-	public Stock(String symbol, int initialPrice, double volatility, double targetGrowth, double stability) {
+	//be defined using the last 2 * 25 = 50 close prices). Double targetFlipChance is the % chance as a decimal
+	//that a stock will invert its targetGrowth (i.e. growth to decay & vice versa) on the start of any given day.
+	public Stock(String symbol, int initialPrice, double volatility, double targetGrowth, double stability, double targetFlipChance) {
 		maxPrice = initialPrice;
 		minPrice = initialPrice;
 		seedPrice = initialPrice;
@@ -66,12 +69,21 @@ public class Stock implements Comparable<Stock> {
 		priceHistory = new ArrayList<>();
 		generateInitialCandlestick(initialPrice);
 		candleCount = views[2];
-		
+		this.targetFlipChance = targetFlipChance;
+				
 		amountHeld = 0;
 		totalPurchasePrice = 0;
 	}
 
 	//getters
+	public static HashMap<Stock, Integer> getBuyOrders() {
+		return buyOrders;
+	}
+	
+	public static HashMap<Stock, Integer> getSellOrders() {
+		return sellOrders;
+	}
+	
 	public String getSymbol () {
 		return symbol;
 	}
@@ -138,14 +150,10 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
-	public static HashMap<Stock, Integer> getBuyOrders() {
-		return buyOrders;
+	public double getTargetFlipChance() {
+		return targetFlipChance;
 	}
 	
-	public static HashMap<Stock, Integer> getSellOrders() {
-		return sellOrders;
-	}
-
 	//setters
 	public void setValue(double newPrice) {
 		priceHistory.addLast(new Candlestick(priceHistory.getLast().getClosePrice(), newPrice));
@@ -189,21 +197,31 @@ public class Stock implements Comparable<Stock> {
 	public static boolean incrementTime() {
 		time++;
 		if(time > 7) {
-			time = 0;
+			time = 0; //reset time
+			//chance for stocks w/ targetFlipping = true to have their trend bias inverted
+			for(int i = 0; i < selectedMarket.size(); i++) {
+				if(Math.random() < selectedMarket.get(i).getTargetFlipChance()) {
+					selectedMarket.get(i).invertTarget();
+				}
+			}
 			return true;
 		}
 		return false;
 	}
 	
+	private void invertTarget() {
+		targetGrowth = 1 / targetGrowth;
+	}
+	
 	public static void drawHoldings(Graphics g) {
-		for(int i = 0; i < testMarket.size(); i++) {
+		for(int i = 0; i < selectedMarket.size(); i++) {
 			//if reached stocks with 0 shares held
-			if(testMarket.get(i).amountHeld == 0) { 
+			if(selectedMarket.get(i).amountHeld == 0) { 
 				break;
 			}
 			g.setFont(body);
-			g.drawString(testMarket.get(i).getSymbol() + 
-					String.format("    (%.4f%%)", testMarket.get(i).getProfitLoss(NEGATIVE)),
+			g.drawString(selectedMarket.get(i).getSymbol() + 
+					String.format("    (%.4f%%)", selectedMarket.get(i).getProfitLoss(NEGATIVE)),
 					1525, 80 * i + 240);
 		}
 	}

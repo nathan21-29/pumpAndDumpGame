@@ -36,9 +36,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Image saveSelect;
 	Image tradingView, selectionPill;
 	
-	Stock demo = new Stock("DEMO", 10, 2, 1, 1);
-	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3);
-	Stock test2 = new Stock("TST2", 100, 0.02, 1.004, 10);
+	ArrayList<Stock> selectedMarket;
+	
+	Stock demo = new Stock("DEMO", 10, 2, 1, 1, 0);
+	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3, 0);
+	Stock test2 = new Stock("TST2", 100, 0.5, 1.0005, 1, 0.1);
 	
 	//player variables
 	double money;
@@ -77,17 +79,19 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void initialize() {
 		//setups before the game starts running
 		System.out.println("Thread: Initializing game");
-		Stock.getTestMarket().add(test);
-		Stock.getTestMarket().add(test2);
+		selectedMarket = Stock.getTestMarket();
+		selectedMarket.add(test);
+		selectedMarket.add(test2);
 		startTime = System.currentTimeMillis();
 		
 		timeElapsed = 0;
 		FPS = 100;
 		
 		//for every stock
-		for(int i = 0; i < Stock.getTestMarket().size(); i++) {
-			for(int j = 0; j < 2920; j++) { //generate 1 year of candlesticks
-				Stock.getTestMarket().get(i).nextCandleStick();
+		for(int i = 0; i < selectedMarket.size(); i++) {
+			for(int j = 0; j < 2555; j++) { //generate 1 year of candlesticks
+				selectedMarket.get(i).nextCandleStick();
+				Stock.incrementTime();
 			}
 		}
 		
@@ -137,7 +141,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		fillOrders(Stock.getSellOrders(), false);
 		
 		//sorting here means 1 sort per 3 seconds as opposed to every repaint
-		Collections.sort(Stock.getTestMarket());
+		Collections.sort(selectedMarket);
 	}
 	
 	//mode == true is buy, mode == false is sell
@@ -249,7 +253,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void keyPressed(KeyEvent e) {
 		//esc moves from trading screen back to menu and resets animation
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE && gameState == TRADINGSCREEN) {
-			demo = new Stock("DEMO", 10, 2, 1, 1);
+			demo = new Stock("DEMO", 10, 2, 1, 1, 0);
 			//generate first 100 candlesticks for demo
 			for(int i = 0; i < 300; i++) {
 				demo.nextCandleStick();
@@ -262,17 +266,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			System.out.println(currentStock.getProfitLoss(false));
 		}
 		if(e.getKeyCode() == KeyEvent.VK_D) {
-			for(int i = 0; i < Stock.getTestMarket().size(); i++) {
-				Stock.getTestMarket().get(i).nextCandleStick();
+			for(int i = 0; i < selectedMarket.size(); i++) {
+				selectedMarket.get(i).nextCandleStick();
 			}
 			Stock.incrementTime();
 //			String temp = JOptionPane.showInputDialog("HI");
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
-			System.out.println("value" + currentStock.getValue());
-			System.out.println("avg purchase" + currentStock.getAveragePurchasePrice());
-			System.out.println("tot purchase" + currentStock.getTotalPurchasePrice());
-			System.out.println("amt held" + currentStock.getAmountHeld());
+			for(int i = 0; i < 1400; i++) {
+				currentStock.nextCandleStick();
+				Stock.incrementTime();
+			}
 		}
 	}
 
