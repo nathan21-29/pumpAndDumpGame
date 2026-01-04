@@ -1,7 +1,11 @@
 package classFiles;
 
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+
+import javax.sound.sampled.*;
 
 public class Notification {
 	
@@ -13,13 +17,14 @@ public class Notification {
 
 	private String title;
 	private String body;
-	
+	private String soundPath;
 	private long startMillis;
 	private long duration = 5000;
 	
-	public Notification(String title, String body) {
+	public Notification(String title, String body, String soundPath) {
 		this.title = title;
 		this.body = body;
+		playAudio(soundPath);
 		startMillis = System.currentTimeMillis();
 	}
 	
@@ -36,9 +41,13 @@ public class Notification {
 		return body;
 	}
 	
+	public String getSoundPath() {
+		return soundPath;
+	}
+	
 	//setters
-	public static void addNotification(String title, String body) {
-		notifications.add(new Notification(title, body));
+	public static void addNotification(String title, String body, String soundPath) {
+		notifications.add(new Notification(title, body, soundPath));
 	}
 	
 	public static void drawNotifications(Graphics g) {
@@ -75,5 +84,29 @@ public class Notification {
 	//returns the % progress, as a decimal, of the notification
 	public double getProgress() {
 		return Math.min((System.currentTimeMillis() - startMillis) * 1.0 / duration, 1);
+	}
+
+	//plays an audio by creating a new AudioInputStrem
+	//Parameter Clip clip is the clip to start
+	//returns nothing
+	public static void playAudio(String path) {
+		try {
+			AudioInputStream player = AudioSystem.getAudioInputStream(new File (path));
+			Clip clip = AudioSystem.getClip();
+			clip.open(player);
+			clip.start();
+			clip.addLineListener(event -> {
+				if(event.getType() == LineEvent.Type.STOP) {
+					clip.close(); //close the audio thread when it finishes to free ram
+				}
+			});
+		} catch (UnsupportedAudioFileException e) {
+			System.out.println("Unsupported file");
+		} catch (IOException e) {
+			System.out.println("File error");
+		} catch (LineUnavailableException e) {
+			System.out.println("Line unavailable");
+		}
+
 	}
 }

@@ -1,10 +1,12 @@
 package pumpAndDumpGame;
 import java.awt.event.*;
+import java.io.*;
 import java.security.PublicKey;
 import java.util.*;
 import java.util.Map.Entry;
 import java.awt.*;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 
 import classFiles.*; //import all files from classFiles package
@@ -35,6 +37,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	ArrayList<Image> tutorial = new ArrayList<>(); //AL to hold the images for the tutorial slideshow
 	Image saveSelect;
 	Image tradingView, selectionPill;
+	
+	String hitSoundPath = "gameFiles/soft-hitnormal.wav";
+	Clip temp;
 	
 	ArrayList<Stock> selectedMarket;
 	
@@ -79,6 +84,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void initialize() {
 		//setups before the game starts running
 		System.out.println("Thread: Initializing game");
+		
 		selectedMarket = Stock.getTestMarket();
 		selectedMarket.add(test);
 		selectedMarket.add(test2);
@@ -157,13 +163,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 //							+ "Reason: Insufficient money");
 					Notification.addNotification("ORDER FAILED",
 							"Order for " + amount + " shares of " + stock.getSymbol() + " has" +  
-							"\nfailed. Reason: Insufficient funds");
+							"\nfailed. Reason: Insufficient funds", hitSoundPath);
 				}
 				else {
 					Notification.addNotification("ORDER FILLED", String.format(
 							"Successfully purchased " + amount + " shares of\n" + stock.getSymbol()
 							+ "for $%.2f/share. ($%.2f)", stock.getValue(),
-							stock.getValue() * amount));
+							stock.getValue() * amount), hitSoundPath);
 					
 					money -= stock.getValue() * amount; //update money
 					stock.incrementTotalPurchasePrice(stock.getValue() * amount);
@@ -177,9 +183,14 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 //							+ "Reason: Insufficient shares");
 					Notification.addNotification("ORDER FAILED",
 							"Order to sell " + amount + " shares of " + stock.getSymbol() + " has" +  
-							"\nfailed. Reason: Insufficient shares");
+							"\nfailed. Reason: Insufficient shares", hitSoundPath);
 				}
 				else {
+					Notification.addNotification("ORDER FILLED", String.format(
+							"Successfully sold " + amount + " shares of\n" + stock.getSymbol()
+							+ "for $%.2f/share. ($%.2f)", stock.getValue(),
+							stock.getValue() * amount), hitSoundPath);
+					
 					money += stock.getValue() * amount; //update money
 					//increment total first using old amount held
 					stock.incrementTotalPurchasePrice(stock.getAveragePurchasePrice() * -amount);
@@ -252,8 +263,27 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//draw notifications
 		Notification.drawNotifications(g);
 	}
-	
+
 	public void startGame() {
+		//load sounds into memory
+		try {
+			AudioInputStream player;
+			BufferedReader soundLoader = new BufferedReader(new FileReader("gameFiles/soundFilePaths.txt"));
+			String data;
+			while((data = soundLoader.readLine()) != null) {
+				player = AudioSystem.getAudioInputStream(new File (data));
+				temp = AudioSystem.getClip();
+				temp.open(player);
+			}
+			soundLoader.close();
+		} catch (UnsupportedAudioFileException e) {
+			System.out.println("Unsupported file");
+		} catch (IOException e) {
+			System.out.println("File error");
+		} catch (LineUnavailableException e) {
+			System.out.println("Line unavailable");
+		}
+
 		gameState = TRADINGSCREEN;
 		lastCycle = System.currentTimeMillis();
 	}
@@ -287,7 +317,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 //			String temp = JOptionPane.showInputDialog("HI");
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F11) {
-			Notification.addNotification("TESTING", "this is a test\ntesting....");
+			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
 			for(int i = 0; i < 1400; i++) {

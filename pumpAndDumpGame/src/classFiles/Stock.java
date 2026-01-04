@@ -470,7 +470,7 @@ public class Stock implements Comparable<Stock> {
 		//draw amount held
 		if(amountHeld == 0) {
 			g.setColor(Color.WHITE);
-			g.drawString("0 (0.00%)", 1090, 860);
+			g.drawString("0.00% (0)", 1090, 860);
 			return; //to avoid zero division later on
 		}
 		else if(amountHeld * getValue() >= totalPurchasePrice) { //positive position
@@ -482,7 +482,7 @@ public class Stock implements Comparable<Stock> {
 
 //		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
 //				getProfitLoss(false)), 1090, 860);
-		g.drawString(String.format("$%+.2f (%+.4f%%)", getProfitLoss(true), getProfitLoss(false)), 1090, 860);
+		g.drawString(String.format("%.4f%% (%+.2f)", getProfitLoss(false), getProfitLoss(true)), 1090, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {
