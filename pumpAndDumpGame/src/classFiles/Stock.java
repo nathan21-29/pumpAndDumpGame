@@ -134,7 +134,7 @@ public class Stock implements Comparable<Stock> {
 	
 	public double getAveragePurchasePrice() {
 		if(amountHeld == 0) {
-			return 1.00001;
+			return 0;
 		}
 		return totalPurchasePrice / amountHeld;
 	}
@@ -221,7 +221,7 @@ public class Stock implements Comparable<Stock> {
 			}
 			g.setFont(body);
 			g.drawString(selectedMarket.get(i).getSymbol() + 
-					String.format("    (%.4f%%)", selectedMarket.get(i).getProfitLoss(NEGATIVE)),
+					String.format("    (%+.4f%%)", selectedMarket.get(i).getProfitLoss(NEGATIVE)),
 					1525, 80 * i + 240);
 		}
 	}
@@ -397,6 +397,7 @@ public class Stock implements Comparable<Stock> {
 	//draws 5 graph lines from the bottom value to the top value
 	//Graphics g is the graphics object used to draw elements
 	public void drawGraphLines(Graphics g) {
+		//draw graph lines
 		g.setColor(Color.WHITE);
 		g.setFont(price);
 		double top = Math.max(priceHistory.get(recentMax).getClosePrice(), 
@@ -411,6 +412,12 @@ public class Stock implements Comparable<Stock> {
 			g.drawLine(10, yCoord, 1425, yCoord);
 			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1430, yCoord + 2);
 		}
+		
+		//draw break even line
+		g.setColor(Color.CYAN);
+		yCoord = getDrawPixel(175, 670, top, bottom, getAveragePurchasePrice());
+		g.drawLine(10, yCoord, 1425, yCoord);
+		g.drawString("AVG", 1430, yCoord + 2);
 	}
 
 	//gets the y pixel to draw an element

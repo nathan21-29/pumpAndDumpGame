@@ -1,32 +1,78 @@
 package classFiles;
 
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
+import java.util.*;
 
 public class Notification {
 	
-	Font titleFont = new Font("Arial", Font.BOLD, 40);
+	private static Queue<Notification> notifications = new LinkedList<Notification>();
+	
+	private static Font titleFont = new Font("Arial", Font.BOLD, 35);
+	private static Font bodyFont = new Font("Arial", Font.PLAIN, 20);
+	private static Color offYellow = new Color(255, 247, 196);
 
 	private String title;
 	private String body;
 	
 	private long startMillis;
-	private long duration;
+	private long duration = 5000;
 	
-	public Notification(String title, String body, long duration) {
+	public Notification(String title, String body) {
 		this.title = title;
 		this.body = body;
 		startMillis = System.currentTimeMillis();
-		this.duration = duration;
 	}
 	
-	//int number is sequential (i.e. the first notification has a number of 0, second has 1 etc.)
-	public void drawNotification(int number, Graphics g) {
-		g.drawRect(880 - number * 120, number, number, number);
+	//getters
+	public static Queue<Notification> getNotifications() {
+		return notifications;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
+	
+	public String getBody() {
+		return body;
+	}
+	
+	//setters
+	public static void addNotification(String title, String body) {
+		notifications.add(new Notification(title, body));
+	}
+	
+	public static void drawNotifications(Graphics g) {
+		//remove all expired notifications
+		while(notifications.peek() != null && notifications.peek().getProgress() == 1) {
+			notifications.poll();
+		}
+		
+		int number = 0; //index
+		for(Notification n : notifications) {
+			//draw box
+			g.setColor(new Color(41, 41, 41));
+			g.fillRect(1525, 880 - number * 120, 355, 100);
+			
+			//draw text
+			g.setColor(Color.WHITE);
+			g.setFont(titleFont);
+			g.drawString(n.getTitle(), 1535, 917 - number * 120);
+			
+			g.setColor(new Color(200, 200, 200));
+			g.setFont(bodyFont);
+			int lineNumber = 0;
+			for(String data : n.getBody().split("\n")) { //force recognition of \n
+				g.drawString(data, 1540, 945 - number * 120 + lineNumber++ * 20);
+			}
+			number++;
+			//draw progress bar
+			g.setColor(offYellow);
+			g.fillRect(1525, 1095 - number * 120, (int)(355 * (1 - n.getProgress())), 5);
+		}
 	}
 	
 	//returns the % progress, as a decimal, of the notification
 	public double getProgress() {
-		return Math.min((System.currentTimeMillis() - startMillis) / duration, 1);
+		return Math.min((System.currentTimeMillis() - startMillis) * 1.0 / duration, 1);
 	}
 }

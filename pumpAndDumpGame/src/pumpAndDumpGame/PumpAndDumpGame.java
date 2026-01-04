@@ -152,11 +152,19 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			//check sufficient funds / shares
 			if(mode) { //buy orders; check sufficient funds
 				if(stock.getValue() * amount > money) {
-					JOptionPane.showMessageDialog(this, "Order to buy " + entry.getValue() + "shares\n"
-							+ "of " + entry.getKey().getSymbol() + " has failed. \n"
-							+ "Reason: Insufficient money");
+//					JOptionPane.showMessageDialog(this, "Order to buy " + entry.getValue() + "shares\n"
+//							+ "of " + entry.getKey().getSymbol() + " has failed. \n"
+//							+ "Reason: Insufficient money");
+					Notification.addNotification("ORDER FAILED",
+							"Order for " + amount + " shares of " + stock.getSymbol() + " has" +  
+							"\nfailed. Reason: Insufficient funds");
 				}
 				else {
+					Notification.addNotification("ORDER FILLED", String.format(
+							"Successfully purchased " + amount + " shares of\n" + stock.getSymbol()
+							+ "for $%.2f/share. ($%.2f)", stock.getValue(),
+							stock.getValue() * amount));
+					
 					money -= stock.getValue() * amount; //update money
 					stock.incrementTotalPurchasePrice(stock.getValue() * amount);
 					stock.incrementAmountHeld(amount);
@@ -164,9 +172,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 			else { //!buy; sell orders
 				if(amount > stock.getAmountHeld()) {
-					JOptionPane.showMessageDialog(this, "Order to sell " + entry.getValue() + "shares\n"
-							+ "of " + entry.getKey().getSymbol() + " has failed. \n"
-							+ "Reason: Insufficient shares");
+//					JOptionPane.showMessageDialog(this, "Order to sell " + entry.getValue() + "shares\n"
+//							+ "of " + entry.getKey().getSymbol() + " has failed. \n"
+//							+ "Reason: Insufficient shares");
+					Notification.addNotification("ORDER FAILED",
+							"Order to sell " + amount + " shares of " + stock.getSymbol() + " has" +  
+							"\nfailed. Reason: Insufficient shares");
 				}
 				else {
 					money += stock.getValue() * amount; //update money
@@ -237,6 +248,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//draw current holdings
 		Stock.drawHoldings(g);
+		
+		//draw notifications
+		Notification.drawNotifications(g);
 	}
 	
 	public void startGame() {
@@ -272,6 +286,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			Stock.incrementTime();
 //			String temp = JOptionPane.showInputDialog("HI");
 		}
+		if(e.getKeyCode() == KeyEvent.VK_F11) {
+			Notification.addNotification("TESTING", "this is a test\ntesting....");
+		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
 			for(int i = 0; i < 1400; i++) {
 				currentStock.nextCandleStick();
@@ -287,7 +304,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 		int x = e.getX(), y = e.getY() - 30; //offset y b/c y counts window header pixels
 		
 		if(gameState == MAINMENU) {
@@ -380,6 +397,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 			
 			if(checkHit(x, y, 770, 896, 1500, 986)) { //dump button
+				//check shares held
+				if(currentStock.getAmountHeld() < 1) {
+					return;
+				}
 				do {
 					validInput = true;
 					try {
@@ -408,7 +429,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
