@@ -1,5 +1,6 @@
 package pumpAndDumpGame;
 import java.awt.event.*;
+import java.awt.geom.Arc2D;
 import java.io.*;
 import java.security.PublicKey;
 import java.util.*;
@@ -35,6 +36,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
 	ArrayList<Image> tutorial = new ArrayList<>(); //AL to hold the images for the tutorial slideshow
+	Image loadingCircle;
 	Image saveSelect;
 	Image tradingView, selectionPill;
 	
@@ -110,13 +112,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		gameState = MAINMENU;
 		demoStartTime = System.currentTimeMillis();
 		
-		//populate market
-		
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
 		menuSettingsButton = Toolkit.getDefaultToolkit().getImage("gameFiles/settingsButton.png");
 		
 		saveSelect = Toolkit.getDefaultToolkit().getImage("gameFiles/saveSelect.png");
+
+		loadingCircle = Toolkit.getDefaultToolkit().getImage("gameFiles/loadingCircle.png"); 
 		
 		tradingView = Toolkit.getDefaultToolkit().getImage("gameFiles/tradingScreen.png");
 		selectionPill = Toolkit.getDefaultToolkit().getImage("gameFiles/selectionPill.png");
@@ -231,7 +233,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void drawSaveSelect(Graphics g) {
 		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
 	}
-
+	
 	//Draws the trading screen
 	//Stock s is the stock to be drawn
 	//Graphics g is the graphics object used to draw elements
@@ -298,8 +300,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//esc moves from trading screen back to menu and resets animation
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE && gameState == TRADINGSCREEN) {
 			demo = new Stock("DEMO", 10, 2, 1, 1, 0);
-			//generate first 100 candlesticks for demo
-			for(int i = 0; i < 300; i++) {
+			for(int i = 0; i < 200; i++) {
 				demo.nextCandleStick();
 			}
 			System.out.println(demo.getRecentMax());
