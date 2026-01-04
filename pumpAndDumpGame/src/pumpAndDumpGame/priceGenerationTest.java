@@ -1,5 +1,6 @@
 package pumpAndDumpGame;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import classFiles.Candlestick;

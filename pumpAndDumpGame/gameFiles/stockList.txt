@@ -1,27 +1,24 @@
-4
-GSPC //s&p
-2000 0.0015 10 0
-NDAQ //based on Nasdaq
-450 0.01 1.008 3 0
-BRK.B //Berkshire class b
-300 0.05 1.001 2 0
-DJI //dow jones
-100 0.02 1.004 10 0
-4
-NVDA //nvidia
-210 0.5 1.0005 1 0.1
-AMZN //amazon
-270 0.35 1.001 1 0.05
-WMT //walmart
-100 0.2 1.002 2 0.0075
-PLTR //palantir
-250 0.3 0.985 4 0
-4
-ETH //ethereum
-500 0.4 1.001 6 0.0004
-SOL //solana
-100 0.5 1.001 1 0.004
-DOGE //dogecoin
-1 0.8 1 1 0
-LITE //litecoin
-70 0.4 1.003 1 0.001
+//s&p
+GSPC 2000 0.0015 1.005 10 0
+//based on Nasdaq
+NDAQ 450 0.01 1.008 3 0
+//Berkshire class b
+BRK.B 300 0.05 1.001 2 0
+//dow jones
+DJI 100 0.02 1.004 10 0
+//nvidia
+NVDA 210 0.5 1.0005 1 0.1
+//amazon
+AMZN 270 0.35 1.001 1 0.05
+//walmart
+WMT 100 0.2 1.002 2 0.0075
+//palantir
+PLTR 250 0.3 0.985 4 0
+//ethereum
+ETH 500 0.4 1.001 6 0.0004
+//solana
+SOL 100 0.5 1.001 1 0.004
+//dogecoin
+DOGE 1 0.8 1 1 0
+//litecoin
+LITE 70 0.4 1.003 1 0.001

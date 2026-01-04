@@ -47,7 +47,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1, 0);
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3, 0);
-	Stock test2 = new Stock("TST2", 70, 0.4, 1.003, 1, 0.001);
+	Stock test2 = new Stock("TST2", 100, 0.5, 1.0005, 1, 0.1);
 	
 	//player variables
 	double money;
@@ -86,6 +86,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void initialize() {
 		//setups before the game starts running
 		System.out.println("Thread: Initializing game");
+		
+		Stock.loadStocks();
 		
 		selectedMarket = Stock.getTestMarket();
 		selectedMarket.add(test);
@@ -321,7 +323,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
-			currentStock = test2;
 			for(int i = 0; i < 1400; i++) {
 				currentStock.nextCandleStick();
 				Stock.incrementTime();

@@ -3,6 +3,13 @@ package classFiles;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 import javax.swing.JOptionPane;
@@ -41,6 +48,7 @@ public class Stock implements Comparable<Stock> {
 	private double stability;
 	private double chanceFactor;
 	private double targetFlipChance;
+	private Image icon;
 	
 	//player variables
 	private int amountHeld;
@@ -55,7 +63,9 @@ public class Stock implements Comparable<Stock> {
 	//sample size defining the baseline, as a multiple of 25 (if stability is 2, then the baseline price will
 	//be defined using the last 2 * 25 = 50 close prices). Double targetFlipChance is the % chance as a decimal
 	//that a stock will invert its targetGrowth (i.e. growth to decay & vice versa) on the start of any given day.
-	public Stock(String symbol, int initialPrice, double volatility, double targetGrowth, double stability, double targetFlipChance) {
+	public Stock(String symbol, int initialPrice, 
+			double volatility, double targetGrowth, 
+			double stability, double targetFlipChance) {
 		maxPrice = initialPrice;
 		minPrice = initialPrice;
 		seedPrice = initialPrice;
@@ -82,6 +92,10 @@ public class Stock implements Comparable<Stock> {
 	
 	public static HashMap<Stock, Integer> getSellOrders() {
 		return sellOrders;
+	}
+	
+	public double getVolatility() {
+		return volatility;
 	}
 	
 	public String getSymbol () {
@@ -175,6 +189,10 @@ public class Stock implements Comparable<Stock> {
 		this.totalPurchasePrice = totalPurchasePrice;
 	}
 	
+	public void setIcon(Image icon) {
+		this.icon = icon;
+	}
+	
 	public void incrementAmountHeld(int increment) {
 		amountHeld += increment;
 	}
@@ -190,6 +208,30 @@ public class Stock implements Comparable<Stock> {
 	public boolean equals(Object obj) {
 		Stock compare = (Stock) obj;
 		return symbol.equals(compare.getSymbol());
+	}
+	
+	public static void loadStocks() {
+		try {
+			BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/stockList.txt"));
+			while(fileIn.readLine() != null) { //skip the comment line
+				Stock tempStock;
+				StringTokenizer temp = new StringTokenizer(fileIn.readLine(), " ");
+				tempStock = (new Stock(temp.nextToken(), //symbol
+						Integer.parseInt(temp.nextToken()), //initial price
+						Double.parseDouble(temp.nextToken()), //volatility
+						Double.parseDouble(temp.nextToken()), //growthTarget
+						Double.parseDouble(temp.nextToken()), //stability
+						Double.parseDouble(temp.nextToken()))); //targetFlipChance
+				tempStock.setIcon(Toolkit.getDefaultToolkit().getImage(
+						"gameFiles/stockIcons/" + tempStock.getSymbol() + ".png"));
+				market.add(tempStock);
+			}
+			fileIn.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("file not found");
+		} catch (IOException e) {
+			System.out.println("stock reading error");
+		}
 	}
 	
 	//returns true if timechange rolls into a new day
