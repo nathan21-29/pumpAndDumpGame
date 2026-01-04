@@ -311,7 +311,7 @@ public class Stock implements Comparable<Stock> {
 	//Creates a candlestick using random change value
 	//boolean type is the type of the candlestick (i.e. true = positive, false = negative)
 	public void generateCandleStick(boolean type) {
-		double change = Math.pow(Math.random(), 1.4) * ((0.0999 * this.getValue()) * volatility) + (0.0001 * this.getValue());
+		double change = Math.pow(Math.random(), 1.6) * ((0.0999 * this.getValue()) * volatility) + (0.0001 * this.getValue());
 		if(type == POSITIVE) {
 			if(priceHistory.getLast().getType() == NEGATIVE) { //swing from negative -> positive
 				//momentum = 2; //reset momentum
@@ -414,10 +414,12 @@ public class Stock implements Comparable<Stock> {
 		}
 		
 		//draw break even line
-		g.setColor(Color.CYAN);
-		yCoord = getDrawPixel(175, 670, top, bottom, getAveragePurchasePrice());
-		g.drawLine(10, yCoord, 1425, yCoord);
-		g.drawString("AVG", 1430, yCoord + 2);
+		if(amountHeld > 0 && getAveragePurchasePrice() > bottom) {
+			g.setColor(Color.CYAN);
+			yCoord = getDrawPixel(175, 670, top, bottom, getAveragePurchasePrice());
+			g.drawLine(10, yCoord, 1425, yCoord);
+			g.drawString("AVG", 1430, yCoord + 2);
+		}
 	}
 
 	//gets the y pixel to draw an element

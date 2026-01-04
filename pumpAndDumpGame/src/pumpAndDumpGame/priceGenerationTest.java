@@ -17,11 +17,11 @@ public class priceGenerationTest {
 		int winners = 0;
 		int losers = 0;
 		double totalSum = 0;
-		int initPrice = 100;
+		int initPrice = 250;
 		for(int i = 0; i < 100; i++) {
-			test = new Stock("TST2", 100, 0.02, 1.004, 10, 0.02);
+			test = new Stock("TEST", initPrice, 0.004, 1.02, 10, 0.03);
 			Stock.getTestMarket().add(test);
-			for(int j = 0; j < 2000; j++) {
+			for(int j = 0; j < 2555; j++) {
 				test.nextCandleStick();
 				Stock.incrementTime();
 			}
@@ -36,8 +36,8 @@ public class priceGenerationTest {
 		}
 		System.out.println(winners + " winners");
 		System.out.println(losers + " losers");
-		System.out.println(totalSum / 1000);
-		System.out.println((totalSum / 1000 - initPrice) / (totalSum / 100000) + "%");
+		System.out.println(totalSum / 100);
+		System.out.println((totalSum / 100 - initPrice) / (totalSum / 100000) + "%");
 	}
 
 }
