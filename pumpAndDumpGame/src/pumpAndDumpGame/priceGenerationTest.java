@@ -18,7 +18,7 @@ public class priceGenerationTest {
 		int losers = 0;
 		double totalSum = 0;
 		int initPrice = 100;
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < 100; i++) {
 			test = new Stock("TST2", 100, 0.02, 1.004, 10, 0.02);
 			Stock.getTestMarket().add(test);
 			for(int j = 0; j < 2000; j++) {

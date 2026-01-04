@@ -51,7 +51,8 @@ public class Notification {
 		for(Notification n : notifications) {
 			//draw box
 			g.setColor(new Color(41, 41, 41));
-			g.fillRect(1525, 880 - number * 120, 355, 100);
+//			g.fillRect(1525, 880 - number * 120, 355, 100);
+			g.fillRoundRect(1525, 880 - number * 120, 355, 100, 15, 15);
 			
 			//draw text
 			g.setColor(Color.WHITE);

@@ -311,7 +311,7 @@ public class Stock implements Comparable<Stock> {
 	//Creates a candlestick using random change value
 	//boolean type is the type of the candlestick (i.e. true = positive, false = negative)
 	public void generateCandleStick(boolean type) {
-		double change = Math.random() * ((0.0999 * this.getValue()) * volatility) + (0.0001 * this.getValue());
+		double change = Math.pow(Math.random(), 1.4) * ((0.0999 * this.getValue()) * volatility) + (0.0001 * this.getValue());
 		if(type == POSITIVE) {
 			if(priceHistory.getLast().getType() == NEGATIVE) { //swing from negative -> positive
 				//momentum = 2; //reset momentum
@@ -428,7 +428,7 @@ public class Stock implements Comparable<Stock> {
 		return (int) (fieldTop + (fieldBottom - fieldTop) * (1 - (target - bottomBound) / (topBound - bottomBound)));
 	}
 	
-	public void getIndicators(Graphics g) {
+	public void drawAllIndicators(Graphics g) {
 		//draw time indicators (past 5 days etc)
 		double currentValue = getValue();
 		double oneDay = getPastPrice(time);

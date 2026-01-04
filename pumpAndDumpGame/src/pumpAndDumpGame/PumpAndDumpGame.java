@@ -227,7 +227,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void drawTradingScreen(Graphics g) { 
 		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
 		currentStock.drawGraph(g);
-		currentStock.getIndicators(g);
+		currentStock.drawAllIndicators(g);
 		
 		//draw timeline selection
 		if(currentStock.getCandleCount() == 140) { //20D
