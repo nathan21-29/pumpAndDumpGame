@@ -420,7 +420,6 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 
-	//draws the last 140 candlesticks of the instance stock in the bounds of the trading menu
 	//Graphics g is the graphics object used to draw elements
 	public void drawGraph(Graphics g) {
 		double topBound = Math.max(priceHistory.get(recentMax).getClosePrice(), 
@@ -549,9 +548,12 @@ public class Stock implements Comparable<Stock> {
 		}
 		g.drawString(ratings[rating], 1090, 807);
 
+		//draw stock icon
+		g.drawImage(icon, 15, 105, 60, 60, null);
+		
 		//draw stock ticker (symbol)
 		g.setColor(Color.WHITE);
-		g.drawString(symbol, 20, 160);
+		g.drawString(symbol, 90, 150);
 
 		//draw amount held
 		if(amountHeld == 0) {
