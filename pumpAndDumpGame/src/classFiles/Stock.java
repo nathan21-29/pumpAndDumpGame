@@ -271,6 +271,12 @@ public class Stock implements Comparable<Stock> {
 				break;
 			}
 			g.setFont(body);
+			if(selectedMarket.get(i).getProfitLoss(NEGATIVE) >= 0) { //positive position
+				g.setColor(darkGreen);
+			}
+			else {
+				g.setColor(darkRed);
+			}
 			g.drawString(selectedMarket.get(i).getSymbol() + 
 					String.format("    (%+.4f%%)", selectedMarket.get(i).getProfitLoss(NEGATIVE)),
 					1525, 80 * i + 240);
