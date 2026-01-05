@@ -175,7 +175,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				else {
 					Notification.addNotification("ORDER FILLED", String.format(
 							"Successfully purchased " + amount + " shares of\n" + stock.getSymbol()
-							+ "for $%.2f/share. ($%.2f)", stock.getValue(),
+							+ " for $%.2f/share. ($%.2f)", stock.getValue(),
 							stock.getValue() * amount), hitSoundPath);
 					
 					money -= stock.getValue() * amount; //update money
@@ -195,7 +195,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				else {
 					Notification.addNotification("ORDER FILLED", String.format(
 							"Successfully sold " + amount + " shares of\n" + stock.getSymbol()
-							+ "for $%.2f/share. ($%.2f)", stock.getValue(),
+							+ " for $%.2f/share. ($%.2f)", stock.getValue(),
 							stock.getValue() * amount), hitSoundPath);
 					
 					money += stock.getValue() * amount; //update money
