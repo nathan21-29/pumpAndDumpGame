@@ -276,7 +276,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	public void loadTradingScreen(Stock s) {
 		currentStock = s;
-		currentStock.recalculateRecents(true);
 		gameState = TRADINGSCREEN;
 	}
 	
@@ -367,7 +366,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 //			String temp = JOptionPane.showInputDialog("HI");
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F11) {
-			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
+//			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
+			System.out.println(lastCycle);
 			System.out.println(selectedMarket.get(1).getCandleCount());
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
