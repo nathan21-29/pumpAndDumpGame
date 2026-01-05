@@ -243,6 +243,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 
 	public void loadStockList() {
+		Collections.sort(selectedMarket, new SortByVolatility());
 		gameState = STOCKLIST;
 	}
 	
@@ -276,6 +277,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	public void loadTradingScreen(Stock s) {
 		currentStock = s;
+		Collections.sort(selectedMarket); //default sort by amount held
 		gameState = TRADINGSCREEN;
 	}
 	

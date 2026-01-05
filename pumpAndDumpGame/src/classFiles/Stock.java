@@ -20,7 +20,7 @@ public class Stock implements Comparable<Stock> {
 
 	private static ArrayList<Stock> testMarket = new ArrayList<>();
 	private static ArrayList<Stock> market = new ArrayList<>();
-	private static ArrayList<Stock> selectedMarket = testMarket;
+	private static ArrayList<Stock> selectedMarket = market;
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
