@@ -30,6 +30,7 @@ public class Stock implements Comparable<Stock> {
 	private static Color darkRed = new Color(187, 46, 40);
 	private static HashMap<Stock, Integer> buyOrders = new HashMap<>(); //yet-to-be-filled buy orders, should be cleared upon each stock refresh
 	private static HashMap<Stock, Integer> sellOrders = new HashMap<>(); //yet-to-be-filled buy orders, should be cleared upon each stock refresh
+	private static int tinyCandleCount = 35; //stores candlecount when list view overwrites it
 	private final static boolean POSITIVE = true;
 	private final static boolean NEGATIVE = false;
 
@@ -175,7 +176,7 @@ public class Stock implements Comparable<Stock> {
 	public Image getIcon() {
 		return icon;
 	}
-	
+
 	//setters
 	public void setValue(double newPrice) {
 		priceHistory.addLast(new Candlestick(priceHistory.getLast().getClosePrice(), newPrice));
@@ -444,27 +445,35 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
-	public void drawTinyGraph(Graphics g) {
-		double topBound = Math.max(priceHistory.get(recentMax).getClosePrice(), 
-				priceHistory.get(recentMax).getOpenPrice());
-		double bottomBound = Math.min(priceHistory.get(recentMin).getClosePrice(), 
-				priceHistory.get(recentMin).getOpenPrice());
-		
-		drawGraphLines(g);
+	public void drawTinyGraph(int startX, int startY, Graphics g) {
+		//calculate min and max
+		int tinyMax = priceHistory.size() - 36, tinyMin = tinyMax;
+		for(int i = priceHistory.size() - 35; i < priceHistory.size(); i++) {
+			if(priceHistory.get(i).getClosePrice() > priceHistory.get(tinyMax).getClosePrice()) {
+				tinyMax = i;
+			}
+			else if(priceHistory.get(i).getClosePrice() < priceHistory.get(tinyMin).getClosePrice()) {
+				tinyMin = i;
+			}
+		}
+		double topBound = Math.max(priceHistory.get(tinyMax).getClosePrice(), 
+				priceHistory.get(tinyMax).getOpenPrice());
+		double bottomBound = Math.min(priceHistory.get(tinyMin).getClosePrice(), 
+				priceHistory.get(tinyMin).getOpenPrice());
 		
 		int openPixel;
 		int closePixel;
-		int start = priceHistory.size() - candleCount;
-		for (int i = 0; i < candleCount; i++) {
-			openPixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getOpenPrice());
-			closePixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getClosePrice());
+		int start = priceHistory.size() - tinyCandleCount;
+		for (int i = 0; i < tinyCandleCount; i++) {
+			openPixel = getDrawPixel(startY + 15, startY + 105, topBound, bottomBound, priceHistory.get(i + start).getOpenPrice());
+			closePixel = getDrawPixel(startY + 15, startY + 105, topBound, bottomBound, priceHistory.get(i + start).getClosePrice());
 			if(openPixel >= closePixel) { //upward candle
 				g.setColor(Color.GREEN);
 			}
 			else { //downward candle
 				g.setColor(Color.RED);
 			}
-			g.fillRect(10 + i * (1400 / candleCount), Math.min(openPixel, closePixel), (1400 / candleCount), Math.abs(openPixel - closePixel));
+			g.fillRect(startX + 345 + i * (4), Math.min(openPixel, closePixel), (4), Math.abs(openPixel - closePixel));
 		}
 	}
 
@@ -572,6 +581,21 @@ public class Stock implements Comparable<Stock> {
 	
 	public void drawIndicator(double currentValue, double pastValue, int x, int y, Graphics g) {
 		g.setFont(body);
+		double diff = currentValue - pastValue;
+		String result = "";
+		if(diff >= 0) {
+			g.setColor(Color.GREEN);
+			result += "(";
+		}
+		else { //diff < 0
+			g.setColor(Color.RED);
+			result += "(";
+		}
+		g.drawString(String.format("%.4f%% %s", diff / pastValue * 100, result + String.format("%+.2f", diff) + ")"), x, y);
+	}
+	
+	public void drawIndicator(double currentValue, double pastValue, int x, int y, Font font, Graphics g) {
+		g.setFont(font);
 		double diff = currentValue - pastValue;
 		String result = "";
 		if(diff >= 0) {

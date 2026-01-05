@@ -33,7 +33,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Color darkRed = new Color(187, 46, 40);
 	Font title = new Font ("Arial", Font.BOLD, 100);
 	Font header = new Font("Arial", Font.BOLD, 50);
-	Font body = new Font("Arial", Font.PLAIN, 35);
+	Font body = new Font("Arial", Font.PLAIN, 32);
 	FontMetrics fmTitle;
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
@@ -133,14 +133,16 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void update() {
 		//update stuff
 		timeElapsed = System.currentTimeMillis() - startTime;
-		if(gameState == TRADINGSCREEN || gameState == STOCKLIST && System.currentTimeMillis() - lastCycle > 3000) {
+		if((gameState == TRADINGSCREEN || gameState == STOCKLIST) && System.currentTimeMillis() - lastCycle > 3000) {
 			refreshMarket();
 		}
 		frameCount++;
 	}
 	
 	public void refreshMarket() {
-		currentStock.nextCandleStick();
+		for(Stock s : selectedMarket) {
+			s.nextCandleStick();
+		}
 		
 		if(Stock.incrementTime()) { //if end of day, pause for user to check stocks and create orders for next morning
 			
@@ -239,6 +241,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void drawSaveSelect(Graphics g) {
 		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
 	}
+
+	public void loadStockList() {
+		gameState = STOCKLIST;
+	}
 	
 	public void drawStockList(Graphics g) {
 		g.drawImage(stockList, 0, 0, 1900, 1000, this);
@@ -247,9 +253,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		int startX, startY;
 		int index = 0;
 		for(Stock s : selectedMarket) {
-			g.setColor(Color.WHITE);
 			startX = 200 + (index / 4) * 500;
 			startY = 300 + (index % 4) * 120;
+			//draw graph background behind all text just in case
+			g.setColor(darkGray);
+			g.fillRoundRect(startX + 335, startY + 5, 160, 110, 10, 10);
+			g.setColor(Color.WHITE);
 			g.drawRect(startX, startY, 500, 120);
 			//draw icon
 			g.drawImage(s.getIcon(), startX + 5, startY + 5, 70, 70, this);
@@ -258,9 +267,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			g.drawString(s.getSymbol(), startX + 80, startY + 60);
 			//draw today's change
 			g.setFont(body);
-			s.drawIndicator(s.getValue(), s.getPastPrice(Stock.getTime() + 35), startX + 10, startY + 110, g);
+			s.drawIndicator(s.getValue(), s.getPastPrice(Stock.getTime() + 35), startX + 10, startY + 110, body, g);
 			index++;
+			//draw graph
+			s.drawTinyGraph(startX, startY, g);
 		}
+	}
+	
+	public void loadTradingScreen(Stock s) {
+		currentStock = s;
+		currentStock.recalculateRecents(true);
+		gameState = TRADINGSCREEN;
 	}
 	
 	//Draws the trading screen
@@ -351,9 +368,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F11) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
-			for(int i = 0; i < Stock.getMarket().size(); i++) {
-				System.out.println(Stock.getMarket().get(i).getSymbol());
-			}
+			System.out.println(selectedMarket.get(1).getCandleCount());
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
 			for(int i = 0; i < 1400; i++) {
@@ -410,7 +425,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				startGame();
 			}
 		}
+		else if(gameState == STOCKLIST) {
+			if(checkHit(x, y, 200, 300, 1700, 780)) { //if in the grid box
+				loadTradingScreen(selectedMarket.get((x - 200) / 500 * 4 //get column * 4
+						+ (y - 300) / 120));  //add rows
+			}
+		}
 		else if(gameState == TRADINGSCREEN) {
+			//back button
+			if(checkHit(x, y, 10, 10, 90, 90)) {
+				loadStockList();
+			}
 			//view changing
 			if(checkHit(x, y, 100, 14, 169, 86)) { //1D
 				System.out.println();
