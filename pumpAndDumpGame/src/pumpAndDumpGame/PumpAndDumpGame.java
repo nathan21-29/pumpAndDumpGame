@@ -366,9 +366,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 //			String temp = JOptionPane.showInputDialog("HI");
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F11) {
-//			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
-			System.out.println(lastCycle);
-			System.out.println(selectedMarket.get(1).getCandleCount());
+			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
+//			System.out.println(lastCycle);
+//			System.out.println(selectedMarket.get(1).getCandleCount());
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
 			for(int i = 0; i < 1400; i++) {
