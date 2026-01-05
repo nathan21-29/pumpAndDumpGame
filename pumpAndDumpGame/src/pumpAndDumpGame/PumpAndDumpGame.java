@@ -438,22 +438,18 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 			//view changing
 			if(checkHit(x, y, 100, 14, 169, 86)) { //1D
-				System.out.println();
 				currentStock.setCandleCount(0);
 				currentStock.recalculateRecents(true);
 			}
-			else if(checkHit(x, y, 70, 14, 256, 86)) { //5D
-				System.out.println();
+			else if(checkHit(x, y, 180, 14, 256, 86)) { //5D
 				currentStock.setCandleCount(1);
 				currentStock.recalculateRecents(true);
 			}
 			else if(checkHit(x, y, 257, 14, 377, 86)) { //20D
-				System.out.println();
 				currentStock.setCandleCount(2);
 				currentStock.recalculateRecents(true);
 			}
 			else if(checkHit(x, y, 378, 14, 512, 86)) { //MAX
-				System.out.println();
 				currentStock.setCandleCount(3);
 				currentStock.recalculateRecents(true);
 			}

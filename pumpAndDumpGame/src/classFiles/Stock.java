@@ -332,7 +332,7 @@ public class Stock implements Comparable<Stock> {
 		if(priceHistory.size() - recentMax > 1 + candleCount) { //recent max is out of bounds of the current graph
 			double maxValue = priceHistory.get(priceHistory.size() - candleCount).getClosePrice();
 			int maxIndex = priceHistory.size() - candleCount;
-			for(int i = priceHistory.size() - candleCount; i < priceHistory.size(); i++) {
+			for(int i = priceHistory.size() - candleCount - 1; i < priceHistory.size(); i++) {
 				if(priceHistory.get(i).getClosePrice() > maxValue) {
 					maxValue = priceHistory.get(i).getClosePrice();
 					maxIndex = i;
@@ -344,8 +344,9 @@ public class Stock implements Comparable<Stock> {
 		if(priceHistory.size() - recentMin > candleCount) { //recent max is out of bounds of the current graph
 			double minValue = priceHistory.get(priceHistory.size() - candleCount).getClosePrice();
 			int minIndex = priceHistory.size() - candleCount;
-			for(int i = priceHistory.size() - candleCount; i < priceHistory.size(); i++) {
-				if(priceHistory.get(i).getClosePrice() < minValue) {
+			for(int i = priceHistory.size() - candleCount - 1; i < priceHistory.size(); i++) {
+				//second condition can happen when lowest item is an upward candle
+				if(priceHistory.get(i).getClosePrice() < minValue || priceHistory.get(i).getOpenPrice() < minValue) {
 					minValue = priceHistory.get(i).getClosePrice();
 					minIndex = i;
 				}
