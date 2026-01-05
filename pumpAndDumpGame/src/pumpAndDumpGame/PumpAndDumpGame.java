@@ -154,7 +154,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		fillOrders(Stock.getSellOrders(), false);
 		
 		//sorting here means 1 sort per 3 seconds as opposed to every repaint
-		Collections.sort(selectedMarket);
+		if(gameState == TRADINGSCREEN) {
+			Collections.sort(selectedMarket);
+		}
 	}
 	
 	//mode == true is buy, mode == false is sell
