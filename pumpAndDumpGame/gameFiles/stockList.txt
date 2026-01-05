@@ -7,7 +7,7 @@ BRK.B 300 0.05 1.001 2 0
 //dow jones
 DJI 100 0.02 1.004 10 0
 //nvidia
-NVDA 210 0.5 1.0005 1 0.1
+NVDA 210 0.35 1.0005 1 0.1
 //amazon
 AMZN 270 0.35 1.001 1 0.05
 //walmart

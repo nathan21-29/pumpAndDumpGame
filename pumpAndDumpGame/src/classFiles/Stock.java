@@ -94,6 +94,10 @@ public class Stock implements Comparable<Stock> {
 		return sellOrders;
 	}
 	
+	public static int getTime() {
+		return time;
+	}
+	
 	public double getVolatility() {
 		return volatility;
 	}
@@ -166,6 +170,10 @@ public class Stock implements Comparable<Stock> {
 	
 	public double getTargetFlipChance() {
 		return targetFlipChance;
+	}
+	
+	public Image getIcon() {
+		return icon;
 	}
 	
 	//setters
@@ -420,6 +428,30 @@ public class Stock implements Comparable<Stock> {
 		
 		drawGraphLines(g);
 
+		int openPixel;
+		int closePixel;
+		int start = priceHistory.size() - candleCount;
+		for (int i = 0; i < candleCount; i++) {
+			openPixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getOpenPrice());
+			closePixel = getDrawPixel(175, 670, topBound, bottomBound, priceHistory.get(i + start).getClosePrice());
+			if(openPixel >= closePixel) { //upward candle
+				g.setColor(Color.GREEN);
+			}
+			else { //downward candle
+				g.setColor(Color.RED);
+			}
+			g.fillRect(10 + i * (1400 / candleCount), Math.min(openPixel, closePixel), (1400 / candleCount), Math.abs(openPixel - closePixel));
+		}
+	}
+	
+	public void drawTinyGraph(Graphics g) {
+		double topBound = Math.max(priceHistory.get(recentMax).getClosePrice(), 
+				priceHistory.get(recentMax).getOpenPrice());
+		double bottomBound = Math.min(priceHistory.get(recentMin).getClosePrice(), 
+				priceHistory.get(recentMin).getOpenPrice());
+		
+		drawGraphLines(g);
+		
 		int openPixel;
 		int closePixel;
 		int start = priceHistory.size() - candleCount;
