@@ -22,6 +22,7 @@ public class Stock implements Comparable<Stock> {
 	private static ArrayList<Stock> market = new ArrayList<>();
 	private static ArrayList<Stock> selectedMarket = market;
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
+	private static Font small = new Font("Arial", Font.PLAIN, 28);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
 	private static String[] ratings = {"Strong sell", "Sell", "Neutral", "Buy", "Strong buy"};
@@ -265,6 +266,7 @@ public class Stock implements Comparable<Stock> {
 	}
 	
 	public static void drawHoldings(Graphics g) {
+		g.setFont(small);
 		for(int i = 0; i < selectedMarket.size(); i++) {
 			//if reached stocks with 0 shares held
 			if(selectedMarket.get(i).amountHeld == 0) { 
@@ -278,8 +280,9 @@ public class Stock implements Comparable<Stock> {
 				g.setColor(darkRed);
 			}
 			g.drawString(selectedMarket.get(i).getSymbol(), 1525, 70 * i + 240);
-			g.drawString(String.format("%.4f%%", selectedMarket.get(i).getProfitLoss(NEGATIVE)),
-					1710, 70 * i + 240);
+			g.drawString(String.format("$%.2f (%+.2f)", selectedMarket.get(i).getAmountHeld() * selectedMarket.get(i).getValue(),
+					selectedMarket.get(i).getProfitLoss(POSITIVE)),
+					1650, 70 * i + 240);
 		}
 	}
 
@@ -503,7 +506,7 @@ public class Stock implements Comparable<Stock> {
 		}
 		
 		//draw break even line
-		if(amountHeld > 0 && getAveragePurchasePrice() > bottom) {
+		if(amountHeld > 0 && getAveragePurchasePrice() > bottom && getAveragePurchasePrice() < top) {
 			g.setColor(Color.CYAN);
 			yCoord = getDrawPixel(175, 670, top, bottom, getAveragePurchasePrice());
 			g.drawLine(10, yCoord, 1425, yCoord);
@@ -576,7 +579,7 @@ public class Stock implements Comparable<Stock> {
 
 //		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
 //				getProfitLoss(false)), 1090, 860);
-		g.drawString(String.format("%+.4f%% ($%.2f)", getProfitLoss(false), getAmountHeld() * getValue()), 1090, 860);
+		g.drawString(String.format("%.4f%% (%+.2f)", getProfitLoss(false), getProfitLoss(true)), 1090, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {
