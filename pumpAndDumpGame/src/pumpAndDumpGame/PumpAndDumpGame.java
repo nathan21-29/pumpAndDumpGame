@@ -26,9 +26,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	int frameCount = 0;
 	
 	int gameState = 0;
-	final int MAINMENU = 0, SAVESELECT = 1, STOCKLIST = 2, TRADINGSCREEN = 3;
+	final int TUTORIAL = -1, MAINMENU = 0, SAVESELECT = 1, STOCKLIST = 2, TRADINGSCREEN = 3;
 	
 	Color darkGray = new Color(22, 22, 22);
+	Color darkGrayTransparent = new Color(22, 22, 22, 220);
 	Color darkGreen = new Color(66, 176, 78);
 	Color darkRed = new Color(187, 46, 40);
 	Font title = new Font ("Arial", Font.BOLD, 100);
@@ -38,6 +39,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
 	ArrayList<Image> tutorial = new ArrayList<>(); //AL to hold the images for the tutorial slideshow
+	int tutorialPage = 0;
 	Image loadingCircle;
 	Image saveSelect;
 	Image stockList;
@@ -117,6 +119,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		gameState = MAINMENU;
 		demoStartTime = System.currentTimeMillis();
 		
+		//load images
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
 		menuSettingsButton = Toolkit.getDefaultToolkit().getImage("gameFiles/settingsButton.png");
@@ -131,7 +134,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 	
 	public void update() {
-		//update stuff
+		//update timeElapsed and check if market refresh is due
 		timeElapsed = System.currentTimeMillis() - startTime;
 		if((gameState == TRADINGSCREEN || gameState == STOCKLIST) && System.currentTimeMillis() - lastCycle > 3000) {
 			refreshMarket();
@@ -140,6 +143,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 	
 	public void refreshMarket() {
+		//generate new candlestick for every stock
 		for(Stock s : selectedMarket) {
 			s.nextCandleStick();
 		}
@@ -148,28 +152,28 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			
 		}
 		
+		//update lastCycle to now
 		lastCycle = System.currentTimeMillis();
 		
+		//fill buy/sell orders
 		fillOrders(Stock.getBuyOrders(), true);
 		fillOrders(Stock.getSellOrders(), false);
 		
 		//sorting here means 1 sort per 3 seconds as opposed to every repaint
 		if(gameState == TRADINGSCREEN) {
-			Collections.sort(selectedMarket);
+			Collections.sort(selectedMarket); //default sort by amount held
 		}
 	}
 	
 	//mode == true is buy, mode == false is sell
 	public void fillOrders(HashMap<Stock, Integer> orders, boolean mode) {
+		//read in orders as pairs to keep information together
 		for(Entry<Stock, Integer> entry : orders.entrySet()) {
 			Stock stock = entry.getKey();
 			int amount = entry.getValue();
 			//check sufficient funds / shares
 			if(mode) { //buy orders; check sufficient funds
 				if(stock.getValue() * amount > money) {
-//					JOptionPane.showMessageDialog(this, "Order to buy " + entry.getValue() + "shares\n"
-//							+ "of " + entry.getKey().getSymbol() + " has failed. \n"
-//							+ "Reason: Insufficient money");
 					Notification.addNotification("ORDER FAILED",
 							"Order for " + amount + " shares of " + stock.getSymbol() + " has" +  
 							"\nfailed. Reason: Insufficient funds", hitSoundPath);
@@ -187,9 +191,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 			else { //!buy; sell orders
 				if(amount > stock.getAmountHeld()) {
-//					JOptionPane.showMessageDialog(this, "Order to sell " + entry.getValue() + "shares\n"
-//							+ "of " + entry.getKey().getSymbol() + " has failed. \n"
-//							+ "Reason: Insufficient shares");
 					Notification.addNotification("ORDER FAILED",
 							"Order to sell " + amount + " shares of " + stock.getSymbol() + " has" +  
 							"\nfailed. Reason: Insufficient shares", hitSoundPath);
@@ -216,6 +217,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		if(gameState == MAINMENU) {
 			drawMenu(g);
 		}
+		else if(gameState == TUTORIAL) {
+			drawTutorial(g);
+		}
 		else if(gameState == SAVESELECT) {
 			drawSaveSelect(g);
 		}
@@ -230,14 +234,33 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	//Draws the main menu
 	//Graphics g is the graphics object used to draw elements
 	public void drawMenu(Graphics g) {
+		//draw background 
 		g.setColor(darkGray);
 		g.fillRect(0, 0, screenWidth, screenHeight);
 
+		//draw demo graph
 		demo.drawDemo(demoStartTime, 200, 10, g);
 		
 		g.drawImage(menuTitle, 0, 0, 1900, 1000, this);
 		g.drawImage(menuPlayButton, 600, 500, 700,  300, this);
 		g.drawImage(menuSettingsButton, 600, 730, 700,  300, this);
+	}
+	
+	public void drawTutorial(Graphics g) {
+		drawMenu(g); //main menu will be the background for the tutorial
+		//darken the main menu by using a semi-transparent layer
+		g.setColor(darkGrayTransparent);
+		g.fillRect(0, 0, screenWidth, screenHeight);
+		
+		
+	}
+	
+	//updates tutorialPage, wrapping back to zero after last image
+	public void incrementTutorial() {
+		tutorialPage++;
+		//if(tutorialPage > arbitrary number) {
+		//tutorialPage = 0;
+		//}
 	}
 	
 	public void drawSaveSelect(Graphics g) {
@@ -324,7 +347,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 
 	public void startGame() {
-		//load sounds into memory
+		//load sounds into memory (so that first play isn't delayed)
 		try {
 			AudioInputStream player;
 			BufferedReader soundLoader = new BufferedReader(new FileReader("gameFiles/soundFilePaths.txt"));
@@ -379,6 +402,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F11) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
+			gameState = TUTORIAL;
 //			System.out.println(lastCycle);
 //			System.out.println(selectedMarket.get(1).getCandleCount());
 		}

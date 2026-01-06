@@ -37,20 +37,20 @@ public class Stock implements Comparable<Stock> {
 
 	private ArrayList<Candlestick> priceHistory;
 	private String symbol;
-	private double volatility;
-	private double baselineSum;
-	private double momentum;
+	private double volatility; //1.3 to 2.55
+	private double baselineSum; //sum used for rolling average
+	private double momentum; //-1 to 1
 	private double maxPrice;
 	private double minPrice;
 	private double seedPrice; //the initial price of the stock, used for regenerating stocks
 	private int recentMax; //stores the INDEX of the recent max value
 	private int recentMin; //stores the INDEX of the recent min value
 	private int candleCount; //makes it possible to save a different view for each stock
-	private double targetGrowth;
-	private double stability;
-	private double chanceFactor;
-	private double targetFlipChance;
-	private Image icon;
+	private double targetGrowth; //as a % (e.g. 1.005 means target gain of 0.5%)
+	private double stability; //modifies the pool history for rolling average
+	private double chanceFactor; //0.3 to 3.55 sum of volatility and momentum
+	private double targetFlipChance; //decimal chance for target to flip on any given refresh
+	private Image icon; //stock/company logo
 	
 	//player variables
 	private int amountHeld;
