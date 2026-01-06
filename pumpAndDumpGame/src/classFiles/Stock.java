@@ -251,9 +251,9 @@ public class Stock implements Comparable<Stock> {
 		if(time > 7) {
 			time = 0; //reset time
 			//chance for stocks w/ targetFlipping = true to have their trend bias inverted
-			for(int i = 0; i < selectedMarket.size(); i++) {
-				if(Math.random() < selectedMarket.get(i).getTargetFlipChance()) {
-					selectedMarket.get(i).invertTarget();
+			for(Stock stock : selectedMarket) {
+				if(Math.random() < stock.getTargetFlipChance()) {
+					stock.invertTarget();
 				}
 			}
 			return true;
@@ -311,9 +311,6 @@ public class Stock implements Comparable<Stock> {
 	//of positive or negative change
 	public void nextCandleStick() {
 		//first, find pressure
-		Deque<Candlestick> recent = new LinkedList<Candlestick>
-		(priceHistory.subList(Math.max(priceHistory.size() - (int)(25 * stability),  0), priceHistory.size()));
-
 		int recentSize = Math.min(priceHistory.size(), (int)(25 * stability));
 
 		//baselinePrice is the average price of the last 25 available candlesticks + 10%
