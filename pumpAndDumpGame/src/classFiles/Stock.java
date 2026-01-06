@@ -277,9 +277,9 @@ public class Stock implements Comparable<Stock> {
 			else {
 				g.setColor(darkRed);
 			}
-			g.drawString(selectedMarket.get(i).getSymbol() + 
-					String.format("    (%+.4f%%)", selectedMarket.get(i).getProfitLoss(NEGATIVE)),
-					1525, 80 * i + 240);
+			g.drawString(selectedMarket.get(i).getSymbol(), 1525, 70 * i + 240);
+			g.drawString(String.format("%.4f%%", selectedMarket.get(i).getProfitLoss(NEGATIVE)),
+					1710, 70 * i + 240);
 		}
 	}
 
@@ -576,7 +576,7 @@ public class Stock implements Comparable<Stock> {
 
 //		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
 //				getProfitLoss(false)), 1090, 860);
-		g.drawString(String.format("%.4f%% (%+.2f)", getProfitLoss(false), getProfitLoss(true)), 1090, 860);
+		g.drawString(String.format("%+.4f%% ($%.2f)", getProfitLoss(false), getAmountHeld() * getValue()), 1090, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {

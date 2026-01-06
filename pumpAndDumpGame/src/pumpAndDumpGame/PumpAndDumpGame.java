@@ -274,6 +274,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			index++;
 			//draw graph
 			s.drawTinyGraph(startX, startY, g);
+			//if shares held, draw a green circle
+			if(s.getAmountHeld() > 0) {
+				g.setColor(Color.MAGENTA);
+				g.fillOval(startX + 290, startY + 10, 30, 30);
+			}
 		}
 	}
 	
@@ -306,6 +311,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		
 		//draw money
+		g.setColor(Color.WHITE);
 		g.drawString(String.format("$%.2f", money), 530, 65);
 		
 		//draw current holdings
