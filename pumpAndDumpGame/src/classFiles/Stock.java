@@ -22,7 +22,7 @@ public class Stock implements Comparable<Stock> {
 	private static ArrayList<Stock> market = new ArrayList<>();
 	private static ArrayList<Stock> selectedMarket = market;
 	private static Font price = new Font("Arial", Font.PLAIN, 20);
-	private static Font small = new Font("Arial", Font.PLAIN, 28);
+	private static Font small = new Font("Arial", Font.PLAIN, 26);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
 	private static String[] ratings = {"Strong sell", "Sell", "Neutral", "Buy", "Strong buy"};
@@ -266,23 +266,23 @@ public class Stock implements Comparable<Stock> {
 	}
 	
 	public static void drawHoldings(Graphics g) {
-		g.setFont(small);
 		for(int i = 0; i < selectedMarket.size(); i++) {
 			//if reached stocks with 0 shares held
 			if(selectedMarket.get(i).amountHeld == 0) { 
 				break;
 			}
-			g.setFont(body);
+			g.setFont(small);
 			if(selectedMarket.get(i).getProfitLoss(NEGATIVE) >= 0) { //positive position
 				g.setColor(darkGreen);
 			}
 			else {
 				g.setColor(darkRed);
 			}
-			g.drawString(selectedMarket.get(i).getSymbol(), 1525, 70 * i + 240);
-			g.drawString(String.format("$%.2f (%+.2f)", selectedMarket.get(i).getAmountHeld() * selectedMarket.get(i).getValue(),
+			g.drawImage(selectedMarket.get(i).getIcon(), 1520, 50 * i + 185, 30, 30, null);
+			g.drawString(selectedMarket.get(i).getSymbol(), 1560, 50 * i + 210);
+			g.drawString(String.format("%+.1f%% (%+.2f)", selectedMarket.get(i).getProfitLoss(NEGATIVE),
 					selectedMarket.get(i).getProfitLoss(POSITIVE)),
-					1650, 70 * i + 240);
+					1650, 50 * i + 210);
 		}
 	}
 
@@ -567,19 +567,19 @@ public class Stock implements Comparable<Stock> {
 		//draw amount held
 		if(amountHeld == 0) {
 			g.setColor(Color.WHITE);
-			g.drawString("0.00% (0)", 1090, 860);
+			g.drawString("$0.00 (+0)", 1090, 860);
 			return; //to avoid zero division later on
 		}
 		else if(amountHeld * getValue() >= totalPurchasePrice) { //positive position
-			g.setColor(darkGreen);
+			g.setColor(Color.GREEN);
 		}
 		else { //negative position
-			g.setColor(darkRed);
+			g.setColor(Color.RED);
 		}
 
 //		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
 //				getProfitLoss(false)), 1090, 860);
-		g.drawString(String.format("%.4f%% (%+.2f)", getProfitLoss(false), getProfitLoss(true)), 1090, 860);
+		g.drawString(String.format("$%.2f (%+.2f%%)", amountHeld * getValue(), getProfitLoss(NEGATIVE)), 1090, 860);
 	}
 	
 	public double getPastPrice(int hoursAgo) {

@@ -280,6 +280,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				g.fillOval(startX + 290, startY + 10, 30, 30);
 			}
 		}
+		
+		Notification.drawNotifications(g);
 	}
 	
 	public void loadTradingScreen(Stock s) {
