@@ -656,6 +656,7 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
+<<<<<<< HEAD
 	public String tokenize(String str) { // returns reply
 		HashMap<String, Double> actionSentiment = new HashMap<String, Double>();
 		actionSentiment.put("buy", 0.0d); // -1 to 1
@@ -667,6 +668,36 @@ public class Stock implements Comparable<Stock> {
 		
 		
 		
+=======
+	// part of the chatbot
+	public String palantir(String str) { // returns reply
+		HashMap<String, Double> actionSentiment = new HashMap<String, Double>();
+		actionSentiment.put("buy", 0.0d); // -1 to 1
+		actionSentiment.put("sell", 0.0d);
+		actionSentiment.put("info", 0.0d);
+		
+		// every word that is not directly related to a sentiment should slightly lower all sentiments
+		
+		
+		str.toLowerCase();
+		
+		String[] tokens = str.split(" ");
+		
+		
+		// There should be multiple dictionaries for words and synonyms related to each sentiment
+		
+		// Negations/adverbs of negation (not, don't, etc) should be kept track of and should
+		// negatively impact the sentiment of surrounding keywords
+		
+		// Should be sentiments after these sentiments including:
+		/*
+		 * Which stock is the user asking for?
+		 * What piece of info is the user asking for/sorting by?
+		 */
+		// If the sentiments are properly implemented,
+		// the user should be allowed to make complex queries such as
+		// Sell any stock in my portfolio that has a negative profit 
+>>>>>>> stash
 		String response = "";
 		return response;
 	}
