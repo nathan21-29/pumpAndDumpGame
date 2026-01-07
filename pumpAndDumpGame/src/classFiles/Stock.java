@@ -655,6 +655,12 @@ public class Stock implements Comparable<Stock> {
 			destination.put(this, amount); //add to destination as normal
 		}
 	}
+	
+	public static void clearHoldings() {
+		for(Stock stock : selectedMarket) {
+			stock.setAmountHeld(0);
+		}
+	}
 		
 		
 	// part of the chatbot

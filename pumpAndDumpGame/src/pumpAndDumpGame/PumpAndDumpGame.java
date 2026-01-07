@@ -231,6 +231,18 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 	}
 	
+	public void loadMenu() {
+		demo = new Stock("DEMO", 10, 2, 1, 1, 0);
+		for(int i = 0; i < 200; i++) {
+			demo.nextCandleStick();
+		}
+		System.out.println(demo.getRecentMax());
+		gameState = MAINMENU;
+		demoStartTime = System.currentTimeMillis();
+		//change gamestate
+		gameState = MAINMENU;
+	}
+	
 	//Draws the main menu
 	//Graphics g is the graphics object used to draw elements
 	public void drawMenu(Graphics g) {
@@ -286,6 +298,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			g.fillRoundRect(startX + 335, startY + 5, 160, 110, 10, 10);
 			g.setColor(Color.WHITE);
 			g.drawRect(startX, startY, 500, 120);
+			//draw back button
 			//draw icon
 			g.drawImage(s.getIcon(), startX + 5, startY + 5, 70, 70, this);
 			//draw symbol
@@ -347,6 +360,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 
 	public void startGame() {
+		//clear holdings from any other saves loaded this session
+		Stock.clearHoldings();
 		//load sounds into memory (so that first play isn't delayed)
 		try {
 			AudioInputStream player;
@@ -381,24 +396,29 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	@Override
 	public void keyPressed(KeyEvent e) {
 		//esc moves from trading screen back to menu and resets animation
-		if(e.getKeyCode() == KeyEvent.VK_ESCAPE && gameState == TRADINGSCREEN) {
-			demo = new Stock("DEMO", 10, 2, 1, 1, 0);
-			for(int i = 0; i < 200; i++) {
-				demo.nextCandleStick();
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			if(gameState == STOCKLIST) { //exit to menu
+				loadMenu();
 			}
-			System.out.println(demo.getRecentMax());
-			gameState = MAINMENU;
-			demoStartTime = System.currentTimeMillis();
+			else if(gameState == TRADINGSCREEN) { //exit to trading screen
+				loadStockList();
+			}
 		}
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			System.out.println(currentStock.getProfitLoss(false));
+		//buy/sell keybinds
+		if(gameState == TRADINGSCREEN) {
+			if(e.getKeyCode() == KeyEvent.VK_P) { //pump
+				promptBuyOrder();
+			}
+			else if(e.getKeyCode() == KeyEvent.VK_D) { //dump
+				promptSellOrder();
+			}
 		}
-		if(e.getKeyCode() == KeyEvent.VK_D) {
+		//testing
+		if(e.getKeyCode() == KeyEvent.VK_F1) {
 			for(int i = 0; i < selectedMarket.size(); i++) {
 				selectedMarket.get(i).nextCandleStick();
 			}
 			Stock.incrementTime();
-//			String temp = JOptionPane.showInputDialog("HI");
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F11) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
@@ -414,6 +434,70 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 	}
 
+	public void promptBuyOrder() {
+		do {
+			validInput = true;
+			try {
+				String amount = JOptionPane.showInputDialog("How many shares would you like to buy?\n"
+						+ "Approx. max is " + (int)(money / currentStock.getValue())).toLowerCase();
+				
+				if(amount == null) { //handle cancel
+					break;
+				}
+				if(amount.equals("max")) { //attempt to buy with approximate max shares
+					currentStock.addOrder(Stock.getBuyOrders(), (int) Math.ceil((money / currentStock.getValue()) * 0.97));
+				}
+				else {
+					//convert count into an integer
+					int convert = Integer.parseInt(amount);
+					if(convert <= 0) {
+						throw new NumberFormatException();
+					}
+					//add buy order
+					currentStock.addOrder(Stock.getBuyOrders(), convert);
+				}
+				
+			} catch (NumberFormatException e2) {
+				validInput = false;
+				JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
+			}
+		} while (!validInput);
+	}
+	
+	public void promptSellOrder() {
+		//check shares held
+		if(currentStock.getAmountHeld() < 1) {
+			return;
+		}
+		do {
+			validInput = true;
+			try {
+				String amount = JOptionPane.showInputDialog("How many shares would you like to sell?\n"
+						+ "Max is " + currentStock.getAmountHeld()).toLowerCase();
+				
+				if(amount == null) { //handle cancel
+					break;
+				}
+				if(amount.equals("max")) {
+					currentStock.addOrder(Stock.getSellOrders(), currentStock.getAmountHeld());
+				}
+				else {
+					//convert count into an integer
+					int convert = Integer.parseInt(amount);
+					if(convert <= 0) {
+						throw new NumberFormatException();
+					}
+					//add buy order
+//				Stock.getSellOrders().put(currentStock, convert);
+					currentStock.addOrder(Stock.getSellOrders(), convert);
+				}
+			} catch (NumberFormatException e2) {
+				validInput = false;
+				JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
+			}
+		} while (!validInput);
+	}
+	
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -462,6 +546,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 		}
 		else if(gameState == STOCKLIST) {
+			//back button
+			if(checkHit(x, y, 10, 10, 90, 90)) {
+				loadMenu();
+			}
 			if(checkHit(x, y, 200, 300, 1700, 780)) { //if in the grid box
 				loadTradingScreen(selectedMarket.get((x - 200) / 500 * 4 //get column * 4
 						+ (y - 300) / 120));  //add rows
@@ -492,61 +580,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			
 			//pump button
 			if(checkHit(x, y, 20, 896, 750, 986)) {
-				do {
-					validInput = true;
-					try {
-						String amount = JOptionPane.showInputDialog("How many shares would you like to buy?\n"
-								+ "Approx. max is " + (int)(money / currentStock.getValue()));
-						
-						if(amount == null) { //handle cancel
-							break;
-						}
-						//convert count into an integer
-						int convert = Integer.parseInt(amount);
-						if(convert <= 0) {
-							throw new NumberFormatException();
-						}
-						//add buy order
-//						Stock.getBuyOrders().put(currentStock, convert);
-						currentStock.addOrder(Stock.getBuyOrders(), convert);
-						
-					} catch (NumberFormatException e2) {
-						validInput = false;
-						JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
-					}
-				} while (!validInput);
-			}
-			else if(checkHit(x, y, 770, 896, 1500, 986)) {
+				promptBuyOrder();
 			}
 			
 			if(checkHit(x, y, 770, 896, 1500, 986)) { //dump button
-				//check shares held
-				if(currentStock.getAmountHeld() < 1) {
-					return;
-				}
-				do {
-					validInput = true;
-					try {
-						String amount = JOptionPane.showInputDialog("How many shares would you like to sell?\n"
-								+ "Max is " + currentStock.getAmountHeld());
-						
-						if(amount == null) { //handle cancel
-							break;
-						}
-						//convert count into an integer
-						int convert = Integer.parseInt(amount);
-						if(convert <= 0) {
-							throw new NumberFormatException();
-						}
-						//add buy order
-//						Stock.getSellOrders().put(currentStock, convert);
-						currentStock.addOrder(Stock.getSellOrders(), convert);
-						
-					} catch (NumberFormatException e2) {
-						validInput = false;
-						JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
-					}
-				} while (!validInput);
+				promptSellOrder();
 			}
 		}
 	}
