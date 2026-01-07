@@ -655,4 +655,19 @@ public class Stock implements Comparable<Stock> {
 			destination.put(this, amount); //add to destination as normal
 		}
 	}
+	
+	public String tokenize(String str) { // returns reply
+		HashMap<String, Double> actionSentiment = new HashMap<String, Double>();
+		actionSentiment.put("buy", 0.0d); // -1 to 1
+		actionSentiment.put("sell", 0.0d);
+		actionSentiment.put("info", 0.0d);
+		
+		// every word that is not directly related to a sentiment should slightly lower all sentiments
+		
+		
+		
+		
+		String response = "";
+		return response;
+	}
 }
