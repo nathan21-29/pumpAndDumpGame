@@ -671,6 +671,10 @@ public class Stock implements Comparable<Stock> {
 		
 		String[] tokens = str.split(" ");
 		
+		for (int i = 0; i < tokens.length; i++) {
+			actionSentiment.put("buy", actionSentiment.get("buy") + PalantirSarumanGPT.similarity(tokens[i], "buy"));
+		}
+		
 		
 		// There should be multiple dictionaries for words and synonyms related to each sentiment
 		
