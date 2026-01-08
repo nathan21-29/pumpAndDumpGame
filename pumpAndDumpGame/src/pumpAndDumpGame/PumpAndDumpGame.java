@@ -310,10 +310,21 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			index++;
 			//draw graph
 			s.drawTinyGraph(startX, startY, g);
-			//if shares held, draw a green circle
+			//if shares held, draw P&L indicator
 			if(s.getAmountHeld() > 0) {
-				g.setColor(Color.MAGENTA);
-				g.fillOval(startX + 290, startY + 10, 30, 30);
+				int[] xCoordinates = {startX + 305, startX + 290, startX + 320};
+				int[] yCoordinates;
+				if(s.getProfitLoss(true) >= 0) { //positive position
+					g.setColor(Color.GREEN);
+					int[] tempYCoordinates = {startY + 10, startY + 40, startY + 40};
+					yCoordinates = tempYCoordinates;
+				}
+				else { //negative position
+					g.setColor(Color.RED);
+					int[] tempYCoordinates = {startY + 40, startY + 10, startY + 10};
+					yCoordinates = tempYCoordinates;
+				}
+				g.fillPolygon(xCoordinates, yCoordinates, 3);
 			}
 		}
 		
