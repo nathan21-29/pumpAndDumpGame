@@ -177,7 +177,7 @@ public class Stock implements Comparable<Stock> {
 	public Image getIcon() {
 		return icon;
 	}
-
+	
 	//setters
 	public void setValue(double newPrice) {
 		priceHistory.addLast(new Candlestick(priceHistory.getLast().getClosePrice(), newPrice));
@@ -577,6 +577,10 @@ public class Stock implements Comparable<Stock> {
 //		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
 //				getProfitLoss(false)), 1090, 860);
 		g.drawString(String.format("$%.2f (%+.2f%%)", amountHeld * getValue(), getProfitLoss(NEGATIVE)), 1090, 860);
+	}
+	
+	public void drawListIndicator(int x, int y, Graphics g) {
+		g.drawString(String.format("$%.2f", getValue()), x + 10, y + 110);
 	}
 	
 	public double getPastPrice(int hoursAgo) {

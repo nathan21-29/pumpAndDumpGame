@@ -415,14 +415,23 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				loadStockList();
 			}
 		}
-		//buy/sell keybinds
 		if(gameState == TRADINGSCREEN) {
-			if(e.getKeyCode() == KeyEvent.VK_P) { //pump
-				promptBuyOrder();
+			String data = e.getKeyChar() + "";
+			try {
+				if(Integer.parseInt(data) < 5 && !data.equals("0")) { //no negative 
+					currentStock.setCandleCount(Integer.parseInt(data) - 1);
+					currentStock.recalculateRecents(true);
+				}
+			} catch (NumberFormatException e2) {
+				//do nothing, expected
 			}
-			else if(e.getKeyCode() == KeyEvent.VK_D) { //dump
-				promptSellOrder();
-			}
+//			//buy/sell keybinds
+//			if(e.getKeyCode() == KeyEvent.VK_P) { //pump
+//				promptBuyOrder();
+//			}
+//			else if(e.getKeyCode() == KeyEvent.VK_D) { //dump
+//				promptSellOrder();
+//			}
 		}
 		//testing
 		if(e.getKeyCode() == KeyEvent.VK_F1) {
@@ -450,13 +459,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			validInput = true;
 			try {
 				String amount = JOptionPane.showInputDialog("How many shares would you like to buy?\n"
-						+ "Approx. max is " + (int)(money / currentStock.getValue())).toLowerCase();
+						+ "Approx. max is " + (int)(money / currentStock.getValue()));
 				
 				if(amount == null) { //handle cancel
 					break;
 				}
-				if(amount.equals("max")) { //attempt to buy with approximate max shares
-					currentStock.addOrder(Stock.getBuyOrders(), (int) Math.ceil((money / currentStock.getValue()) * 0.97));
+				if(amount.equalsIgnoreCase("max")) { //attempt to buy with approximate max shares
+					currentStock.addOrder(Stock.getBuyOrders(), (int) Math.floor((money / currentStock.getValue()) * 0.97));
 				}
 				else {
 					//convert count into an integer
@@ -484,12 +493,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			validInput = true;
 			try {
 				String amount = JOptionPane.showInputDialog("How many shares would you like to sell?\n"
-						+ "Max is " + currentStock.getAmountHeld()).toLowerCase();
+						+ "Max is " + currentStock.getAmountHeld());
 				
 				if(amount == null) { //handle cancel
 					break;
 				}
-				if(amount.equals("max")) {
+				if(amount.equalsIgnoreCase("max")) {
 					currentStock.addOrder(Stock.getSellOrders(), currentStock.getAmountHeld());
 				}
 				else {
@@ -511,8 +520,15 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		if(gameState == TRADINGSCREEN) {
+			//buy/sell keybinds
+			if(e.getKeyCode() == KeyEvent.VK_P) { //pump
+				promptBuyOrder();
+			}
+			else if(e.getKeyCode() == KeyEvent.VK_D) { //dump
+				promptSellOrder();
+			}
+		}
 	}
 
 	@Override
