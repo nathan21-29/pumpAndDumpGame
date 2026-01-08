@@ -580,7 +580,15 @@ public class Stock implements Comparable<Stock> {
 	}
 	
 	public void drawListIndicator(int x, int y, Graphics g) {
-		g.drawString(String.format("$%.2f", getValue()), x + 10, y + 110);
+		double refPrice = getPastPrice(35);
+		if(getValue() >= refPrice) {
+			g.setColor(Color.GREEN);
+		}
+		else {
+			g.setColor(Color.RED);
+		}
+		g.drawString(String.format("$%.2f (%+.2f%%)", getValue(), 100 * (getValue() - refPrice) / refPrice),
+				x + 10, y + 110);
 	}
 	
 	public double getPastPrice(int hoursAgo) {

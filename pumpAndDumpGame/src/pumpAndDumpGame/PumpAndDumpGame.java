@@ -35,6 +35,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Font title = new Font ("Arial", Font.BOLD, 100);
 	Font header = new Font("Arial", Font.BOLD, 50);
 	Font body = new Font("Arial", Font.PLAIN, 32);
+	Font body2 = new Font("Arial", Font.PLAIN, 40);
 	FontMetrics fmTitle;
 	
 	Image menuTitle, menuPlayButton, menuSettingsButton;
@@ -287,6 +288,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void drawStockList(Graphics g) {
 		g.drawImage(stockList, 0, 0, 1900, 1000, this);
 		g.setColor(Color.WHITE);
+		g.setFont(body2);
+		g.drawString(String.format("$%.2f", money), 120, 65);
 		
 		int startX, startY;
 		int index = 0;
@@ -306,7 +309,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			g.drawString(s.getSymbol(), startX + 80, startY + 60);
 			//draw today's change
 			g.setFont(body);
-			s.drawIndicator(s.getValue(), s.getPastPrice(Stock.getTime() + 35), startX + 10, startY + 110, body, g);
+//			s.drawIndicator(s.getValue(), s.getPastPrice(Stock.getTime() + 35), startX + 10, startY + 110, body, g);
+			s.drawListIndicator(startX, startY, g);
 			index++;
 			//draw graph
 			s.drawTinyGraph(startX, startY, g);
