@@ -30,6 +30,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	Color darkGray = new Color(22, 22, 22);
 	Color darkGrayTransparent = new Color(22, 22, 22, 220);
+	Color backGround = new Color(48, 49, 51);
 	Color darkGreen = new Color(66, 176, 78);
 	Color darkRed = new Color(187, 46, 40);
 	Font title = new Font ("Arial", Font.BOLD, 100);
@@ -57,8 +58,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	//player variables
 	double money;
+	double portfolioValue;
 	String name;
 	Stock currentStock = test2;
+	boolean hardMode = true;
 	
 	double quota;
 	double quotaProgress; //as an absolute amount, NOT a percentage
@@ -144,6 +147,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	}
 	
 	public void refreshMarket() {
+		portfolioValue = 0;
 		//generate new candlestick for every stock
 		for(Stock s : selectedMarket) {
 			s.nextCandleStick();
@@ -159,6 +163,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//fill buy/sell orders
 		fillOrders(Stock.getBuyOrders(), true);
 		fillOrders(Stock.getSellOrders(), false);
+		
+		for(Stock s : selectedMarket) {
+			portfolioValue += s.getAmountHeld() * s.getValue(); //increment portfolioValue
+			
+		}
 		
 		//sorting here means 1 sort per 3 seconds as opposed to every repaint
 		if(gameState == TRADINGSCREEN) {
@@ -289,7 +298,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(stockList, 0, 0, 1900, 1000, this);
 		g.setColor(Color.WHITE);
 		g.setFont(body2);
-		g.drawString(String.format("$%.2f", money), 120, 65);
+		g.drawString(String.format("$%.2f (+$%.2f)", money, portfolioValue), 120, 65);
 		
 		int startX, startY;
 		int index = 0;
@@ -365,10 +374,20 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//draw money
 		g.setColor(Color.WHITE);
-		g.drawString(String.format("$%.2f", money), 530, 65);
+		g.drawString(String.format("$%.2f (+$%.2f)", money, portfolioValue), 530, 65);
 		
 		//draw current holdings
 		Stock.drawHoldings(g);
+		
+		if(hardMode) {
+			//draw hard mode
+			g.setFont(body2);
+			g.setColor(backGround);
+			g.fillRect(800, 765, 600, 55);
+			g.setColor(Color.WHITE);
+			g.drawString("(Press H for easy mode)", 800, 805);
+		}
+		
 		
 		//draw notifications
 		Notification.drawNotifications(g);
@@ -429,13 +448,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			} catch (NumberFormatException e2) {
 				//do nothing, expected
 			}
-//			//buy/sell keybinds
-//			if(e.getKeyCode() == KeyEvent.VK_P) { //pump
-//				promptBuyOrder();
-//			}
-//			else if(e.getKeyCode() == KeyEvent.VK_D) { //dump
-//				promptSellOrder();
-//			}
+			//hard mode
+			if(e.getKeyCode() == KeyEvent.VK_H) {
+				hardMode = !hardMode;
+			}
 		}
 		//testing
 		if(e.getKeyCode() == KeyEvent.VK_F1) {
