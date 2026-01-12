@@ -39,7 +39,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Font body2 = new Font("Arial", Font.PLAIN, 40);
 	FontMetrics fmTitle;
 	
-	Image menuTitle, menuPlayButton, menuSettingsButton;
+	Image menuTitle, menuPlayButton, menuTutorialButton;
+	Image backButton;
+	Image tutorialArrows;
 	ArrayList<Image> tutorial = new ArrayList<>(); //AL to hold the images for the tutorial slideshow
 	int tutorialPage = 0;
 	Image loadingCircle;
@@ -123,10 +125,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		gameState = MAINMENU;
 		demoStartTime = System.currentTimeMillis();
 		
-		//load images
+		//load tutorial
+		tutorialArrows = Toolkit.getDefaultToolkit().getImage("gameFiles/tutorial/arrows.png");
+		for(int i = 1; i <= 3; i++) {
+			tutorial.add(Toolkit.getDefaultToolkit().getImage
+					("gameFiles/tutorial/" + String.format("%02d", i) + ".png"));
+		}
+		//load other images
+		backButton = Toolkit.getDefaultToolkit().getImage("gameFiles/backButton.png");
 		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
 		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
-		menuSettingsButton = Toolkit.getDefaultToolkit().getImage("gameFiles/settingsButton.png");
+		menuTutorialButton = Toolkit.getDefaultToolkit().getImage("gameFiles/tutorialButton.png");
 		stockList = Toolkit.getDefaultToolkit().getImage("gameFiles/stockList.png");
 		saveSelect = Toolkit.getDefaultToolkit().getImage("gameFiles/saveSelect.png");
 		loadingCircle = Toolkit.getDefaultToolkit().getImage("gameFiles/loadingCircle.png"); 
@@ -246,7 +255,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		for(int i = 0; i < 200; i++) {
 			demo.nextCandleStick();
 		}
-		System.out.println(demo.getRecentMax());
 		gameState = MAINMENU;
 		demoStartTime = System.currentTimeMillis();
 		//change gamestate
@@ -265,7 +273,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		g.drawImage(menuTitle, 0, 0, 1900, 1000, this);
 		g.drawImage(menuPlayButton, 600, 500, 700,  300, this);
-		g.drawImage(menuSettingsButton, 600, 730, 700,  300, this);
+		g.drawImage(menuTutorialButton, 600, 730, 700,  300, this);
 	}
 	
 	public void drawTutorial(Graphics g) {
@@ -274,19 +282,44 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.setColor(darkGrayTransparent);
 		g.fillRect(0, 0, screenWidth, screenHeight);
 		
+		//draw tutorial page
+		g.drawImage(tutorial.get(tutorialPage), 0, 0, 1900, 1000, this);
 		
+		//draw page number
+		g.setFont(title);
+		g.setColor(Color.WHITE);
+		g.drawString(tutorialPage + 1 + " / " + tutorial.size(), 860, 960);
+		
+		//draw back button
+		g.drawImage(backButton, 10, 10, 80, 80, this);
+		
+		//draw arrows
+		g.drawImage(tutorialArrows, 0, 0, 1900, 1000, this);
 	}
 	
 	//updates tutorialPage, wrapping back to zero after last image
-	public void incrementTutorial() {
-		tutorialPage++;
-		//if(tutorialPage > arbitrary number) {
-		//tutorialPage = 0;
-		//}
+	public void incrementTutorial(boolean increase) {
+		if(increase) {
+			if(tutorialPage == tutorial.size() - 1) { //wrap back to front
+				tutorialPage = 0;
+			}
+			else {
+				tutorialPage++;
+			}
+		}
+		else { //decrease
+			if(tutorialPage == 0) {
+				tutorialPage = tutorial.size() - 1;
+			}
+			else {
+				tutorialPage--;
+			}
+		}
 	}
 	
 	public void drawSaveSelect(Graphics g) {
 		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
+		g.drawImage(backButton, 10, 10, 80, 80, this);
 	}
 
 	public void loadStockList() {
@@ -303,7 +336,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		int startX, startY;
 		int index = 0;
 		for(Stock s : selectedMarket) {
-			startX = 200 + (index / 4) * 500;
+			startX = 50 + (index / 4) * 500;
 			startY = 300 + (index % 4) * 120;
 			//draw graph background behind all text just in case
 			g.setColor(darkGray);
@@ -431,11 +464,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void keyPressed(KeyEvent e) {
 		//esc moves from trading screen back to menu and resets animation
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			if(gameState == STOCKLIST) { //exit to menu
+			if(gameState == SAVESELECT) {
+				loadMenu();
+			}
+			else if(gameState == STOCKLIST) { //exit to menu
 				loadMenu();
 			}
 			else if(gameState == TRADINGSCREEN) { //exit to trading screen
 				loadStockList();
+			}
+			if(gameState == TUTORIAL) {
+				gameState = MAINMENU;
 			}
 		}
 		if(gameState == TRADINGSCREEN) {
@@ -451,6 +490,14 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			//hard mode
 			if(e.getKeyCode() == KeyEvent.VK_H) {
 				hardMode = !hardMode;
+			}
+		}
+		if(gameState == TUTORIAL) { //arrow key binds
+			if(e.getKeyCode() == KeyEvent.VK_RIGHT) { //increase page
+				incrementTutorial(true);
+			}
+			else if(e.getKeyCode() == KeyEvent.VK_LEFT) { //decrease page
+				incrementTutorial(false);
 			}
 		}
 		//testing
@@ -560,8 +607,14 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				//move to save select
 				gameState = SAVESELECT;
 			}
+			if(checkHit(x, y, 600, 730, 1300, 1030)) { //tutorial button
+				gameState = TUTORIAL;
+			}
 		}
 		else if (gameState == SAVESELECT) {
+			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
+				loadMenu();
+			}
 			name = null; //reset in case multiple saves loaded in the same session
 			if(checkHit(x, y, 700, 20, 1200, 95)) {
 				name = JOptionPane.showInputDialog("Name:");
@@ -597,8 +650,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			if(checkHit(x, y, 10, 10, 90, 90)) {
 				loadMenu();
 			}
-			if(checkHit(x, y, 200, 300, 1700, 780)) { //if in the grid box
-				loadTradingScreen(selectedMarket.get((x - 200) / 500 * 4 //get column * 4
+			if(checkHit(x, y, 50, 300, 1700, 780)) { //if in the grid box
+				loadTradingScreen(selectedMarket.get((x - 50) / 500 * 4 //get column * 4
 						+ (y - 300) / 120));  //add rows
 			}
 		}
@@ -632,6 +685,19 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			
 			if(checkHit(x, y, 770, 896, 1500, 986)) { //dump button
 				promptSellOrder();
+			}
+		}
+		else if(gameState == TUTORIAL) {
+			//back button
+			if(checkHit(x, y, 10, 10, 90, 90)) {
+				gameState = MAINMENU;
+			}
+			//arrows
+			if(checkHit(x, y, 32, 460, 205, 540)) { //left arrow
+				incrementTutorial(false);
+			}
+			else if(checkHit(x, y, 1700, 460, 1875, 540)) {
+				incrementTutorial(true);
 			}
 		}
 	}
