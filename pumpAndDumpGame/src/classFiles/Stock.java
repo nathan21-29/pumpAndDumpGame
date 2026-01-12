@@ -313,7 +313,7 @@ public class Stock implements Comparable<Stock> {
 		//first, find pressure
 		int recentSize = Math.min(priceHistory.size(), (int)(25 * stability));
 
-		//baselinePrice is the average price of the last 25 available candlesticks + 10%
+		//baselinePrice is the average price of the last stability * 25 number of candlesticks * targetGrowth
 		double baselinePrice = baselineSum / recentSize * targetGrowth;
 		//find pressure as %difference from baselinePrice
 		double percentDiff = (baselinePrice - this.getValue()) / baselinePrice;
