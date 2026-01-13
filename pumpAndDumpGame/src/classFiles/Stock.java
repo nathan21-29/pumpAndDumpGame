@@ -10,6 +10,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import javax.swing.JOptionPane;
@@ -671,6 +675,26 @@ public class Stock implements Comparable<Stock> {
 	public static void clearHoldings() {
 		for(Stock stock : selectedMarket) {
 			stock.setAmountHeld(0);
+		}
+	}
+
+	public static void saveStocks(int saveNumber) {
+		//save stock data
+		for(Stock stock : selectedMarket) { //for every stock
+			try {
+				PrintWriter fileOut = new PrintWriter
+						("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt");
+				
+				for(int i = stock.getPriceHistory().size() - 1401; i < stock.getPriceHistory().size(); i++) { //last 1400 candles
+					Candlestick temp = stock.getPriceHistory().get(i);
+					fileOut.println(temp.getOpenPrice() + " " + temp.getClosePrice());
+				}
+				
+				fileOut.flush();
+				fileOut.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("Error writing stock " + stock.getSymbol());
+			} 
 		}
 	}
 		

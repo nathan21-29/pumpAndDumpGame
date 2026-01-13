@@ -59,14 +59,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Stock test2 = new Stock("TST2", 100, 0.5, 1.0005, 1, 0.1);
 	
 	//player variables
+	int saveNumber = 0;
+	String name;
 	double money;
 	double portfolioValue;
-	String name;
 	Stock currentStock = test2;
 	boolean hardMode = true;
-	
-	double quota;
-	double quotaProgress; //as an absolute amount, NOT a percentage
 	
 	public PumpAndDumpGame() {
 		//sets up JPanel
@@ -502,10 +500,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		//testing
 		if(e.getKeyCode() == KeyEvent.VK_F1) {
-			for(int i = 0; i < selectedMarket.size(); i++) {
-				selectedMarket.get(i).nextCandleStick();
-			}
-			Stock.incrementTime();
+			savePlayerData();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F11) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
@@ -533,6 +528,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				}
 				if(amount.equalsIgnoreCase("max")) { //attempt to buy with approximate max shares
 					currentStock.addOrder(Stock.getBuyOrders(), (int) Math.floor((money / currentStock.getValue()) * 0.97));
+					Notification.addNotification("ORDER CREATED", 
+							"Buy " + (int) Math.floor((money / currentStock.getValue()) * 0.97) + " shares of " + currentStock.getSymbol(), 
+							hitSoundPath);
 				}
 				else {
 					//convert count into an integer
@@ -542,6 +540,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 					}
 					//add buy order
 					currentStock.addOrder(Stock.getBuyOrders(), convert);
+					Notification.addNotification("ORDER CREATED", 
+							"Buy " + convert + " shares of " + currentStock.getSymbol(), 
+							hitSoundPath);
 				}
 				
 			} catch (NumberFormatException e2) {
@@ -567,6 +568,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				}
 				if(amount.equalsIgnoreCase("max")) {
 					currentStock.addOrder(Stock.getSellOrders(), currentStock.getAmountHeld());
+					Notification.addNotification("ORDER CREATED", 
+							"Sell " + currentStock.getAmountHeld() + " shares of " + currentStock.getSymbol(), 
+							hitSoundPath);
 				}
 				else {
 					//convert count into an integer
@@ -577,12 +581,28 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 					//add buy order
 //				Stock.getSellOrders().put(currentStock, convert);
 					currentStock.addOrder(Stock.getSellOrders(), convert);
+					Notification.addNotification("ORDER CREATED", 
+							"Sell " + convert + " shares of " + currentStock.getSymbol(),
+							hitSoundPath);
 				}
 			} catch (NumberFormatException e2) {
 				validInput = false;
 				JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer.");
 			}
 		} while (!validInput);
+	}
+	
+	public void savePlayerData() {
+		//save money and name and mode
+		try {
+			PrintWriter playerData = new PrintWriter(new File("gameFiles/saves/playerData/" + saveNumber + ".txt"));
+			playerData.print(name + "\n" + money + "\n" + hardMode);
+			playerData.flush();
+			playerData.close();
+		} catch (IOException e) {
+			System.out.println("Player data writing error");
+		}
+		Stock.saveStocks(saveNumber);
 	}
 	
 	@Override
