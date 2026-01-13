@@ -685,6 +685,9 @@ public class Stock implements Comparable<Stock> {
 				PrintWriter fileOut = new PrintWriter
 						("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt");
 				
+				//write player variables
+				fileOut.print(stock.amountHeld + " " + stock.getAveragePurchasePrice());
+				
 				for(int i = stock.getPriceHistory().size() - 1401; i < stock.getPriceHistory().size(); i++) { //last 1400 candles
 					Candlestick temp = stock.getPriceHistory().get(i);
 					fileOut.println(temp.getOpenPrice() + " " + temp.getClosePrice());

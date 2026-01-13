@@ -596,7 +596,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//save money and name and mode
 		try {
 			PrintWriter playerData = new PrintWriter(new File("gameFiles/saves/playerData/" + saveNumber + ".txt"));
-			playerData.print(name + "\n" + money + "\n" + hardMode);
+			playerData.print(name + "\n" + money + "\n" + portfolioValue + "\n" + hardMode + "\n" + System.currentTimeMillis());
 			playerData.flush();
 			playerData.close();
 		} catch (IOException e) {
