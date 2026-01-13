@@ -427,6 +427,47 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void startGame() {
 		//clear holdings from any other saves loaded this session
 		Stock.clearHoldings();
+		
+		//load sounds
+		loadSounds();
+		
+		//sort stocks by volatility
+		Collections.sort(selectedMarket, new SortByVolatility());
+		
+		gameState = STOCKLIST;
+		lastCycle = System.currentTimeMillis();
+	}
+	
+	public void startGameFromSave() {
+		Stock.clearHoldings(); //clear holdings from other saves
+		
+		//load sounds
+		loadSounds();
+		
+		//load player data
+		try {
+			BufferedReader playerData = new BufferedReader(new FileReader("gameFiles/saves/playerData/" + saveNumber + ".txt"));
+			name = playerData.readLine();
+			money = Double.parseDouble(playerData.readLine());
+			portfolioValue = Double.parseDouble(playerData.readLine());
+			hardMode = Boolean.parseBoolean(playerData.readLine());
+			playerData.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Player data not found!");
+		} catch (IOException e) {
+			System.out.println("Reading error");
+		}
+		
+		//load stock data
+		Stock.loadStocksFromSave(saveNumber);
+		
+		Collections.sort(selectedMarket, new SortByVolatility());
+		
+		gameState = STOCKLIST;
+		lastCycle = System.currentTimeMillis();
+	}
+	
+	public void loadSounds() {
 		//load sounds into memory (so that first play isn't delayed)
 		try {
 			AudioInputStream player;
@@ -445,12 +486,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		} catch (LineUnavailableException e) {
 			System.out.println("Line unavailable");
 		}
-
-		//sort stocks by volatility
-		Collections.sort(selectedMarket, new SortByVolatility());
-		
-		gameState = STOCKLIST;
-		lastCycle = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -502,11 +537,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		if(e.getKeyCode() == KeyEvent.VK_F1) {
 			savePlayerData();
 		}
-		if(e.getKeyCode() == KeyEvent.VK_F11) {
+		if(e.getKeyCode() == KeyEvent.VK_F2) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
-			gameState = TUTORIAL;
-//			System.out.println(lastCycle);
-//			System.out.println(selectedMarket.get(1).getCandleCount());
+			startGameFromSave();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
 			for(int i = 0; i < 1400; i++) {

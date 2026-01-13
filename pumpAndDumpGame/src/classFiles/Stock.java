@@ -637,7 +637,7 @@ public class Stock implements Comparable<Stock> {
 	//boolean bypass dictates whether to bypass the checked recount (i.e. only check if recentMax
 	//has left the bounds of the graph) if true, this check will be skipped
 	public void recalculateRecents(boolean bypass) {
-		int lastIndex = 1 + candleCount;
+		int lastIndex = 2 + candleCount;
 		if(priceHistory.size() - recentMax > 1 + lastIndex || bypass) { //recent max is out of bounds of the current graph
 			double maxValue = priceHistory.get(priceHistory.size() - lastIndex).getClosePrice();
 			int maxIndex = priceHistory.size() - lastIndex;
@@ -688,9 +688,11 @@ public class Stock implements Comparable<Stock> {
 				//write player variables
 				fileOut.println(stock.amountHeld + " " + stock.totalPurchasePrice);
 				
-				for(int i = stock.getPriceHistory().size() - 1401; i < stock.getPriceHistory().size(); i++) { //last 1400 candles
-					Candlestick temp = stock.getPriceHistory().get(i);
-					fileOut.println(temp.getOpenPrice() + " " + temp.getClosePrice());
+				Candlestick temp = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1401);
+				fileOut.println(temp.getOpenPrice() + " " + temp.getClosePrice());
+				for(int i = stock.getPriceHistory().size() - 1400; i < stock.getPriceHistory().size(); i++) { //last 1400 candles
+					temp = stock.getPriceHistory().get(i);
+					fileOut.println(temp.getClosePrice());
 				}
 				
 				fileOut.flush();
@@ -698,6 +700,36 @@ public class Stock implements Comparable<Stock> {
 			} catch (FileNotFoundException e) {
 				System.out.println("Error writing stock " + stock.getSymbol());
 			} 
+		}
+	}
+	
+	public static void loadStocksFromSave(int saveNumber) {
+		for(Stock stock : selectedMarket) { //for every stock
+			stock.priceHistory.clear(); //clear previous candlesticks
+			try {
+				BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt"));
+				StringTokenizer st = new StringTokenizer(fileIn.readLine(), " ");
+				//read in user-specific data
+				stock.amountHeld = Integer.parseInt(st.nextToken());
+				stock.totalPurchasePrice = Double.parseDouble(st.nextToken());
+				//add initial candleStick
+				st = new StringTokenizer(fileIn.readLine(), " "); //data for first candlestick which has both open and end
+				double prevPrice; //saves the price of the last candlestick since the while loop isn't indexed
+				stock.priceHistory.add(new Candlestick(Double.parseDouble(st.nextToken()), prevPrice = Double.parseDouble(st.nextToken())));
+				
+				//read in previous price history
+				String data;
+				while((data = fileIn.readLine()) != null) {
+					stock.priceHistory.add(new Candlestick(prevPrice, Double.parseDouble(data)));
+					prevPrice = stock.priceHistory.getLast().getClosePrice();
+				}
+				
+				stock.recalculateRecents(true);
+			} catch (FileNotFoundException e) {
+				System.out.println("stock file not found!");
+			} catch (IOException e) {
+				System.out.println("Reading error");
+			}
 		}
 	}
 		
