@@ -65,6 +65,7 @@ public class Save implements Comparable<Save>{
 
 	//create save objects and load data into them
 	public static void cacheSaves() {
+		saves.clear();
 		try {
 			Scanner countChecker = new Scanner(new File("gameFiles/saves/saveData.txt"));
 			double money;
@@ -111,16 +112,17 @@ public class Save implements Comparable<Save>{
 			
 			//get last played date
 			lastPlayed = System.currentTimeMillis() - currentSave.lastLoginMillis;
-			if(lastPlayed / 86400000 != 0) { //more than 1 day ago
+			if(lastPlayed >= 86400000) { //more than 1 day ago
 				formattedDate.put("Day(s)", (int) (lastPlayed / 1440000));
 			}
-			if(lastPlayed % 86400000 / 3600000 != 0) { //more than 1 hour ago
+			if(lastPlayed % 86400000 >= 3600000) { //more than 1 hour left over
 				formattedDate.put("Hour(s)", (int) (lastPlayed % 86400000 / 3600000));
 			}
-			if(lastPlayed % 3600000 / 60000 != 0) {
+			if(lastPlayed % 3600000 >= 60000) { //more than 1 minute left over
 				formattedDate.put("Minute(s)", (int) (lastPlayed % 3600000 / 60000));
 			}
-			result = new StringBuilder("Last Played ");
+			formattedDate.put("Second(s)", (int) (lastPlayed % 60000 / 1000));
+			result = new StringBuilder("Last Saved ");
 			for(Entry<String, Integer> entry : formattedDate.entrySet()) {
 				result.append(entry.getValue() + " " + entry.getKey() + ", ");
 			}

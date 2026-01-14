@@ -50,6 +50,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Image tradingView, selectionPill;
 	
 	String hitSoundPath = "gameFiles/soft-hitnormal.wav";
+	String orderFilledPath = "gameFiles/orderFilled.wav";
 	Clip temp;
 	
 	ArrayList<Stock> selectedMarket;
@@ -201,7 +202,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 					Notification.addNotification("ORDER FILLED", String.format(
 							"Successfully purchased " + amount + " shares of\n" + stock.getSymbol()
 							+ " for $%.2f/share. ($%.2f)", stock.getValue(),
-							stock.getValue() * amount), hitSoundPath);
+							stock.getValue() * amount), orderFilledPath);
 					
 					money -= stock.getValue() * amount; //update money
 					stock.incrementTotalPurchasePrice(stock.getValue() * amount);
@@ -218,7 +219,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 					Notification.addNotification("ORDER FILLED", String.format(
 							"Successfully sold " + amount + " shares of\n" + stock.getSymbol()
 							+ " for $%.2f/share. ($%.2f)", stock.getValue(),
-							stock.getValue() * amount), hitSoundPath);
+							stock.getValue() * amount), orderFilledPath);
 					
 					money += stock.getValue() * amount; //update money
 					//increment total first using old amount held
@@ -315,6 +316,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				tutorialPage--;
 			}
 		}
+	}
+	
+	public void loadSaveSelect() {
+		Save.cacheSaves(); //update save list
+		gameState = SAVESELECT;
 	}
 	
 	public void drawSaveSelect(Graphics g) {
@@ -661,7 +667,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		if(gameState == MAINMENU) {
 			if(checkHit(x, y, 600, 500, 1300, 800)) { //play button
 				//move to save select
-				gameState = SAVESELECT;
+				loadSaveSelect();
 			}
 			if(checkHit(x, y, 600, 730, 1300, 1030)) { //tutorial button
 				gameState = TUTORIAL;
