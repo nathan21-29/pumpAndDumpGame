@@ -12,6 +12,12 @@ import javax.swing.*;
 
 import classFiles.*; //import all files from classFiles package
 
+//Nathan Chan and Jerry Li Jan 14, 2026
+//Pump and Dump game!
+//this file is the "driver" file for our game, which is essentially a paper trading/crypto trading sim.
+//In our game, you start with a certain amount of money, and your goal is to amass as much money as possible
+//by making profitable trades. The game provides the player with 12 stocks to invest in, each with their own
+//risk levels and entry levels. Keep in mind that you can also lose money, so invest wisely!
 @SuppressWarnings("serial") //funky warning, just suppress it. It's not gonna do anything.
 public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, MouseListener{
 	

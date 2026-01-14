@@ -9,6 +9,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
+//Nathan Chan Jan 14, 2026
+//This is the Save java, which is a lightweight object storing the pre-required
+//information required to list a save. Each save has its own saveNumber, which is
+//tied to the txt files holding the pricehistory of each stock on the last save of
+//this player, however this data is not stored in the Save object.
 public class Save implements Comparable<Save>{
 
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
