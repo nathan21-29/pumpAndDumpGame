@@ -59,6 +59,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3, 0);
 	Stock test2 = new Stock("TST2", 100, 0.5, 1.0005, 1, 0.1);
 	
+	int savePageNum = 0;
+	
 	//player variables
 	int saveNumber = 0;
 	String name;
@@ -416,6 +418,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.setColor(Color.WHITE);
 		g.drawString(String.format("$%.2f (+$%.2f)", money, portfolioValue), 530, 65);
 		
+		//draw name
+		g.drawString(name, 700, 65);
+		
 		//draw current holdings
 		Stock.drawHoldings(g);
 		
@@ -443,6 +448,19 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//sort stocks by volatility
 		Collections.sort(selectedMarket, new SortByVolatility());
 		
+		//get next save number
+		try {
+			Scanner fileIn = new Scanner(new File("gameFiles/saves/saveData.txt"));
+			saveNumber = Integer.parseInt(fileIn.nextLine()) + 1;
+			fileIn.close();
+			PrintWriter fileOut = new PrintWriter(new File("gameFiles/saves/saveData.txt"));
+			fileOut.print(saveNumber);
+			fileOut.flush();
+			fileOut.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("file not found");
+		}
+		System.out.println(saveNumber);
 		gameState = STOCKLIST;
 		lastCycle = System.currentTimeMillis();
 	}
@@ -549,6 +567,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		if(e.getKeyCode() == KeyEvent.VK_F2) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
 			startGameFromSave();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_F3) {
+			System.out.println(name);
 		}
 		if(e.getKeyCode() == KeyEvent.VK_F12) {
 			for(int i = 0; i < 1400; i++) {
@@ -668,6 +689,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			if(checkHit(x, y, 600, 500, 1300, 800)) { //play button
 				//move to save select
 				loadSaveSelect();
+				for(Save save : Save.getSaves()) {
+					System.out.println(save.getName());
+				}
 			}
 			if(checkHit(x, y, 600, 730, 1300, 1030)) { //tutorial button
 				gameState = TUTORIAL;
@@ -677,7 +701,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
 				loadMenu();
 			}
-			name = null; //reset in case multiple saves loaded in the same session
+			if(checkHit(x, y, 525, 140, 1375, 830)) { //in the saves field
+				saveNumber = Save.getSaveNumberFromGUI(savePageNum, (y - 140) / 115);
+				if(saveNumber != -1) {
+					startGameFromSave();
+					return;
+				}
+			}
 			if(checkHit(x, y, 700, 20, 1200, 95)) {
 				name = JOptionPane.showInputDialog("Name:");
 				if(name == null) { //handle cancel button

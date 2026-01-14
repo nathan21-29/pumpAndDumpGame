@@ -55,14 +55,21 @@ public class Save implements Comparable<Save>{
 		if(lastLoginMillis == p.getLastLoginMillis()) {
 			return 0;
 		}
-		else if (lastLoginMillis - p.getLastLoginMillis() < 0) {
-			return 1;
+		else if (lastLoginMillis > p.getLastLoginMillis()) { //this is newer, so it comes first
+			return -1;
 		}
 		else {
-			return 0;
+			return 1;
 		}
 	}
-
+	
+	public static int getSaveNumberFromGUI(int pageNum, int row) {
+		if(5 * pageNum + row >= saves.size()) { //out of bounds
+			return -1;
+		}
+		return saves.get(5 * pageNum + row).saveNumber;
+	}
+	
 	//create save objects and load data into them
 	public static void cacheSaves() {
 		saves.clear();
@@ -97,34 +104,31 @@ public class Save implements Comparable<Save>{
 	//pageNum starts counting at 0
 	public static void drawSaves(int pageNum, Graphics g) {
 		g.setColor(Color.WHITE);
-		g.setFont(body);
 		Save currentSave;
 		Long lastPlayed;
 		StringBuilder result;
 		//it just so happens that days, hours, minutes, seconds are alphabetically consecutive
 		TreeMap<String, Integer> formattedDate = new TreeMap<String, Integer>();
 		for(int i = 0; i < saves.size() - (6 * pageNum) && i < 6; i++) {
+			g.setFont(body);
 			formattedDate.clear(); //clear for every save
 			currentSave = saves.get(i + 6 * pageNum);
 			g.drawRect(525, 140 + i * 115, 850, 115);
 			g.drawString(currentSave.name, 535, 180 + i * 115);
-			g.drawString(String.format("$%.2f", currentSave.money + currentSave.portfolioValue), 535, 240 + i * 115);
+			g.drawString(String.format("$%.2f (+%.2f)", currentSave.money, currentSave.portfolioValue), 535, 240 + i * 115);
 			
 			//get last played date
 			lastPlayed = System.currentTimeMillis() - currentSave.lastLoginMillis;
-			if(lastPlayed >= 86400000) { //more than 1 day ago
-				formattedDate.put("Day(s)", (int) (lastPlayed / 1440000));
+			if(lastPlayed >= 86400000) { //more than 1 day ago 
+				formattedDate.put("d", (int) (lastPlayed / 1440000));
 			}
 			if(lastPlayed % 86400000 >= 3600000) { //more than 1 hour left over
-				formattedDate.put("Hour(s)", (int) (lastPlayed % 86400000 / 3600000));
+				formattedDate.put("hr", (int) (lastPlayed % 86400000 / 3600000));
 			}
-			if(lastPlayed % 3600000 >= 60000) { //more than 1 minute left over
-				formattedDate.put("Minute(s)", (int) (lastPlayed % 3600000 / 60000));
-			}
-			formattedDate.put("Second(s)", (int) (lastPlayed % 60000 / 1000));
+			formattedDate.put("m", (int) (lastPlayed % 3600000 / 60000));
 			result = new StringBuilder("Last Saved ");
 			for(Entry<String, Integer> entry : formattedDate.entrySet()) {
-				result.append(entry.getValue() + " " + entry.getKey() + ", ");
+				result.append(entry.getValue() + entry.getKey() + ", ");
 			}
 			result.deleteCharAt(result.length() - 2);
 			result.append("ago");
