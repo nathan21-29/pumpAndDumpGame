@@ -140,7 +140,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		tradingView = Toolkit.getDefaultToolkit().getImage("gameFiles/tradingScreen.png");
 		selectionPill = Toolkit.getDefaultToolkit().getImage("gameFiles/selectionPill.png");
 		
-		
+		//load saves
+		Save.cacheSaves();
 		System.out.println("Thread: Done initializing game");
 	}
 	
@@ -152,6 +153,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		frameCount++;
 	}
+	
 	
 	public void refreshMarket() {
 		portfolioValue = 0;
@@ -318,6 +320,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void drawSaveSelect(Graphics g) {
 		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
 		g.drawImage(backButton, 10, 10, 80, 80, this);
+		Save.drawSaves(0, g);
 	}
 
 	public void loadStockList() {
