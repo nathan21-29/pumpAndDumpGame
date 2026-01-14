@@ -72,7 +72,7 @@ public class Save implements Comparable<Save>{
 		if(5 * pageNum + row >= saves.size()) { //out of bounds
 			return -1;
 		}
-		return saves.get(5 * pageNum + row).saveNumber;
+		return saves.get(6 * pageNum + row).saveNumber;
 	}
 	
 	//create save objects and load data into them

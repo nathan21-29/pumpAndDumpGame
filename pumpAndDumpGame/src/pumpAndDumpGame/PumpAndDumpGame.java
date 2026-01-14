@@ -334,7 +334,27 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void drawSaveSelect(Graphics g) {
 		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
 		g.drawImage(backButton, 10, 10, 80, 80, this);
-		Save.drawSaves(0, g);
+		Save.drawSaves(savePageNum, g);
+	}
+	
+	public void incrementSavePage(boolean increase) {
+		int maxPage = Save.getSaves().size() / 6;
+		if(increase) {
+			if(savePageNum == maxPage) { //wrap back to front
+				savePageNum = 0;
+			}
+			else {
+				savePageNum++;
+			}
+		}
+		else { //decrease
+			if(savePageNum == 0) {
+				savePageNum = maxPage;
+			}
+			else {
+				savePageNum--;
+			}
+		}
 	}
 
 	public void loadStockList() {
@@ -425,7 +445,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawString(String.format("$%.2f (+$%.2f)", money, portfolioValue), 530, 65);
 		
 		//draw name
-		g.drawString(name, 700, 65);
+		g.drawString(name, 1185, 65);
 		
 		//draw current holdings
 		Stock.drawHoldings(g);
@@ -466,7 +486,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		} catch (FileNotFoundException e) {
 			System.out.println("file not found");
 		}
-		System.out.println(saveNumber);
 		gameState = STOCKLIST;
 		lastCycle = System.currentTimeMillis();
 	}
@@ -543,7 +562,16 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				gameState = MAINMENU;
 			}
 		}
-		if(gameState == TRADINGSCREEN) {
+		else if(gameState == SAVESELECT) {
+			//change page
+			if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				incrementSavePage(true);
+			}
+			else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+				incrementSavePage(false);
+			}
+		}
+		else if(gameState == TRADINGSCREEN) {
 			String data = e.getKeyChar() + "";
 			try {
 				if(Integer.parseInt(data) < 5 && !data.equals("0")) { //no negative 
@@ -558,7 +586,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				hardMode = !hardMode;
 			}
 		}
-		if(gameState == TUTORIAL) { //arrow key binds
+		else if(gameState == TUTORIAL) { //arrow key binds
 			if(e.getKeyCode() == KeyEvent.VK_RIGHT) { //increase page
 				incrementTutorial(true);
 			}
@@ -567,17 +595,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 		}
 		//testing
-		if(e.getKeyCode() == KeyEvent.VK_F1) {
+		else if(e.getKeyCode() == KeyEvent.VK_F1) {
 			savePlayerData();
 		}
-		if(e.getKeyCode() == KeyEvent.VK_F2) {
+		else if(e.getKeyCode() == KeyEvent.VK_F2) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
 			startGameFromSave();
 		}
-		if(e.getKeyCode() == KeyEvent.VK_F3) {
+		else if(e.getKeyCode() == KeyEvent.VK_F3) {
 			System.out.println(name);
 		}
-		if(e.getKeyCode() == KeyEvent.VK_F12) {
+		else if(e.getKeyCode() == KeyEvent.VK_F12) {
 			for(int i = 0; i < 1400; i++) {
 				currentStock.nextCandleStick();
 				Stock.incrementTime();
@@ -719,28 +747,28 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				if(name == null) { //handle cancel button
 					//ignore
 				}
-			}
-			if(name != null) { //valid name has been inputted
-				//prompt mods
-				//custom money
-				if(JOptionPane.showOptionDialog(null, "Custom money?", "Custom money", 0, 3, null, null, null) == 0) {
-					do {
-						validInput = true;
-						try {
-							money = Integer.parseInt(JOptionPane.showInputDialog("How much? (Default 1000)"));
-							if(money < 50) {
-								throw new NumberFormatException();
+				if(name != null) { //valid name has been inputted
+					//prompt mods
+					//custom money
+					if(JOptionPane.showOptionDialog(null, "Custom money?", "Custom money", 0, 3, null, null, null) == 0) {
+						do {
+							validInput = true;
+							try {
+								money = Integer.parseInt(JOptionPane.showInputDialog("How much? (Default 1000)"));
+								if(money < 50) {
+									throw new NumberFormatException();
+								}
+							} catch (NumberFormatException e2) {
+								validInput = false;
+								JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer above 50.");
 							}
-						} catch (NumberFormatException e2) {
-							validInput = false;
-							JOptionPane.showMessageDialog(this, "INVALID. Please enter a positive integer above 50.");
-						}
-					} while (!validInput);
+						} while (!validInput);
+					}
+					else { //default money
+						money = 1000;
+					}
+					startGame();
 				}
-				else { //default money
-					money = 1000;
-				}
-				startGame();
 			}
 		}
 		else if(gameState == STOCKLIST) {
