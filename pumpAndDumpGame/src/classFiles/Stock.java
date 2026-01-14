@@ -735,38 +735,80 @@ public class Stock implements Comparable<Stock> {
 		
 		
 	// part of the chatbot
-	public String palantir(String str) { // returns reply
+	public static String reply(String str) { // returns reply
+		ArrayList<String> numberKeyWords = new ArrayList<>();
+		
+		String action = "";
+		Stock stock = null;
+		String stockName = "";
+		int amount;
+		
 		HashMap<String, Double> actionSentiment = new HashMap<String, Double>();
 		actionSentiment.put("buy", 0.0d); // -1 to 1
 		actionSentiment.put("sell", 0.0d);
-		actionSentiment.put("info", 0.0d);
+		//actionSentiment.put("info", 0.0d);
 		
-		// every word that is not directly related to a sentiment should slightly lower all sentiments
-		
+		HashMap<String, Double> stockSentiment = new HashMap<String, Double>();
+		for (int i = 0; i < market.size(); i++) {
+			stockSentiment.put(market.get(i).symbol, 0.0d);
+		}
 		
 		str.toLowerCase();
 		
 		String[] tokens = str.split(" ");
 		
+		//XXX data type
+		HashMap<Integer, Double> numberPlausibility = new HashMap<>();
 		for (int i = 0; i < tokens.length; i++) {
-			actionSentiment.put("buy", actionSentiment.get("buy") + PalantirSarumanGPT.similarity(tokens[i], "buy"));
+			for (String s : actionSentiment.keySet()) {
+				//System.out.printf("%f: %s + %s%n", Chatbot.similarity(tokens[i], s), tokens[i], s);
+				actionSentiment.put(s, Math.max(actionSentiment.get(s), Chatbot.similarity(s, tokens[i])));
+			}
+			for (String s : stockSentiment.keySet()) {
+				stockSentiment.put(s, stockSentiment.get(s) + Chatbot.similarity(s.toLowerCase(), tokens[i]));
+			}
+			
+			try {
+				numberPlausibility.put(Integer.parseInt(tokens[i]), 0.0);
+			} catch (NumberFormatException e) {
+				// not a number
+			}
 		}
 		
 		
-		// There should be multiple dictionaries for words and synonyms related to each sentiment
+		double maxSentiment = -99999; //XXX
+		for (String symbol : stockSentiment.keySet()) {
+			//System.out.printf("%s: %f/%f%n", symbol, stockSentiment.get(symbol), maxSentiment);
+		    if (stockSentiment.get(symbol) > maxSentiment) {
+		    	//System.out.println("Symbol change");
+		        maxSentiment = stockSentiment.get(symbol);
+		        stockName = symbol;
+		    }
+		}
 		
-		// Negations/adverbs of negation (not, don't, etc) should be kept track of and should
-		// negatively impact the sentiment of surrounding keywords
 		
-		// Should be sentiments after these sentiments including:
-		/*
-		 * Which stock is the user asking for?
-		 * What piece of info is the user asking for/sorting by?
-		 */
-		// If the sentiments are properly implemented,
-		// the user should be allowed to make complex queries such as
-		// Sell any stock in my portfolio that has a negative profit 
-		String response = "";
-		return response;
+		//TODO implement "keywords" (half, all, quarter, etc)
+		int sum = 0;
+		for (Integer i : numberPlausibility.keySet()) {
+			sum += i;
+		}
+		amount = sum/numberPlausibility.values().size();
+		
+		
+		//stock = Collections.binarySearch(market, new Stock());
+		ArrayList<String> names = new ArrayList<>();
+		for (Stock s : market) {
+			if (s.getSymbol().equalsIgnoreCase(stockName)) {
+				stock = s;
+			}
+		}
+		
+		if (actionSentiment.get("buy") > actionSentiment.get("sell")) {
+			stock.addOrder(buyOrders, amount);
+			return String.format("Buying %d shares of %s", amount, stockName);
+		} else {
+			stock.addOrder(sellOrders, amount);
+			return String.format("Selling %d shares of %s", amount, stockName);
+		}
 	}
 }

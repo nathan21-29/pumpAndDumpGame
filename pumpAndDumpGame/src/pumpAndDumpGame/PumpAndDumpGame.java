@@ -824,5 +824,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		frame.setResizable(false);
 		System.out.println("  Main: Done initializing Jframe");
 		
+		//TEST
+		Chatbot saruman = new Chatbot();
+		Scanner sc = new Scanner(System.in);
+		System.out.println(Stock.reply(sc.nextLine()));
 	}
 }
