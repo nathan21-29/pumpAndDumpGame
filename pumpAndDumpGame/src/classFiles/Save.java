@@ -24,12 +24,14 @@ public class Save implements Comparable<Save>{
 	private int saveNumber;
 	private String name;
 	private double money;
+	private double initialMoney;
 	private double portfolioValue;
 	private long lastLoginMillis;
 
-	public Save (int saveNumber, String name, double money, double portfolioValue, long lastLoginMillis) {
+	public Save (int saveNumber, String name, double money, double initialMoney, double portfolioValue, long lastLoginMillis) {
 		this.saveNumber = saveNumber;
 		this.name = name;
+		this.initialMoney = initialMoney;
 		this.money = money;
 		this.portfolioValue = portfolioValue;
 		this.lastLoginMillis = lastLoginMillis;
@@ -81,25 +83,29 @@ public class Save implements Comparable<Save>{
 		try {
 			Scanner countChecker = new Scanner(new File("gameFiles/saves/saveData.txt"));
 			double money;
+			double initialMoney;
 			double portfolioValue;
 			long lastLoginMillis;
 			int saveCount = Integer.parseInt(countChecker.nextLine());
 			for(int i = 0; i <= saveCount; i++) {
 				//open file 
-				BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/saves/playerData/" + i + ".txt"));
-				String name = fileIn.readLine();
-				money = Double.parseDouble(fileIn.readLine());
-				portfolioValue = Double.parseDouble(fileIn.readLine());
-				fileIn.readLine(); //skip hardMode line
-				lastLoginMillis = Long.parseLong(fileIn.readLine());
-				saves.add(new Save(i, name, money, portfolioValue, lastLoginMillis));
-				fileIn.close();
+				try {
+					BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/saves/playerData/" + i + ".txt"));
+					String name = fileIn.readLine();
+					money = Double.parseDouble(fileIn.readLine());
+					initialMoney = Double.parseDouble(fileIn.readLine());
+					portfolioValue = Double.parseDouble(fileIn.readLine());
+					fileIn.readLine(); //skip hardMode line
+					lastLoginMillis = Long.parseLong(fileIn.readLine());
+					saves.add(new Save(i, name, money, initialMoney, portfolioValue, lastLoginMillis));
+					fileIn.close();
+				} catch (IOException e) {
+					//expected, protects against non-consecutive save numbers
+				}
 			}
 			countChecker.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Save file not found!");
-		} catch (IOException e) {
-			System.out.println("Reading error");
 		}
 
 		Collections.sort(saves); //default sort by last login time
@@ -142,6 +148,9 @@ public class Save implements Comparable<Save>{
 			g.setFont(small);
 			smallFM = g.getFontMetrics(small);
 			g.drawString(result.toString(), 1365 - smallFM.stringWidth(result.toString()), 170 + i * 115);
+			
+			String profitMessage = String.format("Lifetime P&L %+.2f%%", 100 * (currentSave.money + currentSave.portfolioValue - currentSave.initialMoney) / currentSave.initialMoney);
+			g.drawString(profitMessage, 1365 - smallFM.stringWidth(profitMessage), 240 + i * 115);
 		}
 	}
 }

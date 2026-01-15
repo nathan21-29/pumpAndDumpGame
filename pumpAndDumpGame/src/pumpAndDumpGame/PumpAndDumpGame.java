@@ -71,6 +71,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	int saveNumber = 0;
 	String name;
 	double money;
+	double initialMoney;
 	double portfolioValue;
 	Stock currentStock = test2;
 	boolean hardMode = true;
@@ -595,7 +596,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 		}
 		//testing
-		else if(e.getKeyCode() == KeyEvent.VK_F1) {
+		if(e.getKeyCode() == KeyEvent.VK_F1) {
 			savePlayerData();
 		}
 		else if(e.getKeyCode() == KeyEvent.VK_F2) {
@@ -605,11 +606,14 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		else if(e.getKeyCode() == KeyEvent.VK_F3) {
 			System.out.println(name);
 		}
+		else if(e.getKeyCode() == KeyEvent.VK_F4) {
+			System.out.println(initialMoney);
+//			System.out.println((money + portfolioValue - initialMoney) / initialMoney);
+//			System.out.println(money + portfolioValue - initialMoney);
+			
+		}
 		else if(e.getKeyCode() == KeyEvent.VK_F12) {
-			for(int i = 0; i < 1400; i++) {
-				currentStock.nextCandleStick();
-				Stock.incrementTime();
-			}
+			refreshMarket();
 		}
 	}
 
@@ -693,7 +697,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//save money and name and mode
 		try {
 			PrintWriter playerData = new PrintWriter(new File("gameFiles/saves/playerData/" + saveNumber + ".txt"));
-			playerData.print(name + "\n" + money + "\n" + portfolioValue + "\n" + hardMode + "\n" + System.currentTimeMillis());
+			playerData.print(name + "\n" + money + "\n" + initialMoney + "\n" + portfolioValue + "\n" + 
+					hardMode + "\n" + System.currentTimeMillis());
 			playerData.flush();
 			playerData.close();
 		} catch (IOException e) {
@@ -723,9 +728,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			if(checkHit(x, y, 600, 500, 1300, 800)) { //play button
 				//move to save select
 				loadSaveSelect();
-				for(Save save : Save.getSaves()) {
-					System.out.println(save.getName());
-				}
 			}
 			if(checkHit(x, y, 600, 730, 1300, 1030)) { //tutorial button
 				gameState = TUTORIAL;
@@ -767,6 +769,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 					else { //default money
 						money = 1000;
 					}
+					initialMoney = money; //set initial money for lifetime P&L
 					startGame();
 				}
 			}

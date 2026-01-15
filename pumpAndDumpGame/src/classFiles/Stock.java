@@ -187,6 +187,10 @@ public class Stock implements Comparable<Stock> {
 		return icon;
 	}
 	
+	public double getChanceFactor() {
+		return chanceFactor;
+	}
+	
 	//setters
 	public void setValue(double newPrice) {
 		priceHistory.addLast(new Candlestick(priceHistory.getLast().getClosePrice(), newPrice));
@@ -691,11 +695,12 @@ public class Stock implements Comparable<Stock> {
 						("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt");
 				
 				//write player variables
-				fileOut.println(stock.amountHeld + " " + stock.totalPurchasePrice);
-				
-				Candlestick temp = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1401);
+				fileOut.println(time + " " + stock.amountHeld + " " + stock.totalPurchasePrice + " " + 
+						stock.chanceFactor + " " + stock.baselineSum + " " + stock.momentum);
+
+				Candlestick temp = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1402);
 				fileOut.println(temp.getOpenPrice() + " " + temp.getClosePrice());
-				for(int i = stock.getPriceHistory().size() - 1400; i < stock.getPriceHistory().size(); i++) { //last 1400 candles
+				for(int i = stock.getPriceHistory().size() - 1401; i < stock.getPriceHistory().size(); i++) { //last 1400 candles
 					temp = stock.getPriceHistory().get(i);
 					fileOut.println(temp.getClosePrice());
 				}
@@ -715,8 +720,12 @@ public class Stock implements Comparable<Stock> {
 				BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt"));
 				StringTokenizer st = new StringTokenizer(fileIn.readLine(), " ");
 				//read in user-specific data
+				time = Integer.parseInt(st.nextToken());
 				stock.amountHeld = Integer.parseInt(st.nextToken());
 				stock.totalPurchasePrice = Double.parseDouble(st.nextToken());
+				stock.chanceFactor = Double.parseDouble(st.nextToken());
+				stock.baselineSum = Double.parseDouble(st.nextToken());
+				stock.momentum = Double.parseDouble(st.nextToken());
 				//add initial candleStick
 				st = new StringTokenizer(fileIn.readLine(), " "); //data for first candlestick which has both open and end
 				double prevPrice; //saves the price of the last candlestick since the while loop isn't indexed
@@ -730,6 +739,7 @@ public class Stock implements Comparable<Stock> {
 				}
 				
 				stock.recalculateRecents(true);
+				fileIn.close();
 			} catch (FileNotFoundException e) {
 				System.out.println("stock file not found!");
 			} catch (IOException e) {
