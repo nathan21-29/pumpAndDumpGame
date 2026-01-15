@@ -125,7 +125,7 @@ public class Save implements Comparable<Save>{
 			//get last played date
 			lastPlayed = System.currentTimeMillis() - currentSave.lastLoginMillis;
 			if(lastPlayed >= 86400000) { //more than 1 day ago 
-				formattedDate.put("d", (int) (lastPlayed / 1440000));
+				formattedDate.put("d", (int) (lastPlayed / 86400000));
 			}
 			if(lastPlayed % 86400000 >= 3600000) { //more than 1 hour left over
 				formattedDate.put("hr", (int) (lastPlayed % 86400000 / 3600000));
