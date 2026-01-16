@@ -35,7 +35,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	final int TUTORIAL = -1, MAINMENU = 0, SAVESELECT = 1, STOCKLIST = 2, TRADINGSCREEN = 3;
 	
 	Color darkGray = new Color(22, 22, 22);
-	Color darkGrayTransparent = new Color(22, 22, 22, 220);
+	Color darkGrayTransparent = new Color(22, 22, 22, 240);
 	Color backGround = new Color(48, 49, 51);
 	Color darkGreen = new Color(66, 176, 78);
 	Color darkRed = new Color(187, 46, 40);
@@ -135,7 +135,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//load tutorial
 		tutorialArrows = Toolkit.getDefaultToolkit().getImage("gameFiles/tutorial/arrows.png");
-		for(int i = 1; i <= 3; i++) {
+		for(int i = 1; i <= 4; i++) {
 			tutorial.add(Toolkit.getDefaultToolkit().getImage
 					("gameFiles/tutorial/" + String.format("%02d", i) + ".png"));
 		}
