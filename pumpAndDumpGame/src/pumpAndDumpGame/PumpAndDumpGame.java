@@ -367,7 +367,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(stockList, 0, 0, 1900, 1000, this);
 		g.setColor(Color.WHITE);
 		g.setFont(body2);
+		//draw money
 		g.drawString(String.format("$%.2f (+$%.2f)", money, portfolioValue), 120, 65);
+		//draw name
+		g.drawString(name, 790, 65);
 		
 		int startX, startY;
 		int index = 0;
@@ -502,6 +505,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			BufferedReader playerData = new BufferedReader(new FileReader("gameFiles/saves/playerData/" + saveNumber + ".txt"));
 			name = playerData.readLine();
 			money = Double.parseDouble(playerData.readLine());
+			initialMoney = Double.parseDouble(playerData.readLine());
 			portfolioValue = Double.parseDouble(playerData.readLine());
 			hardMode = Boolean.parseBoolean(playerData.readLine());
 			playerData.close();
@@ -776,8 +780,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		else if(gameState == STOCKLIST) {
 			//back button
-			if(checkHit(x, y, 10, 10, 90, 90)) {
+			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
 				loadMenu();
+			}
+			if(checkHit(x, y, 1790, 10, 1890, 110)) { //save button
+				savePlayerData();
 			}
 			if(checkHit(x, y, 50, 300, 1700, 780)) { //if in the grid box
 				loadTradingScreen(selectedMarket.get((x - 50) / 500 * 4 //get column * 4
