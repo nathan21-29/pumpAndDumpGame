@@ -65,6 +65,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3, 0);
 	Stock test2 = new Stock("TST2", 100, 0.5, 1.0005, 1, 0.1);
 	
+	Chatbot saruman = new Chatbot();
+	
 	int savePageNum = 0;
 	
 	//player variables
@@ -185,7 +187,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		for(Stock s : selectedMarket) {
 			portfolioValue += s.getAmountHeld() * s.getValue(); //increment portfolioValue
-			
 		}
 		
 		//sorting here means 1 sort per 3 seconds as opposed to every repaint
@@ -722,11 +723,21 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				promptSellOrder();
 			}
 		}
+		else if (gameState == STOCKLIST) {
+			if (saruman.isTyping()) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					Stock.reply(saruman.getCurrentMessage());
+				} else {
+					saruman.userType(e.getKeyChar());
+				}
+			}
+		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		int x = e.getX(), y = e.getY() - 30; //offset y b/c y counts window header pixels
+		//System.out.printf("%d : %d%n", x, y);
 		
 		if(gameState == MAINMENU) {
 			if(checkHit(x, y, 600, 500, 1300, 800)) { //play button
@@ -790,6 +801,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				loadTradingScreen(selectedMarket.get((x - 50) / 500 * 4 //get column * 4
 						+ (y - 300) / 120));  //add rows
 			}
+			
+			if (checkHit(x, y, 1577, 1861, 752, 800)) { // user clicked in the chatbot field
+				saruman.startTyping();
+			} else {
+				saruman.endTyping();
+			}
+			
 		}
 		else if(gameState == TRADINGSCREEN) {
 			//back button
@@ -898,8 +916,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		frame.setResizable(false);
 		System.out.println("  Main: Done initializing Jframe");
 		
-		//TEST
-		Chatbot saruman = new Chatbot();
 		Scanner sc = new Scanner(System.in);
 		System.out.println(Stock.reply(sc.nextLine()));
 	}

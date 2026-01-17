@@ -6,11 +6,76 @@
 
 package classFiles;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.io.*;
 
 public class Chatbot {
+	
+	static HashMap<String, String[]> aliases = new HashMap<>();
+
+	private boolean isTyping;
+	private ArrayList<Character> currentMessage;
+	
+	public void startTyping() {
+		this.isTyping = true;
+	}
+	
+	public void endTyping() {
+		this.isTyping = false;
+	}
+	
+	public boolean isTyping() {
+		return this.isTyping;
+	}
+	
+	public void userType(Character c) {
+		currentMessage.add(c);
+	}
+	
+	public String getCurrentMessage() {
+		String s = "";
+		for (Character c : currentMessage) {
+			s += c;
+		}
+		return s;
+	}
+	
+	public Chatbot() {
+		this.isTyping = false;
+		
+		try {
+			Scanner dictionaryScanner = new Scanner(new File("gameFiles/sentimentList"));
+			while (dictionaryScanner.hasNextLine()) {
+				String[] raw = dictionaryScanner.nextLine().toLowerCase().split(" ");
+				aliases.put(raw[0], raw);
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("A minor file in the chatbot was not found");
+		}
+	}
+	
 	/*
+	 * This was my initial attempt at making a
+	 * method that can detect how similar two
+	 * words are to one another
+	 * 
+	 * It fails for words like "sell", as it
+	 * sees the leading S and tailing L and
+	 * interprets it as similar to "SOL" (Name of a stock)
+	 * 
 	public static double similarity (String str1, String str2) {
 
 		result -= Math.abs(str1.length() - str2.length()) / 10;
@@ -33,20 +98,10 @@ public class Chatbot {
 
 	}
 	 */
-	static HashMap<String, String[]> aliases = new HashMap<>();
-
-	public Chatbot() {
-		try {
-			Scanner dictionaryScanner = new Scanner(new File("gameFiles/sentimentList"));
-			while (dictionaryScanner.hasNextLine()) {
-				String[] raw = dictionaryScanner.nextLine().toLowerCase().split(" ");
-				aliases.put(raw[0], raw);
-			}
-		} catch (FileNotFoundException e) {
-			System.out.println("A minor file in the chatbot was not found");
-		}
-	}
-
+	
+	/*
+	 * 
+	 */
 	public static double similarity(String str1, String str2) { //XXX only works if the first parameter is the one with aliases
 		double result = 0.0;
 		if (aliases.get(str1) != null) {
@@ -60,7 +115,32 @@ public class Chatbot {
 		return result;
 	}
 
-	// XXX W3 school
+	/* takes in two strings and returns a double 
+	 * based on how correlated they are
+	 * 
+	 * XXX Not my code; copy paste from internet at: 
+	 * https://www.geeksforgeeks.org/dsa/introduction-to-levenshtein-distance/
+	 * 
+	 * This is my own understanding of what this algorithm is:
+	 * 
+	 * The Levenshtein distance between two strings is 
+	 * the amount of characters that must be 
+	 * changed/added/removed in order for the two strings 
+	 * to match
+	 * 
+	 * This implementation uses dynamic programming
+	 * (splitting up the algorithm into smaller
+	 * sub problems). In this case, it finds the
+	 * Levenshtein distance between substrings from the
+	 * larger strings, and stores them in a 2d array
+	 * (sacrificing memory complexity for better time
+	 * complexity) and then uses a sort of prefix
+	 * sum array (?) to calculate the final Levenshtein
+	 * distance
+	 * 
+	 * This is ostensibly a more robust solution than
+	 * a hardcoded method with weights
+	 */
 	public static double levenshtein(String str1, String str2) {
 		int m = str1.length();
 		int n = str2.length();
@@ -98,6 +178,10 @@ public class Chatbot {
 		}
 
 		// Result is stored in the bottom-right cell of the DP array
+		
+		// at the end, WE make it a negative value and tie it to length;
+		// as it stands in the stock.reply() class, a negative number
+		// means negative correlation
 		double result = Math.min(m, n)-dp[m][n];
 		//		if (result > 0) 
 		//			System.out.printf("%.1f: %s and %s%n", result, str1, str2);
