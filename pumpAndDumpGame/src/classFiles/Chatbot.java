@@ -42,7 +42,7 @@ public class Chatbot {
 	}
 	
 	public void userType(Character c) {
-	    /* backspace
+	    // backspace
 	    if ((int)c == 8) {
 	        if (!currentMessage.isEmpty()) {
 	            currentMessage.remove(currentMessage.size() - 1);
@@ -50,9 +50,9 @@ public class Chatbot {
 	    } else if ((int)c >= 32 && (int)c <= 126) {
 	        this.currentMessage.add(c);
 	    }
-	    */
+	    
 		
-		this.currentMessage.add(c);
+		//this.currentMessage.add(c);
 	}
 	
 	public String getCurrentMessage() {

@@ -569,11 +569,14 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			System.out.println(saruman.isTyping());
 			if (saruman.isTyping()) {
 				System.out.println("Here3");
+				
+				
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					Stock.reply(saruman.getCurrentMessage());
 				} else {
 					saruman.userType(e.getKeyChar());
 				}
+				
 			}
 		}
 		
@@ -822,7 +825,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			
 			if (checkHit(x, y, 1577, 750, 1861, 805)) { // user clicked in the chatbot field
 				System.out.println("Started Typing");
-				this.requestFocus();
 				saruman.startTyping();
 			} else {
 				System.out.println("Stopped Typing");
