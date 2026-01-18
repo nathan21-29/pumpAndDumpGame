@@ -412,6 +412,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				}
 				g.fillPolygon(xCoordinates, yCoordinates, 3);
 			}
+			
+			if (saruman.isTyping()) { // draw current message + pointer
+				g.setColor(Color.WHITE);
+				g.fillRect(1580 + saruman.getCurrentMessage().length() * 18, 750, 1, 45);
+			}
 		}
 		
 		Notification.drawNotifications(g);
@@ -790,6 +795,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 		}
 		else if(gameState == STOCKLIST) {
+			
+			System.out.printf("%d : %d%n", x, y);
+			
 			//back button
 			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
 				loadMenu();
@@ -798,15 +806,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				savePlayerData();
 			}
 			if(checkHit(x, y, 50, 300, 1700, 780)) { //if in the grid box
-				loadTradingScreen(selectedMarket.get((x - 50) / 500 * 4 //get column * 4
-						+ (y - 300) / 120));  //add rows
+				loadTradingScreen(selectedMarket.get((x - 50) / 500 * 4 + (y - 300) / 120));  //add rows
 			}
 			
-			if (checkHit(x, y, 1577, 1861, 752, 800)) { // user clicked in the chatbot field
+			if (checkHit(x, y, 1577, 750, 1861, 805)) { // user clicked in the chatbot field
+				System.out.println("Started Typing");
 				saruman.startTyping();
 			} else {
+				System.out.println("Stopped Typing");
 				saruman.endTyping();
 			}
+			System.out.println(saruman.isTyping());
 			
 		}
 		else if(gameState == TRADINGSCREEN) {

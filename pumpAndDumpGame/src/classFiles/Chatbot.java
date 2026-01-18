@@ -42,7 +42,8 @@ public class Chatbot {
 	}
 	
 	public void userType(Character c) {
-		currentMessage.add(c);
+		System.out.println(this.currentMessage);
+		this.currentMessage.add(c);
 	}
 	
 	public String getCurrentMessage() {
