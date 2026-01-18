@@ -42,7 +42,16 @@ public class Chatbot {
 	}
 	
 	public void userType(Character c) {
-		System.out.println(this.currentMessage);
+	    /* backspace
+	    if ((int)c == 8) {
+	        if (!currentMessage.isEmpty()) {
+	            currentMessage.remove(currentMessage.size() - 1);
+	        }
+	    } else if ((int)c >= 32 && (int)c <= 126) {
+	        this.currentMessage.add(c);
+	    }
+	    */
+		
 		this.currentMessage.add(c);
 	}
 	
@@ -55,6 +64,8 @@ public class Chatbot {
 	}
 	
 	public Chatbot() {
+		this.currentMessage = new ArrayList<>();
+		
 		this.isTyping = false;
 		
 		try {

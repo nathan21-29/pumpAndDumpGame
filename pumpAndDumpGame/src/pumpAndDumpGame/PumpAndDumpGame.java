@@ -373,6 +373,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//draw name
 		g.drawString(name, 790, 65);
 		
+		//System.out.println(saruman.isTyping());
+		if (saruman.isTyping()) { // draw current message + pointer
+			g.setColor(Color.WHITE);
+			//System.out.println("Current msg:" + saruman.getCurrentMessage());
+			g.fillRect(1580 + saruman.getCurrentMessage().length() * 18, 750, 1, 45);
+		}
+		
 		int startX, startY;
 		int index = 0;
 		for(Stock s : selectedMarket) {
@@ -411,11 +418,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 					yCoordinates = tempYCoordinates;
 				}
 				g.fillPolygon(xCoordinates, yCoordinates, 3);
-			}
-			
-			if (saruman.isTyping()) { // draw current message + pointer
-				g.setColor(Color.WHITE);
-				g.fillRect(1580 + saruman.getCurrentMessage().length() * 18, 750, 1, 45);
 			}
 		}
 		
@@ -558,6 +560,23 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		System.out.println("Here1");
+		
+		System.out.println(gameState);
+		if (gameState == STOCKLIST) {
+			System.out.println("Here2");
+			System.out.println("Current msg:" + saruman.getCurrentMessage());
+			System.out.println(saruman.isTyping());
+			if (saruman.isTyping()) {
+				System.out.println("Here3");
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					Stock.reply(saruman.getCurrentMessage());
+				} else {
+					saruman.userType(e.getKeyChar());
+				}
+			}
+		}
+		
 		//esc moves from trading screen back to menu and resets animation
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			if(gameState == SAVESELECT) {
@@ -625,6 +644,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		else if(e.getKeyCode() == KeyEvent.VK_F12) {
 			refreshMarket();
 		}
+		
 	}
 
 	public void promptBuyOrder() {
@@ -728,15 +748,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				promptSellOrder();
 			}
 		}
-		else if (gameState == STOCKLIST) {
-			if (saruman.isTyping()) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					Stock.reply(saruman.getCurrentMessage());
-				} else {
-					saruman.userType(e.getKeyChar());
-				}
-			}
-		}
 	}
 
 	@Override
@@ -811,6 +822,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			
 			if (checkHit(x, y, 1577, 750, 1861, 805)) { // user clicked in the chatbot field
 				System.out.println("Started Typing");
+				this.requestFocus();
 				saruman.startTyping();
 			} else {
 				System.out.println("Stopped Typing");
