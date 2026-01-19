@@ -138,7 +138,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//load tutorial
 		tutorialArrows = Toolkit.getDefaultToolkit().getImage("gameFiles/tutorial/arrows.png");
-		for(int i = 1; i <= 4; i++) {
+		for(int i = 1; i <= 5; i++) {
 			tutorial.add(Toolkit.getDefaultToolkit().getImage
 					("gameFiles/tutorial/" + String.format("%02d", i) + ".png"));
 		}
@@ -1011,6 +1011,21 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//it might mess up your graphics and collisions
 		frame.setResizable(false);
 		System.out.println("  Main: Done initializing Jframe");
+		try {
+			AudioInputStream player;
+			Clip background;
+			player = AudioSystem.getAudioInputStream(new File ("gameFiles/background.wav"));
+			background = AudioSystem.getClip();
+			background.open(player);
+			background.setFramePosition (0); //<-- play sound file again from beginning
+			background.loop(Clip.LOOP_CONTINUOUSLY);
+		} catch (UnsupportedAudioFileException e) {
+			System.out.println("Unsupported file");
+		} catch (IOException e) {
+			System.out.println("File error");
+		} catch (LineUnavailableException e) {
+			System.out.println("Line unavailable");
+		}
 		
 		Scanner sc = new Scanner(System.in);
 		System.out.println(Stock.reply(sc.nextLine()));
