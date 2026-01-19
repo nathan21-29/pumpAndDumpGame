@@ -54,7 +54,7 @@ public class Notification {
 		notifications.add(new Notification(title, body, soundPath));
 	}
 	
-	public static void drawNotifications(Graphics g) {
+	public static void drawNotifications(Graphics g, boolean viewAll) {
 		//remove all expired notifications
 		while(notifications.peek() != null && notifications.peek().getProgress() == 1) {
 			notifications.poll();
@@ -62,26 +62,28 @@ public class Notification {
 		
 		int number = 0; //index
 		for(Notification n : notifications) {
-			//draw box
-			g.setColor(new Color(41, 41, 41));
-//			g.fillRect(1525, 880 - number * 120, 355, 100);
-			g.fillRoundRect(1525, 880 - number * 120, 355, 100, 15, 15);
-			
-			//draw text
-			g.setColor(Color.WHITE);
-			g.setFont(titleFont);
-			g.drawString(n.getTitle(), 1535, 917 - number * 120);
-			
-			g.setColor(new Color(200, 200, 200));
-			g.setFont(bodyFont);
-			int lineNumber = 0;
-			for(String data : n.getBody().split("\n")) { //force recognition of \n
-				g.drawString(data, 1540, 945 - number * 120 + lineNumber++ * 20);
+			if(viewAll || number < 2) {
+				//draw box
+				g.setColor(new Color(41, 41, 41));
+				//			g.fillRect(1525, 880 - number * 120, 355, 100);
+				g.fillRoundRect(1525, 880 - number * 120, 355, 100, 15, 15);
+
+				//draw text
+				g.setColor(Color.WHITE);
+				g.setFont(titleFont);
+				g.drawString(n.getTitle(), 1535, 917 - number * 120);
+
+				g.setColor(new Color(200, 200, 200));
+				g.setFont(bodyFont);
+				int lineNumber = 0;
+				for(String data : n.getBody().split("\n")) { //force recognition of \n
+					g.drawString(data, 1540, 945 - number * 120 + lineNumber++ * 20);
+				}
+				number++;
+				//draw progress bar
+				g.setColor(offYellow);
+				g.fillRect(1525, 1095 - number * 120, (int)(355 * (1 - n.getProgress())), 5);
 			}
-			number++;
-			//draw progress bar
-			g.setColor(offYellow);
-			g.fillRect(1525, 1095 - number * 120, (int)(355 * (1 - n.getProgress())), 5);
 		}
 	}
 	

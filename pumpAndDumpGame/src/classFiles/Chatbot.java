@@ -46,6 +46,10 @@ public class Chatbot {
 		this.previousMessages.add(s);
 	}
 	
+	public void clearMessages() {
+		previousMessages.clear();
+	}
+	
 	public void clearText() {
 		this.currentMessage = new ArrayList<Character>();
 	}

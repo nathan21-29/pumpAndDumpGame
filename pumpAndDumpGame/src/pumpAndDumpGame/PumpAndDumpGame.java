@@ -39,7 +39,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Color backGround = new Color(48, 49, 51);
 	Font title = new Font ("Arial", Font.BOLD, 100);
 	Font header = new Font("Arial", Font.BOLD, 50);
-	Font body = new Font("Arial", Font.PLAIN, 32);
+	Font body = new Font("Arial", Font.PLAIN, 25);
 	Font body2 = new Font("Arial", Font.PLAIN, 40);
 	Font wormTongue = new Font("Courier New", Font.PLAIN, 18);
 	FontMetrics fmTitle;
@@ -426,8 +426,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			//draw symbol
 			g.setFont(header);
 			g.drawString(s.getSymbol(), startX + 80, startY + 60);
-			//draw today's change
 			g.setFont(body);
+			//draw amount held
+			if(s.getAmountHeld() > 0) {
+				g.drawString("" + s.getAmountHeld(), startX + 280, startY + 70);
+			}
+			//draw today's change
 //			s.drawIndicator(s.getValue(), s.getPastPrice(Stock.getTime() + 35), startX + 10, startY + 110, body, g);
 			s.drawListIndicator(startX, startY, g);
 			index++;
@@ -451,7 +455,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 		}
 		
-		Notification.drawNotifications(g);
+		Notification.drawNotifications(g, false);
 	}
 	
 	//loads the trading screen by sorting the market by amount held ($)
@@ -506,7 +510,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		
 		//draw notifications
-		Notification.drawNotifications(g);
+		Notification.drawNotifications(g, true);
 	}
 
 	//starts a new game and updates the current save number file
@@ -514,6 +518,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//clear holdings from any other saves loaded this session
 		Stock.clearHoldings();
 		Notification.clearNotifications();
+		saruman = new Chatbot(); //reload saruman
 		
 		//load sounds
 		loadSounds();
@@ -541,6 +546,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void startGameFromSave() {
 		Stock.clearHoldings(); //clear holdings from other saves
 		Notification.clearNotifications(); //clear notifications
+		saruman = new Chatbot();
 		
 		//load sounds
 		loadSounds();
