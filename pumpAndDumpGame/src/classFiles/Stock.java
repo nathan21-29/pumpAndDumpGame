@@ -224,15 +224,19 @@ public class Stock implements Comparable<Stock> {
 		totalPurchasePrice += increment;
 	}
 	
+	//returns the priceHistory AL as a string
 	public String toString() {
 		return priceHistory.toString();
 	}
 	
+	//2 stocks are considered equal if they have the same symbol.
+	//Object obj is the stock to be compared to
 	public boolean equals(Object obj) {
 		Stock compare = (Stock) obj;
 		return symbol.equals(compare.getSymbol());
 	}
 	
+	//loads stocks from disk
 	public static void loadStocks() {
 		try {
 			BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/stockList.txt"));
@@ -257,8 +261,10 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
+	//increments the in-game time
 	//returns true if timechange rolls into a new day
 	//returns false otherwise
+	//^the above behaviour is not used in any meaningful way as of yet
 	public static boolean incrementTime() {
 		time++;
 		if(time > 7) {
@@ -274,10 +280,15 @@ public class Stock implements Comparable<Stock> {
 		return false;
 	}
 	
+	//inverts the price target of the stock
+	//when combined with randomness to create irregular trigger intervals,
+	//this behaviour creates longer-term trends in stock pricing
 	private void invertTarget() {
 		targetGrowth = 1 / targetGrowth;
 	}
 	
+	//draws the stock holdings in the trading screen
+	//with the format [icon, symbol, P&L]
 	public static void drawHoldings(Graphics g) {
 		for(int i = 0; i < selectedMarket.size(); i++) {
 			//if reached stocks with 0 shares held
@@ -385,7 +396,6 @@ public class Stock implements Comparable<Stock> {
 		double change = Math.pow(Math.random(), 1.6) * ((0.0999 * this.getValue()) * volatility) + (0.0001 * this.getValue());
 		if(type == POSITIVE) {
 			if(priceHistory.getLast().getType() == NEGATIVE) { //swing from negative -> positive
-				//momentum = 2; //reset momentum
 				//maxroll momentum in the other direction
 				momentum = Math.min(momentum + 0.25, 2.7);
 			}
@@ -401,7 +411,6 @@ public class Stock implements Comparable<Stock> {
 		}
 		else { //type == NEGATIVE
 			if(priceHistory.getLast().getType() == POSITIVE) { //swing from positive -> negative
-				//momentum = 2; //reset momentum
 				//maxroll momentum in the other direction
 				momentum = Math.max(momentum - 0.25, 1.3);
 			}
@@ -439,6 +448,7 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 
+	//draws the graph in tradingScreen
 	//Graphics g is the graphics object used to draw elements
 	public void drawGraph(Graphics g) {
 		double topBound = Math.max(priceHistory.get(recentMax).getClosePrice(), 
@@ -464,6 +474,8 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
+	//draws the little graphs in stockList
+	//essentially the same as drawgraph but with no lines or numbers whatsoever
 	public void drawTinyGraph(int startX, int startY, Graphics g) {
 		//calculate min and max
 		int tinyMax = priceHistory.size() - 36, tinyMin = tinyMax;
@@ -532,6 +544,7 @@ public class Stock implements Comparable<Stock> {
 		return (int) (fieldTop + (fieldBottom - fieldTop) * (1 - (target - bottomBound) / (topBound - bottomBound)));
 	}
 	
+	//draws the stock indicators for tradingScreen (e.g. daily change, analyst rating, symbol etc)
 	public void drawAllIndicators(Graphics g) {
 		//draw time indicators (past 5 days etc)
 		double currentValue = getValue();
@@ -592,6 +605,10 @@ public class Stock implements Comparable<Stock> {
 		g.drawString(String.format("$%.2f (%+.2f%%)", amountHeld * getValue(), getProfitLoss(NEGATIVE)), 1090, 860);
 	}
 	
+	//draws the stock's price and recent gain/loss in stockList
+	//int x is the x coordinate to draw the indicator at
+	//int y is the y coordinate to draw the incator at
+	//Graphics g is the graphics object to draw the elements
 	public void drawListIndicator(int x, int y, Graphics g) {
 		double refPrice = getPastPrice(35);
 		if(getValue() >= refPrice) {
@@ -604,6 +621,8 @@ public class Stock implements Comparable<Stock> {
 				x + 10, y + 110);
 	}
 	
+	//gets the price of the stock hoursAgo candlesticks ago
+	//int hoursAgo is the amount of hours to go back in time
 	public double getPastPrice(int hoursAgo) {
 		return priceHistory.get(priceHistory.size() - 1 - hoursAgo).getClosePrice();
 	}
@@ -613,6 +632,9 @@ public class Stock implements Comparable<Stock> {
 		return (int) (compare.getAmountHeld() * compare.getValue() - amountHeld * getValue());
 	}
 	
+	//draws individual indicators (daily/5d/20d gain)
+	//double currentValue is the currentValue of the stock, double pastValue is the previous value
+	//of the stock for that indicator, int x and y are coordinates to place the indicator
 	public void drawIndicator(double currentValue, double pastValue, int x, int y, Graphics g) {
 		g.setFont(body);
 		double diff = currentValue - pastValue;
@@ -628,6 +650,10 @@ public class Stock implements Comparable<Stock> {
 		g.drawString(String.format("%.4f%% %s", diff / pastValue * 100, result + String.format("%+.2f", diff) + ")"), x, y);
 	}
 	
+	//overloaded version of drawIndicator that has a font parameter
+	//double currentValue is the currentValue of the stock, double pastValue is the previous value
+	//of the stock for that indicator, int x and y are coordinates to place the indicator, Font font
+	//is the font to be used to write the indicator
 	public void drawIndicator(double currentValue, double pastValue, int x, int y, Font font, Graphics g) {
 		g.setFont(font);
 		double diff = currentValue - pastValue;
@@ -643,6 +669,7 @@ public class Stock implements Comparable<Stock> {
 		g.drawString(String.format("%.4f%% %s", diff / pastValue * 100, result + String.format("%+.2f", diff) + ")"), x, y);
 	}
 	
+	//recalculates the values for recentMax/recentMin, useful for ensuring bounds when changing view length
 	//boolean bypass dictates whether to bypass the checked recount (i.e. only check if recentMax
 	//has left the bounds of the graph) if true, this check will be skipped
 	public void recalculateRecents(boolean bypass) {
@@ -672,6 +699,11 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
+	//adds a buy/sell order
+	//HashMap<Stock, Integer> destination is the HM to send the order to,
+	//either buyOrders or sellOrders. Stock is the stock to be bought/sold,
+	//and the Integer represents amount. int amount is the amount to submit
+	//the order with.
 	public void addOrder(HashMap<Stock, Integer> destination, int amount) {
 		if(destination.get(this) != null) { //order is already present
 			destination.put(this, destination.get(this) + amount); //add to the order
@@ -681,12 +713,15 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
+	//clears holdings, used when a save is loaded
 	public static void clearHoldings() {
 		for(Stock stock : selectedMarket) {
 			stock.setAmountHeld(0);
 		}
 	}
-
+	
+	//saves stock data to disk
+	//int saveNumber is the save to save the data to
 	public static void saveStocks(int saveNumber) {
 		//save stock data
 		for(Stock stock : selectedMarket) { //for every stock
@@ -713,6 +748,9 @@ public class Stock implements Comparable<Stock> {
 		}
 	}
 	
+	//loads stock data from disk
+	//int saveNumber is the save to load the stocks from, since the game saves
+	//are identified internally as ints
 	public static void loadStocksFromSave(int saveNumber) {
 		for(Stock stock : selectedMarket) { //for every stock
 			stock.priceHistory.clear(); //clear previous candlesticks

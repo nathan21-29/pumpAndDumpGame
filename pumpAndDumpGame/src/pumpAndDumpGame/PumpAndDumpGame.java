@@ -77,6 +77,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Stock currentStock = test2;
 	boolean hardMode = true;
 	
+	//constructor
 	public PumpAndDumpGame() {
 		//sets up JPanel
 		setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -165,7 +166,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		frameCount++;
 	}
 	
-	
+	//1. Generates one new candlestick for every stock
+	//2. increments time (which is used for %change indicators)
+	//3. updates portfolio value and sorts by amount held
+	//returns nothing
 	public void refreshMarket() {
 		portfolioValue = 0;
 		//generate new candlestick for every stock
@@ -173,9 +177,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			s.nextCandleStick();
 		}
 		
-		if(Stock.incrementTime()) { //if end of day, pause for user to check stocks and create orders for next morning
-			
-		}
+		Stock.incrementTime();
 		
 		//update lastCycle to now
 		lastCycle = System.currentTimeMillis();
@@ -194,7 +196,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 	}
 	
+	//fills the orders in the given HashMap
+	//HashMap<Stock, Integer> orders is the hashmap storing the orders,
+	//in a stock/amount key-value pair
 	//mode == true is buy, mode == false is sell
+	//returns nothing
 	public void fillOrders(HashMap<Stock, Integer> orders, boolean mode) {
 		//read in orders as pairs to keep information together
 		for(Entry<Stock, Integer> entry : orders.entrySet()) {
@@ -260,6 +266,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 	}
 	
+	//loads main menu by refreshing demo stock and changing gamestate
+	//returns nothing
 	public void loadMenu() {
 		demo = new Stock("DEMO", 10, 2, 1, 1, 0);
 		for(int i = 0; i < 200; i++) {
@@ -286,6 +294,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(menuTutorialButton, 600, 730, 700,  300, this);
 	}
 	
+	//Draws the tutorial OVERTOP of the main menu
+	//Graphics g is the graphics object used to draw elements
 	public void drawTutorial(Graphics g) {
 		drawMenu(g); //main menu will be the background for the tutorial
 		//darken the main menu by using a semi-transparent layer
@@ -307,7 +317,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(tutorialArrows, 0, 0, 1900, 1000, this);
 	}
 	
+	
 	//updates tutorialPage, wrapping back to zero after last image
+	//boolean increase defines the direction of change, increase == true
+	//means page++, !increase means page--
 	public void incrementTutorial(boolean increase) {
 		if(increase) {
 			if(tutorialPage == tutorial.size() - 1) { //wrap back to front
@@ -327,17 +340,24 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 	}
 	
+	//loads save select by loading save objects from disk then changing gamestate
+	//returns nothing
 	public void loadSaveSelect() {
 		Save.cacheSaves(); //update save list
 		gameState = SAVESELECT;
 	}
 	
+	//draws the save select screen, where the user can either make a new save
+	//or open an old save.
+	//Graphics g is the graphics object used to draw elements
 	public void drawSaveSelect(Graphics g) {
 		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
 		g.drawImage(backButton, 10, 10, 80, 80, this);
 		Save.drawSaves(savePageNum, g);
 	}
 	
+	//increments the save page list if there are >6 saves on disk
+	//boolean increase defines direction of increment, true means page++
 	public void incrementSavePage(boolean increase) {
 		int maxPage = Save.getSaves().size() / 6;
 		if(increase) {
@@ -357,12 +377,15 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 		}
 	}
-
+	
+	//loads the stock list by sorting the market by volatility and changing gamestate
 	public void loadStockList() {
 		Collections.sort(selectedMarket, new SortByVolatility());
 		gameState = STOCKLIST;
 	}
 	
+	//draws the stockList and chatbot window
+	//Graphics g is the graphics object used to draw elements
 	public void drawStockList(Graphics g) {
 		g.drawImage(stockList, 0, 0, 1900, 1000, this);
 		g.setColor(Color.WHITE);
@@ -423,6 +446,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		Notification.drawNotifications(g);
 	}
 	
+	//loads the trading screen by sorting the market by amount held ($)
+	//and changing gamestate
+	//Stock s is the stock to load the trading screen of
 	public void loadTradingScreen(Stock s) {
 		currentStock = s;
 		Collections.sort(selectedMarket); //default sort by amount held
@@ -475,9 +501,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		Notification.drawNotifications(g);
 	}
 
+	//starts a new game and updates the current save number file
 	public void startGame() {
 		//clear holdings from any other saves loaded this session
 		Stock.clearHoldings();
+		Notification.clearNotifications();
 		
 		//load sounds
 		loadSounds();
@@ -501,8 +529,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		lastCycle = System.currentTimeMillis();
 	}
 	
+	//starts the game from save
 	public void startGameFromSave() {
 		Stock.clearHoldings(); //clear holdings from other saves
+		Notification.clearNotifications(); //clear notifications
 		
 		//load sounds
 		loadSounds();
@@ -529,8 +559,11 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		gameState = STOCKLIST;
 		lastCycle = System.currentTimeMillis();
+		
+		Notification.addNotification("GAME LOADED", "Welcome back, " + name + "!", hitSoundPath);
 	}
 	
+	//loads sounds into memory to remove delay on first playback
 	public void loadSounds() {
 		//load sounds into memory (so that first play isn't delayed)
 		try {
@@ -578,6 +611,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//esc moves from trading screen back to menu and resets animation
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			System.out.println("trigger");
 			if(gameState == SAVESELECT) {
 				loadMenu();
 			}
@@ -624,8 +658,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 		}
 		//testing
-		if(e.getKeyCode() == KeyEvent.VK_F1) {
-			savePlayerData();
+		if(e.getKeyCode() == KeyEvent.VK_F1 && (gameState == TRADINGSCREEN || gameState == STOCKLIST)) {
+			saveGame();
 		}
 		else if(e.getKeyCode() == KeyEvent.VK_F2) {
 			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
@@ -646,6 +680,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 	}
 
+	//prompts the user for stock buy
+	//error checks for invalid inputs
 	public void promptBuyOrder() {
 		do {
 			validInput = true;
@@ -682,6 +718,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		} while (!validInput);
 	}
 	
+	//prompts the user for stock sell
+	//error checks for invalid inputs
 	public void promptSellOrder() {
 		//check shares held
 		if(currentStock.getAmountHeld() < 1) {
@@ -722,7 +760,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		} while (!validInput);
 	}
 	
-	public void savePlayerData() {
+	//saves the game to disk
+	public void saveGame() {
 		//save money and name and mode
 		try {
 			PrintWriter playerData = new PrintWriter(new File("gameFiles/saves/playerData/" + saveNumber + ".txt"));
@@ -734,6 +773,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			System.out.println("Player data writing error");
 		}
 		Stock.saveStocks(saveNumber);
+		Notification.addNotification("GAME SAVED", "Game has been saved.", hitSoundPath);
 	}
 	
 	@Override
@@ -813,7 +853,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				loadMenu();
 			}
 			if(checkHit(x, y, 1790, 10, 1890, 110)) { //save button
-				savePlayerData();
+				saveGame();
 			}
 			if(checkHit(x, y, 50, 300, 1700, 780)) { //if in the grid box
 				loadTradingScreen(selectedMarket.get((x - 50) / 500 * 4 + (y - 300) / 120));  //add rows
@@ -901,6 +941,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 	}
 	
+	//checks if the mouse coordinates are within a rectangular bound
+	//mouseX and mouseY are the coordinates of the cursor/click
 	//x1 and y1 are the coordinates of the top left point of the rect
 	//x2 and y2 are the coordinates of the bottom right point of the rect
 	public boolean checkHit(int mouseX, int mouseY, int x1, int y1, int x2, int y2) {
