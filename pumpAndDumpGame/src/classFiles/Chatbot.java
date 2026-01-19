@@ -41,6 +41,10 @@ public class Chatbot {
 		return this.isTyping;
 	}
 	
+	public void clearText() {
+		this.currentMessage = new ArrayList<Character>();
+	}
+	
 	public void userType(Character c) {
 	    // backspace
 	    if ((int)c == 8) {

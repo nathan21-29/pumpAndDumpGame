@@ -857,9 +857,15 @@ public class Stock implements Comparable<Stock> {
 		}
 		
 		if (actionSentiment.get("buy") > actionSentiment.get("sell")) {
+			Notification.addNotification("ORDER CREATED", 
+					"Buy " + amount + " shares of " + stock.getSymbol(), 
+					"gameFiles/soft-hitnormal.wav");
 			stock.addOrder(buyOrders, amount);
 			return String.format("Buying %d shares of %s", amount, stockName);
 		} else {
+			Notification.addNotification("ORDER CREATED", 
+					"Sell " + amount + " shares of " + stock.getSymbol(),
+					"gameFiles/soft-hitnormal.wav");
 			stock.addOrder(sellOrders, amount);
 			return String.format("Selling %d shares of %s", amount, stockName);
 		}

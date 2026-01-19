@@ -41,6 +41,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Font header = new Font("Arial", Font.BOLD, 50);
 	Font body = new Font("Arial", Font.PLAIN, 32);
 	Font body2 = new Font("Arial", Font.PLAIN, 40);
+	Font wormTongue = new Font("Courier", Font.PLAIN, 18);
 	FontMetrics fmTitle;
 	
 	Image menuTitle, menuPlayButton, menuTutorialButton;
@@ -399,6 +400,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		if (saruman.isTyping()) { // draw current message + pointer
 			g.setColor(Color.WHITE);
 			//System.out.println("Current msg:" + saruman.getCurrentMessage());
+			g.setFont(wormTongue);
+			g.drawString(saruman.getCurrentMessage(), 1580, 750);
 			g.fillRect(1580 + saruman.getCurrentMessage().length() * 18, 750, 1, 45);
 		}
 		
@@ -592,19 +595,21 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("Here1");
+		//System.out.println("Here1");
 		
 		System.out.println(gameState);
 		if (gameState == STOCKLIST) {
-			System.out.println("Here2");
-			System.out.println("Current msg:" + saruman.getCurrentMessage());
-			System.out.println(saruman.isTyping());
+			//System.out.println("Here2");
+			//System.out.println("Current msg:" + saruman.getCurrentMessage());
+			//System.out.println(saruman.isTyping());
 			if (saruman.isTyping()) {
-				System.out.println("Here3");
+				//System.out.println("Here3");
 				
 				
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					Stock.reply(saruman.getCurrentMessage());
+					
+					saruman.clearText();
 				} else {
 					saruman.userType(e.getKeyChar());
 				}
@@ -849,7 +854,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		}
 		else if(gameState == STOCKLIST) {
 			
-			System.out.printf("%d : %d%n", x, y);
+			//System.out.printf("%d : %d%n", x, y);
 			
 			//back button
 			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
@@ -863,13 +868,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			}
 			
 			if (checkHit(x, y, 1577, 750, 1861, 805)) { // user clicked in the chatbot field
-				System.out.println("Started Typing");
+				//System.out.println("Started Typing");
 				saruman.startTyping();
 			} else {
-				System.out.println("Stopped Typing");
+				//System.out.println("Stopped Typing");
 				saruman.endTyping();
 			}
-			System.out.println(saruman.isTyping());
+			//System.out.println(saruman.isTyping());
 			
 		}
 		else if(gameState == TRADINGSCREEN) {
