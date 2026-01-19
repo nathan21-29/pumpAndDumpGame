@@ -208,6 +208,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		for(Entry<Stock, Integer> entry : orders.entrySet()) {
 			Stock stock = entry.getKey();
 			int amount = entry.getValue();
+			if(amount <= 0) {
+				Notification.addNotification("ORDER FAILED",
+						"Order for " + amount + " shares of " + stock.getSymbol() + " has" +  
+								"\nfailed. Reason: Invalid amount", hitSoundPath);
+				continue; //move to next stock, this is probably the only time I have ever used continue
+			}
 			//check sufficient funds / shares
 			if(mode) { //buy orders; check sufficient funds
 				if(stock.getValue() * amount > money) {
