@@ -6,6 +6,9 @@ import java.util.Scanner;
 import classFiles.Candlestick;
 import classFiles.Stock;
 
+//Jerry Li and Nathan Chan Jan 18, 2026
+//this is the file used for basic testing of stocks to see average
+//returns and likelihood of profit in the long term
 public class priceGenerationTest {
 
 	public static void main(String[] args) {

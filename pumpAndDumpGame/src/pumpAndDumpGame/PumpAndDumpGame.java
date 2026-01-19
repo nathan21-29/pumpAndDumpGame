@@ -35,10 +35,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	final int TUTORIAL = -1, MAINMENU = 0, SAVESELECT = 1, STOCKLIST = 2, TRADINGSCREEN = 3;
 	
 	Color darkGray = new Color(22, 22, 22);
-	Color darkGrayTransparent = new Color(22, 22, 22, 240);
+	Color darkGrayTransparent = new Color(22, 22, 22, 240); //transparent layer for tutorial
 	Color backGround = new Color(48, 49, 51);
-	Color darkGreen = new Color(66, 176, 78);
-	Color darkRed = new Color(187, 46, 40);
 	Font title = new Font ("Arial", Font.BOLD, 100);
 	Font header = new Font("Arial", Font.BOLD, 50);
 	Font body = new Font("Arial", Font.PLAIN, 32);
@@ -61,6 +59,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	ArrayList<Stock> selectedMarket;
 	
+	//testing
 	Stock demo = new Stock("DEMO", 10, 2, 1, 1, 0);
 	Stock test = new Stock("TEST", 10, 0.01, 1.008, 3, 0);
 	Stock test2 = new Stock("TST2", 100, 0.5, 1.0005, 1, 0.1);

@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 
 import pumpAndDumpGame.PumpAndDumpGame;
 
-//Nathan Chan Jan 14, 2026
+//Nathan Chan and Jerry Li Jan 14, 2026
 //This is the stock object class, which is the structure used to store
 //the properties and price history of securities and stocks. Each stock
 //has its own instance variables defining its behavior, as well as an 
