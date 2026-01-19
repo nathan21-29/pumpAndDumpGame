@@ -355,12 +355,20 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(saveSelect, 0, 0, 1900, 1000, this);
 		g.drawImage(backButton, 10, 10, 80, 80, this);
 		Save.drawSaves(savePageNum, g);
+
+		//draw page number
+		g.setFont(title);
+		g.setColor(Color.WHITE);
+		g.drawString(savePageNum + 1 + " / " + ((Save.getSaves().size() - 1) / 6 + 1), 860, 960);
+		
+		//draw arrows
+		g.drawImage(tutorialArrows, 0, 0, 1900, 1000, this);
 	}
 	
 	//increments the save page list if there are >6 saves on disk
 	//boolean increase defines direction of increment, true means page++
 	public void incrementSavePage(boolean increase) {
-		int maxPage = Save.getSaves().size() / 6;
+		int maxPage = (Save.getSaves().size() - 1) / 6;
 		if(increase) {
 			if(savePageNum == maxPage) { //wrap back to front
 				savePageNum = 0;
@@ -631,7 +639,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//esc moves from trading screen back to menu and resets animation
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			System.out.println("trigger");
 			if(gameState == SAVESELECT) {
 				loadMenu();
 			}
@@ -826,6 +833,13 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		else if (gameState == SAVESELECT) {
 			if(checkHit(x, y, 10, 10, 90, 90)) { //back button
 				loadMenu();
+			}
+			//arrows
+			if(checkHit(x, y, 32, 460, 205, 540)) { //left arrow
+				incrementSavePage(false);
+			}
+			else if(checkHit(x, y, 1700, 460, 1875, 540)) {
+				incrementSavePage(true);
 			}
 			if(checkHit(x, y, 525, 140, 1375, 830)) { //in the saves field
 				saveNumber = Save.getSaveNumberFromGUI(savePageNum, (y - 140) / 115);

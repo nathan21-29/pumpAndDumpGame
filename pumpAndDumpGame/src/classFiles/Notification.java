@@ -101,6 +101,7 @@ public class Notification {
 	//plays an audio by creating a new AudioInputStrem
 	//Parameter Clip clip is the clip to start
 	//returns nothing
+	//code borrowed from my last year osu game
 	public static void playAudio(String path) {
 		try {
 			AudioInputStream player = AudioSystem.getAudioInputStream(new File (path));
@@ -109,6 +110,7 @@ public class Notification {
 			clip.start();
 			clip.addLineListener(event -> {
 				if(event.getType() == LineEvent.Type.STOP) {
+					clip.drain();
 					clip.close(); //close the audio thread when it finishes to free ram
 				}
 			});
