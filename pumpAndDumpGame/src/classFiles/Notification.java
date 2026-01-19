@@ -7,6 +7,10 @@ import java.util.*;
 
 import javax.sound.sampled.*;
 
+//Nathan Chan Jan 18, 2026
+//This is the object class for the notification object, which is used
+//to relay information to the player, including buy/sell orders,
+//when orders are successful/fail etc.
 public class Notification {
 	
 	private static Queue<Notification> notifications = new LinkedList<Notification>();
@@ -84,6 +88,12 @@ public class Notification {
 	//returns the % progress, as a decimal, of the notification
 	public double getProgress() {
 		return Math.min((System.currentTimeMillis() - startMillis) * 1.0 / duration, 1);
+	}
+	
+	//clears notification queue
+	//useful for ensuring notification queue is empty upon save load
+	public static void clearNotifications() {
+		notifications.clear();
 	}
 
 	//plays an audio by creating a new AudioInputStrem

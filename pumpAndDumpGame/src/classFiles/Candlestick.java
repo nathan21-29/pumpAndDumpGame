@@ -1,5 +1,12 @@
 package classFiles;
 
+//Nathan Chan Jan 18, 2026
+//This is the class file for Candlesticks, which are the objects
+//used to encode the price change for a time window. Each candlestick
+//has an openPrice representing the price at the beginning of the time
+//window and a closePrice representing the price at the end of the time
+//window. type == true means price went up, type == false means price
+//went down.
 public class Candlestick {
 
 	private boolean type;
