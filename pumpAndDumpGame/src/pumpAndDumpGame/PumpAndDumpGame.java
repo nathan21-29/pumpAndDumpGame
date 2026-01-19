@@ -863,7 +863,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			if(checkHit(x, y, 1790, 10, 1890, 110)) { //save button
 				saveGame();
 			}
-			if(checkHit(x, y, 50, 300, 1700, 780)) { //if in the grid box
+			if(checkHit(x, y, 50, 300, 1550, 780)) { //if in the grid box
 				loadTradingScreen(selectedMarket.get((x - 50) / 500 * 4 + (y - 300) / 120));  //add rows
 			}
 			
