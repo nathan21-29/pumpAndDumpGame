@@ -23,7 +23,7 @@ public class Notification {
 	private String body;
 	private String soundPath;
 	private long startMillis;
-	private long duration = 5000;
+	private long duration = 3000;
 	
 	public Notification(String title, String body, String soundPath) {
 		this.title = title;

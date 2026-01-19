@@ -26,6 +26,7 @@ public class Chatbot {
 	
 	static HashMap<String, String[]> aliases = new HashMap<>();
 
+	private ArrayList<String> previousMessages;
 	private boolean isTyping;
 	private ArrayList<Character> currentMessage;
 	
@@ -39,6 +40,10 @@ public class Chatbot {
 	
 	public boolean isTyping() {
 		return this.isTyping;
+	}
+	
+	public void addMessage(String s) {
+		this.previousMessages.add(s);
 	}
 	
 	public void clearText() {
@@ -59,6 +64,10 @@ public class Chatbot {
 		//this.currentMessage.add(c);
 	}
 	
+	public ArrayList<String> getMessages() {
+		return this.previousMessages;
+	}
+	
 	public String getCurrentMessage() {
 		String s = "";
 		for (Character c : currentMessage) {
@@ -69,6 +78,8 @@ public class Chatbot {
 	
 	public Chatbot() {
 		this.currentMessage = new ArrayList<>();
+		this.previousMessages = new ArrayList<>();
+		this.previousMessages.add("How can I help?");
 		
 		this.isTyping = false;
 		

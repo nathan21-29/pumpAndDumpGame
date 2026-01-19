@@ -60,7 +60,7 @@ public class Stock implements Comparable<Stock> {
 	private double chanceFactor; //0.3 to 3.55 sum of volatility and momentum
 	private double targetFlipChance; //decimal chance for target to flip on any given refresh
 	private Image icon; //stock/company logo
-	
+
 	//player variables
 	private int amountHeld;
 	private double totalPurchasePrice;
@@ -91,7 +91,7 @@ public class Stock implements Comparable<Stock> {
 		generateInitialCandlestick(initialPrice);
 		candleCount = views[2];
 		this.targetFlipChance = targetFlipChance;
-				
+
 		amountHeld = 0;
 		totalPurchasePrice = 0;
 	}
@@ -100,19 +100,19 @@ public class Stock implements Comparable<Stock> {
 	public static HashMap<Stock, Integer> getBuyOrders() {
 		return buyOrders;
 	}
-	
+
 	public static HashMap<Stock, Integer> getSellOrders() {
 		return sellOrders;
 	}
-	
+
 	public static int getTime() {
 		return time;
 	}
-	
+
 	public double getVolatility() {
 		return volatility;
 	}
-	
+
 	public String getSymbol () {
 		return symbol;
 	}
@@ -128,7 +128,7 @@ public class Stock implements Comparable<Stock> {
 	public double getMinPrice() {
 		return minPrice;
 	}
-	
+
 	public double getSeedPrice() {
 		return seedPrice;
 	}
@@ -140,34 +140,34 @@ public class Stock implements Comparable<Stock> {
 	public int getRecentMax() {
 		return recentMax;
 	}
-	
+
 	public int getCandleCount() {
 		return candleCount;
 	}
-	
+
 	public int getAmountHeld() {
 		return amountHeld;
 	}
-	
+
 	public double getTotalPurchasePrice() {
 		return totalPurchasePrice;
 	}
-	
+
 	public static ArrayList<Stock> getMarket() {
 		return market;
 	}
-	
+
 	public static ArrayList<Stock> getTestMarket() {
 		return testMarket;
 	}
-	
+
 	public double getAveragePurchasePrice() {
 		if(amountHeld == 0) {
 			return 0;
 		}
 		return totalPurchasePrice / amountHeld;
 	}
-	
+
 	//if absolute is true, return the absolute profitloss (dollar amount)
 	//otherwise return %
 	public double getProfitLoss(boolean absolute) {
@@ -178,19 +178,19 @@ public class Stock implements Comparable<Stock> {
 			return (getValue() - getAveragePurchasePrice()) / getValue() * 100;
 		}
 	}
-	
+
 	public double getTargetFlipChance() {
 		return targetFlipChance;
 	}
-	
+
 	public Image getIcon() {
 		return icon;
 	}
-	
+
 	public double getChanceFactor() {
 		return chanceFactor;
 	}
-	
+
 	//setters
 	public void setValue(double newPrice) {
 		priceHistory.addLast(new Candlestick(priceHistory.getLast().getClosePrice(), newPrice));
@@ -199,43 +199,43 @@ public class Stock implements Comparable<Stock> {
 	public void setValue(double openPrice, double closePrice) {
 		priceHistory.addLast(new Candlestick(openPrice, closePrice));
 	}
-	
+
 	public void setCandleCount(int data) {
 		candleCount = views[data];
 	}
-	
+
 	public void setAmountHeld(int amountHeld) {
 		this.amountHeld = amountHeld;
 	}
-	
+
 	public void setTotalPurchasePrice(int totalPurchasePrice) {
 		this.totalPurchasePrice = totalPurchasePrice;
 	}
-	
+
 	public void setIcon(Image icon) {
 		this.icon = icon;
 	}
-	
+
 	public void incrementAmountHeld(int increment) {
 		amountHeld += increment;
 	}
-	
+
 	public void incrementTotalPurchasePrice(double increment) {
 		totalPurchasePrice += increment;
 	}
-	
+
 	//returns the priceHistory AL as a string
 	public String toString() {
 		return priceHistory.toString();
 	}
-	
+
 	//2 stocks are considered equal if they have the same symbol.
 	//Object obj is the stock to be compared to
 	public boolean equals(Object obj) {
 		Stock compare = (Stock) obj;
 		return symbol.equals(compare.getSymbol());
 	}
-	
+
 	//loads stocks from disk
 	public static void loadStocks() {
 		try {
@@ -260,7 +260,7 @@ public class Stock implements Comparable<Stock> {
 			System.out.println("stock reading error");
 		}
 	}
-	
+
 	//increments the in-game time
 	//returns true if timechange rolls into a new day
 	//returns false otherwise
@@ -279,14 +279,14 @@ public class Stock implements Comparable<Stock> {
 		}
 		return false;
 	}
-	
+
 	//inverts the price target of the stock
 	//when combined with randomness to create irregular trigger intervals,
 	//this behaviour creates longer-term trends in stock pricing
 	private void invertTarget() {
 		targetGrowth = 1 / targetGrowth;
 	}
-	
+
 	//draws the stock holdings in the trading screen
 	//with the format [icon, symbol, P&L]
 	public static void drawHoldings(Graphics g) {
@@ -455,7 +455,7 @@ public class Stock implements Comparable<Stock> {
 				priceHistory.get(recentMax).getOpenPrice());
 		double bottomBound = Math.min(priceHistory.get(recentMin).getClosePrice(), 
 				priceHistory.get(recentMin).getOpenPrice());
-		
+
 		drawGraphLines(g);
 
 		int openPixel;
@@ -473,7 +473,7 @@ public class Stock implements Comparable<Stock> {
 			g.fillRect(10 + i * (1400 / candleCount), Math.min(openPixel, closePixel), (1400 / candleCount), Math.abs(openPixel - closePixel));
 		}
 	}
-	
+
 	//draws the little graphs in stockList
 	//essentially the same as drawgraph but with no lines or numbers whatsoever
 	public void drawTinyGraph(int startX, int startY, Graphics g) {
@@ -491,7 +491,7 @@ public class Stock implements Comparable<Stock> {
 				priceHistory.get(tinyMax).getOpenPrice());
 		double bottomBound = Math.min(priceHistory.get(tinyMin).getClosePrice(), 
 				priceHistory.get(tinyMin).getOpenPrice());
-		
+
 		int openPixel;
 		int closePixel;
 		int start = priceHistory.size() - tinyCandleCount;
@@ -526,7 +526,7 @@ public class Stock implements Comparable<Stock> {
 			g.drawLine(10, yCoord, 1425, yCoord);
 			g.drawString(String.format("%.2f", bottom + (i * valueIncrement)), 1430, yCoord + 2);
 		}
-		
+
 		//draw break even line
 		if(amountHeld > 0 && getAveragePurchasePrice() > bottom && getAveragePurchasePrice() < top) {
 			g.setColor(Color.CYAN);
@@ -543,7 +543,7 @@ public class Stock implements Comparable<Stock> {
 	public int getDrawPixel(int fieldTop, int fieldBottom, double topBound, double bottomBound, double target) {
 		return (int) (fieldTop + (fieldBottom - fieldTop) * (1 - (target - bottomBound) / (topBound - bottomBound)));
 	}
-	
+
 	//draws the stock indicators for tradingScreen (e.g. daily change, analyst rating, symbol etc)
 	public void drawAllIndicators(Graphics g) {
 		//draw time indicators (past 5 days etc)
@@ -554,11 +554,11 @@ public class Stock implements Comparable<Stock> {
 		drawIndicator(currentValue, oneDay, 430, 755, g);
 		drawIndicator(currentValue, fiveDay, 430, 807, g);
 		drawIndicator(currentValue, twentyDay, 430, 860, g);
-		
+
 		//draw current price
 		g.setColor(Color.WHITE);
 		g.drawString(String.format("$%.4f", currentValue),  1090, 755);
-		
+
 		//draw "analyst rating" based on our chanceFactor
 		int rating = 0;
 		if(chanceFactor < 1.8) {
@@ -582,7 +582,7 @@ public class Stock implements Comparable<Stock> {
 
 		//draw stock icon
 		g.drawImage(icon, 15, 105, 60, 60, null);
-		
+
 		//draw stock ticker (symbol)
 		g.setColor(Color.WHITE);
 		g.drawString(symbol, 90, 150);
@@ -600,11 +600,11 @@ public class Stock implements Comparable<Stock> {
 			g.setColor(Color.RED);
 		}
 
-//		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
-//				getProfitLoss(false)), 1090, 860);
+		//		g.drawString(String.format("%d @ $%.2f (%+.2f%%)", amountHeld, getAveragePurchasePrice(),
+		//				getProfitLoss(false)), 1090, 860);
 		g.drawString(String.format("$%.2f (%+.2f%%)", amountHeld * getValue(), getProfitLoss(NEGATIVE)), 1090, 860);
 	}
-	
+
 	//draws the stock's price and recent gain/loss in stockList
 	//int x is the x coordinate to draw the indicator at
 	//int y is the y coordinate to draw the incator at
@@ -620,18 +620,18 @@ public class Stock implements Comparable<Stock> {
 		g.drawString(String.format("$%.2f (%+.2f%%)", getValue(), 100 * (getValue() - refPrice) / refPrice),
 				x + 10, y + 110);
 	}
-	
+
 	//gets the price of the stock hoursAgo candlesticks ago
 	//int hoursAgo is the amount of hours to go back in time
 	public double getPastPrice(int hoursAgo) {
 		return priceHistory.get(priceHistory.size() - 1 - hoursAgo).getClosePrice();
 	}
-	
+
 	//compares stock objects by a default order of amount held decreasing
 	public int compareTo(Stock compare) {
 		return (int) (compare.getAmountHeld() * compare.getValue() - amountHeld * getValue());
 	}
-	
+
 	//draws individual indicators (daily/5d/20d gain)
 	//double currentValue is the currentValue of the stock, double pastValue is the previous value
 	//of the stock for that indicator, int x and y are coordinates to place the indicator
@@ -649,7 +649,7 @@ public class Stock implements Comparable<Stock> {
 		}
 		g.drawString(String.format("%.4f%% %s", diff / pastValue * 100, result + String.format("%+.2f", diff) + ")"), x, y);
 	}
-	
+
 	//overloaded version of drawIndicator that has a font parameter
 	//double currentValue is the currentValue of the stock, double pastValue is the previous value
 	//of the stock for that indicator, int x and y are coordinates to place the indicator, Font font
@@ -668,7 +668,7 @@ public class Stock implements Comparable<Stock> {
 		}
 		g.drawString(String.format("%.4f%% %s", diff / pastValue * 100, result + String.format("%+.2f", diff) + ")"), x, y);
 	}
-	
+
 	//recalculates the values for recentMax/recentMin, useful for ensuring bounds when changing view length
 	//boolean bypass dictates whether to bypass the checked recount (i.e. only check if recentMax
 	//has left the bounds of the graph) if true, this check will be skipped
@@ -698,7 +698,7 @@ public class Stock implements Comparable<Stock> {
 			recentMin = minIndex;
 		}
 	}
-	
+
 	//adds a buy/sell order
 	//HashMap<Stock, Integer> destination is the HM to send the order to,
 	//either buyOrders or sellOrders. Stock is the stock to be bought/sold,
@@ -712,14 +712,14 @@ public class Stock implements Comparable<Stock> {
 			destination.put(this, amount); //add to destination as normal
 		}
 	}
-	
+
 	//clears holdings, used when a save is loaded
 	public static void clearHoldings() {
 		for(Stock stock : selectedMarket) {
 			stock.setAmountHeld(0);
 		}
 	}
-	
+
 	//saves stock data to disk
 	//int saveNumber is the save to save the data to
 	public static void saveStocks(int saveNumber) {
@@ -728,7 +728,7 @@ public class Stock implements Comparable<Stock> {
 			try {
 				PrintWriter fileOut = new PrintWriter
 						("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt");
-				
+
 				//write player variables
 				fileOut.println(time + " " + stock.amountHeld + " " + stock.totalPurchasePrice + " " + 
 						stock.chanceFactor + " " + stock.baselineSum + " " + stock.momentum);
@@ -739,7 +739,7 @@ public class Stock implements Comparable<Stock> {
 					temp = stock.getPriceHistory().get(i);
 					fileOut.println(temp.getClosePrice());
 				}
-				
+
 				fileOut.flush();
 				fileOut.close();
 			} catch (FileNotFoundException e) {
@@ -747,7 +747,7 @@ public class Stock implements Comparable<Stock> {
 			} 
 		}
 	}
-	
+
 	//loads stock data from disk
 	//int saveNumber is the save to load the stocks from, since the game saves
 	//are identified internally as ints
@@ -768,14 +768,14 @@ public class Stock implements Comparable<Stock> {
 				st = new StringTokenizer(fileIn.readLine(), " "); //data for first candlestick which has both open and end
 				double prevPrice; //saves the price of the last candlestick since the while loop isn't indexed
 				stock.priceHistory.add(new Candlestick(Double.parseDouble(st.nextToken()), prevPrice = Double.parseDouble(st.nextToken())));
-				
+
 				//read in previous price history
 				String data;
 				while((data = fileIn.readLine()) != null) {
 					stock.priceHistory.add(new Candlestick(prevPrice, Double.parseDouble(data)));
 					prevPrice = stock.priceHistory.getLast().getClosePrice();
 				}
-				
+
 				stock.recalculateRecents(true);
 				fileIn.close();
 			} catch (FileNotFoundException e) {
@@ -785,31 +785,31 @@ public class Stock implements Comparable<Stock> {
 			}
 		}
 	}
-		
-		
+
+
 	// part of the chatbot
 	public static String reply(String str) { // returns reply
 		ArrayList<String> numberKeyWords = new ArrayList<>();
-		
+
 		String action = "";
 		Stock stock = null;
 		String stockName = "";
 		int amount;
-		
+
 		HashMap<String, Double> actionSentiment = new HashMap<String, Double>();
 		actionSentiment.put("buy", 0.0d); // -1 to 1
 		actionSentiment.put("sell", 0.0d);
 		//actionSentiment.put("info", 0.0d);
-		
+
 		HashMap<String, Double> stockSentiment = new HashMap<String, Double>();
 		for (int i = 0; i < market.size(); i++) {
 			stockSentiment.put(market.get(i).symbol, 0.0d);
 		}
-		
+
 		str.toLowerCase();
-		
+
 		String[] tokens = str.split(" ");
-		
+
 		//XXX data type
 		HashMap<Integer, Double> numberPlausibility = new HashMap<>();
 		for (int i = 0; i < tokens.length; i++) {
@@ -820,34 +820,38 @@ public class Stock implements Comparable<Stock> {
 			for (String s : stockSentiment.keySet()) {
 				stockSentiment.put(s, stockSentiment.get(s) + Chatbot.similarity(s.toLowerCase(), tokens[i]));
 			}
-			
+
 			try {
 				numberPlausibility.put(Integer.parseInt(tokens[i]), 0.0);
 			} catch (NumberFormatException e) {
 				// not a number
 			}
 		}
-		
-		
+
+
 		double maxSentiment = -99999; //XXX
 		for (String symbol : stockSentiment.keySet()) {
 			//System.out.printf("%s: %f/%f%n", symbol, stockSentiment.get(symbol), maxSentiment);
-		    if (stockSentiment.get(symbol) > maxSentiment) {
-		    	//System.out.println("Symbol change");
-		        maxSentiment = stockSentiment.get(symbol);
-		        stockName = symbol;
-		    }
+			if (stockSentiment.get(symbol) > maxSentiment) {
+				//System.out.println("Symbol change");
+				maxSentiment = stockSentiment.get(symbol);
+				stockName = symbol;
+			}
 		}
-		
-		
+
+
 		//TODO implement "keywords" (half, all, quarter, etc)
-		int sum = 0;
-		for (Integer i : numberPlausibility.keySet()) {
-			sum += i;
+		if (numberPlausibility.keySet().isEmpty()) {
+			amount = 0;
+		} else {
+			int sum = 0;
+			for (Integer i : numberPlausibility.keySet()) {
+				sum += i;
+			}
+			amount = sum/numberPlausibility.values().size();
 		}
-		amount = sum/numberPlausibility.values().size();
-		
-		
+
+
 		//stock = Collections.binarySearch(market, new Stock());
 		ArrayList<String> names = new ArrayList<>();
 		for (Stock s : market) {
@@ -855,7 +859,7 @@ public class Stock implements Comparable<Stock> {
 				stock = s;
 			}
 		}
-		
+
 		if (actionSentiment.get("buy") > actionSentiment.get("sell")) {
 			Notification.addNotification("ORDER CREATED", 
 					"Buy " + amount + " shares of " + stock.getSymbol(), 

@@ -41,7 +41,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Font header = new Font("Arial", Font.BOLD, 50);
 	Font body = new Font("Arial", Font.PLAIN, 32);
 	Font body2 = new Font("Arial", Font.PLAIN, 40);
-	Font wormTongue = new Font("Courier", Font.PLAIN, 18);
+	Font wormTongue = new Font("Courier New", Font.PLAIN, 18);
 	FontMetrics fmTitle;
 	
 	Image menuTitle, menuPlayButton, menuTutorialButton;
@@ -397,12 +397,17 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawString(name, 790, 65);
 		
 		//System.out.println(saruman.isTyping());
+		ArrayList<String> subMessages = new ArrayList<>(saruman.getMessages().subList(Math.max(saruman.getMessages().size() - 17, 0), saruman.getMessages().size()));
+		g.setColor(Color.WHITE);
+		g.setFont(wormTongue);
+		for (int i = 0; i < subMessages.size(); i++) {
+			g.drawString(subMessages.get(i), 1580, 270 + i * 30);
+		}
+		
 		if (saruman.isTyping()) { // draw current message + pointer
-			g.setColor(Color.WHITE);
-			//System.out.println("Current msg:" + saruman.getCurrentMessage());
-			g.setFont(wormTongue);
-			g.drawString(saruman.getCurrentMessage(), 1580, 750);
-			g.fillRect(1580 + saruman.getCurrentMessage().length() * 18, 750, 1, 45);
+
+			g.drawString(saruman.getCurrentMessage(), 1580, 775);
+			g.fillRect(1580 + saruman.getCurrentMessage().length() * 11, 750, 1, 45);
 		}
 		
 		int startX, startY;
@@ -597,7 +602,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void keyPressed(KeyEvent e) {
 		//System.out.println("Here1");
 		
-		System.out.println(gameState);
+		//System.out.println(gameState);
 		if (gameState == STOCKLIST) {
 			//System.out.println("Here2");
 			//System.out.println("Current msg:" + saruman.getCurrentMessage());
@@ -607,7 +612,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				
 				
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					Stock.reply(saruman.getCurrentMessage());
+					saruman.addMessage(String.format("%s", name, saruman.getCurrentMessage()));
+					saruman.addMessage(String.format("%s", Stock.reply(saruman.getCurrentMessage())));
 					
 					saruman.clearText();
 				} else {
