@@ -612,7 +612,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				
 				
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					saruman.addMessage(String.format("%s", name, saruman.getCurrentMessage()));
+					saruman.addMessage(String.format("%s", saruman.getCurrentMessage()));
 					saruman.addMessage(String.format("%s", Stock.reply(saruman.getCurrentMessage())));
 					
 					saruman.clearText();
