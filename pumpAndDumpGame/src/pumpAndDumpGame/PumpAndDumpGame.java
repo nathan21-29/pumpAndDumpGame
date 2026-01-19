@@ -392,7 +392,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.setColor(Color.WHITE);
 		g.setFont(body2);
 		//draw money
-		g.drawString(String.format("$%.2f (+$%.2f)", money, portfolioValue), 120, 65);
+		g.drawString(String.format("$%,.2f (+$%,.2f)", money, portfolioValue), 120, 65);
 		//draw name
 		g.drawString(name, 790, 65);
 		
@@ -482,7 +482,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//draw money
 		g.setColor(Color.WHITE);
-		g.drawString(String.format("$%.2f (+$%.2f)", money, portfolioValue), 530, 65);
+		g.drawString(String.format("$%,.2f (+$%,.2f)", money, portfolioValue), 530, 65);
 		
 		//draw name
 		g.drawString(name, 1185, 65);
