@@ -43,6 +43,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Font body2 = new Font("Arial", Font.PLAIN, 40);
 	Font wormTongue = new Font("Courier New", Font.PLAIN, 18);
 	FontMetrics fmTitle;
+	FontMetrics fmBody;
 	
 	Image menuTitle, menuPlayButton, menuTutorialButton;
 	Image backButton;
@@ -396,6 +397,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	//draws the stockList and chatbot window
 	//Graphics g is the graphics object used to draw elements
 	public void drawStockList(Graphics g) {
+		fmBody = g.getFontMetrics(body);
 		g.drawImage(stockList, 0, 0, 1900, 1000, this);
 		g.setColor(Color.WHITE);
 		g.setFont(body2);
@@ -437,7 +439,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 			g.setFont(body);
 			//draw amount held
 			if(s.getAmountHeld() > 0) {
-				g.drawString("" + s.getAmountHeld(), startX + 280, startY + 70);
+				g.drawString("" + s.getAmountHeld(), startX + 320 - fmBody.stringWidth("" + s.getAmountHeld()), startY + 70);
 			}
 			//draw today's change
 //			s.drawIndicator(s.getValue(), s.getPastPrice(Stock.getTime() + 35), startX + 10, startY + 110, body, g);
