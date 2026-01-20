@@ -541,6 +541,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		Stock.clearHoldings();
 		Notification.clearNotifications();
 		saruman = new Chatbot(); //reload saruman
+		portfolioValue = 0;
 		
 		//load sounds
 		loadSounds();
