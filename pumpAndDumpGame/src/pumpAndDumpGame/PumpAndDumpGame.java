@@ -256,7 +256,6 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2d = (Graphics2D) g; //We can use g2d if we need something g doesn't have
 		if(gameState == MAINMENU) {
 			drawMenu(g);
 		}
