@@ -874,7 +874,12 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 						do {
 							validInput = true;
 							try {
-								money = Integer.parseInt(JOptionPane.showInputDialog("How much? (Default 1000)"));
+								String temp;
+								temp = JOptionPane.showInputDialog("How much? (Default 1000)");
+								if(temp == null) {
+									return; //cancel
+								}
+								money = Double.parseDouble(temp);
 								if(money < 50) {
 									throw new NumberFormatException();
 								}
