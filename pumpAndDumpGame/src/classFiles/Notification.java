@@ -62,7 +62,7 @@ public class Notification {
 		
 		int number = 0; //index
 		for(Notification n : notifications) {
-			if(viewAll || number < 2) {
+			if(viewAll || number < 1) {
 				//draw box
 				g.setColor(new Color(41, 41, 41));
 				//			g.fillRect(1525, 880 - number * 120, 355, 100);
