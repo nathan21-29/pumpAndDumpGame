@@ -412,6 +412,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//draw name
 		g.drawString(name, 790, 65);
 		//draw time
+		g.setColor(Color.WHITE);
 		g.drawString(Stock.getHours(), 1550, 65);
 		
 		//System.out.println(saruman.isTyping());
@@ -494,6 +495,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		currentStock.drawAllIndicators(g);
 		
 		//draw time
+		g.setColor(Color.WHITE);
 		g.drawString(Stock.getHours(), 1550, 65);
 		
 		//draw timeline selection
