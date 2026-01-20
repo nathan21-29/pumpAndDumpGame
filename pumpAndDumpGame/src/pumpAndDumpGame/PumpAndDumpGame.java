@@ -411,6 +411,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawString(String.format("$%,.2f (+$%,.2f)", money, portfolioValue), 120, 65);
 		//draw name
 		g.drawString(name, 790, 65);
+		//draw time
+		g.drawString(Stock.getHours(), 1550, 65);
 		
 		//System.out.println(saruman.isTyping());
 		ArrayList<String> subMessages = new ArrayList<>(saruman.getMessages().subList(Math.max(saruman.getMessages().size() - 17, 0), saruman.getMessages().size()));
@@ -490,6 +492,9 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		g.drawImage(tradingView, 0, 0, 1900, 1000, this);
 		currentStock.drawGraph(g);
 		currentStock.drawAllIndicators(g);
+		
+		//draw time
+		g.drawString(Stock.getHours(), 1550, 65);
 		
 		//draw timeline selection
 		if(currentStock.getCandleCount() == 140) { //20D

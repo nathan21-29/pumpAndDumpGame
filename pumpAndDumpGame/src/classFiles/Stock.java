@@ -34,6 +34,9 @@ public class Stock implements Comparable<Stock> {
 	private static Font small = new Font("Arial", Font.PLAIN, 26);
 	private static Font body = new Font("Arial", Font.PLAIN, 40);
 	private static int time = 0; //int # of hours since "day" started
+	private static String[] timeStrings = {"9:00 A.M.", "10:00 A.M.", "11:00 A.M."
+			, "12:00 P.M.", "1:00 P.M.", "2:00 P.M.", "3:00 P.M."
+	};
 	private static String[] ratings = {"Strong sell", "Sell", "Neutral", "Buy", "Strong buy"};
 	private static int[] views = {7, 35, 140, 1400}; //array of different view history options, in # of candles (hours)
 	private static Color darkGreen = new Color(66, 176, 78);
@@ -107,6 +110,10 @@ public class Stock implements Comparable<Stock> {
 
 	public static int getTime() {
 		return time;
+	}
+	
+	public static String getHours() {
+		return timeStrings[time];
 	}
 
 	public double getVolatility() {
@@ -266,8 +273,10 @@ public class Stock implements Comparable<Stock> {
 	//returns false otherwise
 	//^the above behaviour is not used in any meaningful way as of yet
 	public static boolean incrementTime() {
-		time++;
-		if(time > 7) {
+		if(time < 6) {
+			time++;
+		}
+		else {
 			time = 0; //reset time
 			//chance for stocks w/ targetFlipping = true to have their trend bias inverted
 			for(Stock stock : selectedMarket) {
