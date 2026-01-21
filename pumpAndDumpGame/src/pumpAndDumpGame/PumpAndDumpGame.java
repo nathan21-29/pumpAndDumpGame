@@ -699,26 +699,24 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 				incrementTutorial(false);
 			}
 		}
-		//testing
 		if(e.getKeyCode() == KeyEvent.VK_F1 && (gameState == TRADINGSCREEN || gameState == STOCKLIST)) {
 			saveGame();
 		}
-		else if(e.getKeyCode() == KeyEvent.VK_F2) {
-			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
-			startGameFromSave();
-		}
-		else if(e.getKeyCode() == KeyEvent.VK_F3) {
-			System.out.println(name);
-		}
-		else if(e.getKeyCode() == KeyEvent.VK_F4) {
-			System.out.println(initialMoney);
-//			System.out.println((money + portfolioValue - initialMoney) / initialMoney);
-//			System.out.println(money + portfolioValue - initialMoney);
-			
-		}
-		else if(e.getKeyCode() == KeyEvent.VK_F12) {
-			refreshMarket();
-		}
+		//testing
+//		else if(e.getKeyCode() == KeyEvent.VK_F2) {
+//			Notification.addNotification("TESTING", "this is a test\ntesting....", hitSoundPath);
+//			startGameFromSave();
+//		}
+//		else if(e.getKeyCode() == KeyEvent.VK_F3) {
+//			System.out.println(name);
+//		}
+//		else if(e.getKeyCode() == KeyEvent.VK_F4) {
+//			System.out.println(initialMoney);
+//			
+//		}
+//		else if(e.getKeyCode() == KeyEvent.VK_F12) {
+//			refreshMarket();
+//		}
 		
 	}
 
