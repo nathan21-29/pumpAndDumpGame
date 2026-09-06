@@ -55,8 +55,8 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	Image stockList;
 	Image tradingView, selectionPill;
 	
-	String hitSoundPath = "gameFiles/soft-hitnormal.wav";
-	String orderFilledPath = "gameFiles/orderFilled.wav";
+	String hitSoundPath = "src/gameFiles/soft-hitnormal.wav";
+	String orderFilledPath = "src/gameFiles/orderFilled.wav";
 	Clip temp;
 	
 	ArrayList<Stock> selectedMarket;
@@ -138,21 +138,21 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		demoStartTime = System.currentTimeMillis();
 		
 		//load tutorial
-		tutorialArrows = Toolkit.getDefaultToolkit().getImage("gameFiles/tutorial/arrows.png");
+		tutorialArrows = Toolkit.getDefaultToolkit().getImage("src/gameFiles/tutorial/arrows.png");
 		for(int i = 1; i <= 5; i++) {
 			tutorial.add(Toolkit.getDefaultToolkit().getImage
-					("gameFiles/tutorial/" + String.format("%02d", i) + ".png"));
+					("src/gameFiles/tutorial/" + String.format("%02d", i) + ".png"));
 		}
 		//load other images
-		backButton = Toolkit.getDefaultToolkit().getImage("gameFiles/backButton.png");
-		menuTitle = Toolkit.getDefaultToolkit().getImage("gameFiles/menuTitle.png");
-		menuPlayButton = Toolkit.getDefaultToolkit().getImage("gameFiles/playButton.png");
-		menuTutorialButton = Toolkit.getDefaultToolkit().getImage("gameFiles/tutorialButton.png");
-		stockList = Toolkit.getDefaultToolkit().getImage("gameFiles/stockList.png");
-		saveSelect = Toolkit.getDefaultToolkit().getImage("gameFiles/saveSelect.png");
-		loadingCircle = Toolkit.getDefaultToolkit().getImage("gameFiles/loadingCircle.png"); 
-		tradingView = Toolkit.getDefaultToolkit().getImage("gameFiles/tradingScreen.png");
-		selectionPill = Toolkit.getDefaultToolkit().getImage("gameFiles/selectionPill.png");
+		backButton = Toolkit.getDefaultToolkit().getImage("src/gameFiles/backButton.png");
+		menuTitle = Toolkit.getDefaultToolkit().getImage("src/gameFiles/menuTitle.png");
+		menuPlayButton = Toolkit.getDefaultToolkit().getImage("src/gameFiles/playButton.png");
+		menuTutorialButton = Toolkit.getDefaultToolkit().getImage("src/gameFiles/tutorialButton.png");
+		stockList = Toolkit.getDefaultToolkit().getImage("src/gameFiles/stockList.png");
+		saveSelect = Toolkit.getDefaultToolkit().getImage("src/gameFiles/saveSelect.png");
+		loadingCircle = Toolkit.getDefaultToolkit().getImage("src/gameFiles/loadingCircle.png"); 
+		tradingView = Toolkit.getDefaultToolkit().getImage("src/gameFiles/tradingScreen.png");
+		selectionPill = Toolkit.getDefaultToolkit().getImage("src/gameFiles/selectionPill.png");
 		
 		//load saves
 		Save.cacheSaves();
@@ -551,10 +551,10 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//get next save number
 		try {
-			Scanner fileIn = new Scanner(new File("gameFiles/saves/saveData.txt"));
+			Scanner fileIn = new Scanner(new File("src/gameFiles/saves/saveData.txt"));
 			saveNumber = Integer.parseInt(fileIn.nextLine()) + 1;
 			fileIn.close();
-			PrintWriter fileOut = new PrintWriter(new File("gameFiles/saves/saveData.txt"));
+			PrintWriter fileOut = new PrintWriter(new File("src/gameFiles/saves/saveData.txt"));
 			fileOut.print(saveNumber);
 			fileOut.flush();
 			fileOut.close();
@@ -576,7 +576,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		
 		//load player data
 		try {
-			BufferedReader playerData = new BufferedReader(new FileReader("gameFiles/saves/playerData/" + saveNumber + ".txt"));
+			BufferedReader playerData = new BufferedReader(new FileReader("src/gameFiles/saves/playerData/" + saveNumber + ".txt"));
 			name = playerData.readLine();
 			money = Double.parseDouble(playerData.readLine());
 			initialMoney = Double.parseDouble(playerData.readLine());
@@ -605,7 +605,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		//load sounds into memory (so that first play isn't delayed)
 		try {
 			AudioInputStream player;
-			BufferedReader soundLoader = new BufferedReader(new FileReader("gameFiles/soundFilePaths.txt"));
+			BufferedReader soundLoader = new BufferedReader(new FileReader("src/gameFiles/soundFilePaths.txt"));
 			String data;
 			while((data = soundLoader.readLine()) != null) {
 				player = AudioSystem.getAudioInputStream(new File (data));
@@ -804,7 +804,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 	public void saveGame() {
 		//save money and name and mode
 		try {
-			PrintWriter playerData = new PrintWriter(new File("gameFiles/saves/playerData/" + saveNumber + ".txt"));
+			PrintWriter playerData = new PrintWriter(new File("src/gameFiles/saves/playerData/" + saveNumber + ".txt"));
 			playerData.print(name + "\n" + money + "\n" + initialMoney + "\n" + portfolioValue + "\n" + 
 					hardMode + "\n" + System.currentTimeMillis());
 			playerData.flush();
@@ -1032,7 +1032,7 @@ public class PumpAndDumpGame extends JPanel implements Runnable, KeyListener, Mo
 		try {
 			AudioInputStream player;
 			Clip background;
-			player = AudioSystem.getAudioInputStream(new File ("gameFiles/background.wav"));
+			player = AudioSystem.getAudioInputStream(new File ("src/gameFiles/background.wav"));
 			background = AudioSystem.getClip();
 			background.open(player);
 			background.setFramePosition (0); //<-- play sound file again from beginning

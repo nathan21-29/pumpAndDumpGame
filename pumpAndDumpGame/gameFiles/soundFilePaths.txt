@@ -1,2 +1,0 @@
-gameFiles/soft-hitnormal.wav
-gameFiles/orderFilled.wav
