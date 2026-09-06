@@ -1,0 +1,30 @@
+//formatting guide for the different types of files in gameFiles
+
+Player data
+{
+String name
+double money
+double initialMoney //used for lifetime p&l calculation
+double portfolioValue
+boolean hardMode
+long lastSaveMillis
+}
+
+Stock data
+{
+int time int amountHeld double totalPurchasePrice double chanceFactor double baselineSum double momentum
+//first candlestick
+double openPrice double closePrice
+//every other candlestick
+double closePrice
+}
+
+saveData.txt
+{
+int n //represents the # of saves created, new saves are created with number n + 1 and n is incremented
+}
+
+stockList.txt
+{
+String symbol int initialPrice double volatility double growthTarget double stability double targetFlipChance
+}
