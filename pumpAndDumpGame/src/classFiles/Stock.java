@@ -246,7 +246,7 @@ public class Stock implements Comparable<Stock> {
 	//loads stocks from disk
 	public static void loadStocks() {
 		try {
-			BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/stockList.txt"));
+			BufferedReader fileIn = new BufferedReader(new FileReader("src/gameFiles/stockList.txt"));
 			while(fileIn.readLine() != null) { //skip the comment line
 				Stock tempStock;
 				StringTokenizer temp = new StringTokenizer(fileIn.readLine(), " ");
@@ -257,7 +257,7 @@ public class Stock implements Comparable<Stock> {
 						Double.parseDouble(temp.nextToken()), //stability
 						Double.parseDouble(temp.nextToken()))); //targetFlipChance
 				tempStock.setIcon(Toolkit.getDefaultToolkit().getImage(
-						"gameFiles/stockIcons/" + tempStock.getSymbol() + ".png"));
+						"src/gameFiles/stockIcons/" + tempStock.getSymbol() + ".png"));
 				market.add(tempStock);
 			}
 			fileIn.close();
@@ -736,7 +736,7 @@ public class Stock implements Comparable<Stock> {
 		for(Stock stock : selectedMarket) { //for every stock
 			try {
 				PrintWriter fileOut = new PrintWriter
-						("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt");
+						("src/gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt");
 
 				//write player variables
 				fileOut.println(time + " " + stock.amountHeld + " " + stock.totalPurchasePrice + " " + 
@@ -764,7 +764,7 @@ public class Stock implements Comparable<Stock> {
 		for(Stock stock : selectedMarket) { //for every stock
 			stock.priceHistory.clear(); //clear previous candlesticks
 			try {
-				BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt"));
+				BufferedReader fileIn = new BufferedReader(new FileReader("src/gameFiles/saves/stockData/" + stock.getSymbol() + "/" + saveNumber + ".txt"));
 				StringTokenizer st = new StringTokenizer(fileIn.readLine(), " ");
 				//read in user-specific data
 				time = Integer.parseInt(st.nextToken());
@@ -872,13 +872,13 @@ public class Stock implements Comparable<Stock> {
 		if (actionSentiment.get("buy") > actionSentiment.get("sell")) {
 			Notification.addNotification("ORDER CREATED", 
 					"Buy " + amount + " shares of " + stock.getSymbol(), 
-					"gameFiles/soft-hitnormal.wav");
+					"src/gameFiles/soft-hitnormal.wav");
 			stock.addOrder(buyOrders, amount);
 			return String.format("Buying %d shares of %s", amount, stockName);
 		} else {
 			Notification.addNotification("ORDER CREATED", 
 					"Sell " + amount + " shares of " + stock.getSymbol(),
-					"gameFiles/soft-hitnormal.wav");
+					"src/gameFiles/soft-hitnormal.wav");
 			stock.addOrder(sellOrders, amount);
 			return String.format("Selling %d shares of %s", amount, stockName);
 		}

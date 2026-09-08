@@ -81,7 +81,7 @@ public class Save implements Comparable<Save>{
 	public static void cacheSaves() {
 		saves.clear();
 		try {
-			Scanner countChecker = new Scanner(new File("gameFiles/saves/saveData.txt"));
+			Scanner countChecker = new Scanner(new File("src/gameFiles/saves/saveData.txt"));
 			double money;
 			double initialMoney;
 			double portfolioValue;
@@ -90,7 +90,7 @@ public class Save implements Comparable<Save>{
 			for(int i = 0; i <= saveCount; i++) {
 				//open file 
 				try {
-					BufferedReader fileIn = new BufferedReader(new FileReader("gameFiles/saves/playerData/" + i + ".txt"));
+					BufferedReader fileIn = new BufferedReader(new FileReader("src/gameFiles/saves/playerData/" + i + ".txt"));
 					String name = fileIn.readLine();
 					money = Double.parseDouble(fileIn.readLine());
 					initialMoney = Double.parseDouble(fileIn.readLine());
