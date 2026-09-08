@@ -4,12 +4,16 @@ A paper-trading / crypto-trading simulator built in Java (Swing/AWT). Start with
 
 # Gallery
 ### Main Menu
+<img width="2853" height="1546" alt="image" src="https://github.com/user-attachments/assets/ea740de9-c8c9-4b3d-a175-fa0747bb4ea7" />
 
 ### Save Selection
+<img width="2853" height="1546" alt="image" src="https://github.com/user-attachments/assets/33100127-28be-40a4-900c-2c128a1ed575" />
 
 ### Stock Menu
+<img width="2853" height="1546" alt="image" src="https://github.com/user-attachments/assets/49bcc150-1731-40f2-a968-a2a951a32217" />
 
 ### Trading Screen
+<img width="2853" height="1546" alt="image" src="https://github.com/user-attachments/assets/b4d5a105-9cd9-4089-b166-aabb8dcb984f" />
 
 ## Features
 
